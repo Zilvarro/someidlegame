@@ -1,110 +1,157 @@
 export const newSave = {
-    fishCount: 0,
-    totalFish: 0,
-    tapLevel: 1,
-    idleLevel: 0,
-    holyFish: -1,
-    spells: [false],
-    flags: {
-        fishtext: false,
-        taplevel: false,
-        idlelevel: false,
-        hatbutton: false,
-        fishology: false
-    }
+    xValue: [0,0,0,0],
+    highestXTier: 0,
+    freeFormula: "x+1",
+    formulaUnlocked: {},
+    formulaBought: {},
+    formulaUsed: {},
+    myFormulas: [],
+    anyFormulaUsed: true,
+    xResetCount: 0,
+    formulaUnlockCount: 0,
+    maxAlpha: 0,
+    alpha: 0,
+    tickFormula: false,
+    inventorySize: 3,
+    idleMultiplier: 1,
+    boughtAlpha: [false,false],
+    saveTimeStamp: 0,
 }
 
 export const getSaveGame = ()=>{
-    const savedgame = window.localStorage.getItem('fishingdeluxeidle')
-    if (!savedgame) {
+    const savedgame = window.localStorage.getItem('idleformulas')
+    if (true||!savedgame) {
         console.log("New Game")
-        return newSave;
+        return {...newSave, saveTimeStamp: Date.now()}
     }
     else {
         console.log("Game Loaded")
-        return JSON.parse(savedgame);
+        return JSON.parse(savedgame)
     }
+}
+
+export const loadGame = ()=>{
+    const savedgame = window.localStorage.getItem('idleformulas')
+    if (!savedgame) {
+        window.alert("No savegame found!")
+        return undefined
+    }
+    else {
+        return JSON.parse(savedgame)
+    }
+}
+
+export const getStartingX = (state)=>{
+    return 12*Math.pow(state.maxAlpha,2);
 }
 
 export const save = (state)=>{
     const currentgame = JSON.stringify(state)
-    window.localStorage.setItem('fishingdeluxeidle', currentgame);
+    window.localStorage.setItem('idleformulas', currentgame)
+    window.alert("Game saved!")
 }
 
 export const saveReducer = (state, action)=>{
     switch(action.name){
-    case "tap":
-        const holyfishchance = getHolyFishChance(state);
-        console.log(holyfishchance)
-        if (holyfishchance > 0 && Math.random() < holyfishchance){
-            state.holyFish++;
-            state.tapsSinceHoly=0;
-            alert("YOU CAUGHT A HOLY FISH! CONGRATULATIONS!");
-        } else {
-            state.fishCount += state.tapLevel;
-            state.totalFish += state.tapLevel;
-            state.tapsSinceHoly++;
-        }
-        break;
     case "idle":
-        state.fishCount += state.idleLevel;
-        state.totalFish += state.idleLevel;
-        break;
-    case "taplevel":
-        state.fishCount -= getTapLevelCost(state);
-        state.tapLevel++;
-        break;
-    case "idlelevel":
-        state.fishCount -= getIdleLevelCost(state);
-        state.idleLevel++;
-        break;
-    case "hatbutton":
-        state.fishCount -= 100000;
-        state.tapsSinceHoly = 0;
-        state.holyFish++;
-        break;
-    case "unlockfishology":
-        state.spells[0] = true;
+        const timeStamp = Date.now()
+        const deltaMilliSeconds = (timeStamp - state.saveTimeStamp)
+        if (deltaMilliSeconds < 60000) { //Quick Computation
+            for(let i=1; i<state.xValue.length; i++) {
+                state.xValue[i-1]+= deltaMilliSeconds * state.idleMultiplier * state.xValue[i] / 1000
+            }
+        } else { //Offline Progress
+            const integrationFactor = [1,1,1/2,1/6,1/24] //one over factorial
+            const xBefore = state.xValue[0]
+            for(let j=0; j<state.xValue.length; j++) { //tier to be calculated
+                for(let k=j+1; k<state.xValue.length; k++) { //higher tiers that affect it
+                    //~2% time penalty on offline progress to hopefully ensure offline is not better than online idling
+                    state.xValue[j]+= Math.pow(deltaMilliSeconds / 1020, k-j) * state.idleMultiplier * state.xValue[k] * integrationFactor[k-j]
+                }
+            }
+            window.alert("You were away for " + Math.floor(deltaMilliSeconds / 60000) + " minutes.\nYour x increased by a factor of " + (state.xValue[0] / xBefore).toFixed(2))
+        }
+        state.saveTimeStamp = timeStamp
+        state.tickFormula=false
         break;
     case "reset":
-        state = newSave;
+        state = {...newSave, saveTimeStamp: Date.now()};
+        break;
+    case "load":
+        state = loadGame() || state;
+        break;
+    case "applyFormula":
+        if (!state.tickFormula && (action.forceApply || state.xValue[action.formula.targetLevel] <= action.formula.applyFormula(state.xValue) || window.confirm("This will lower your X value. Are you sure?\n(You can skip this pop-up by using Shift+Click)"))) {
+            state.xValue[action.formula.targetLevel] = action.formula.applyFormula(state.xValue)
+            state.xValue[0] -= action.formula.applyCost
+            state.formulaUsed[action.formula.formulaName] = true
+            state.anyFormulaUsed = true
+            state.tickFormula = true
+        }
+        break;
+    case "unlockFormula":
+        state.xValue[0] -= action.formula.unlockCost
+        state.formulaUnlocked[action.formula.formulaName] = true
+        state.formulaUnlockCount++
+        break;
+    case "getFormula":
+        state.formulaBought[action.formula.formulaName] = true
+        state.myFormulas.push(action.formula.formulaName)
+        break;
+    case "discardFormula":
+        state.formulaBought[action.formula.formulaName] = false
+        state.myFormulas = state.myFormulas.filter(formulaName => formulaName !== action.formula.formulaName)
+        break;
+    case "resetXValues":
+        state.xValue = [getStartingX(state),0,0,0]
+        state.formulaUsed = {}
+        state.anyFormulaUsed = false
+        state.xResetCount++
+        break;
+    case "resetShop":
+        state.xValue = [getStartingX(state),0,0,0]
+        state.formulaUsed = {}
+        state.anyFormulaUsed = false
+        state.formulaBought = {}
+        state.formulaUnlocked = {}
+        state.myFormulas = []
+        state.formulaUnlockCount = 0
+        break;
+    case "upgradeXTier":
+        state.highestXTier++
+        const freeFormulas = ["x+1","x'=1","x'=1","x'=1"]
+        state.freeFormula = freeFormulas[state.highestXTier]
+        break;
+    case "alphaReset":
+        state.alpha++
+        state.maxAlpha++
+        state.highestXTier = 0
+        state.freeFormula = ""
+        state.xResetCount = 0
+        break;
+    case "alphaUpgrade":
+        switch (action.id) {
+        case 0:
+            state.alpha -= 1
+            state.inventorySize = 4
+            break;
+        case 1:
+            state.alpha -= 2
+            state.idleMultiplier = 2
+            break;
+        default:
+            console.error("Alpha Upgrade " + action.id + " not found.")
+        }
+        state.boughtAlpha[action.id] = true
+        break;
+    case "cheat":
+        state.xValue[0] = 1e23
+        //state.idleMultiplier = 10
+        //state.maxAlpha++
+        //state.alpha++
         break;
     default:
-        console.error("Action " + action.name + " not found.");
+        console.error("Action " + action.name + " not found.")
     }
-    state = checkFlags(state);
     return state;
-}
-
-export const checkFlags = (state)=>{
-    state.flags.fishtext ||= state.totalFish > 0;
-    state.flags.taplevel ||= state.totalFish >= 10;
-    state.flags.idlelevel ||= state.fishCount >= 100;
-    state.flags.hatbutton ||= state.totalFish >= 5000;
-    state.flags.fishology ||= state.holyFish >= 2;
-    return state;
-}
-
-export const getTapLevelCost = (state)=>{
-    return Math.floor(Math.max(30, Math.pow(1.5, state.tapLevel)))
-}
-
-export const getIdleLevelCost = (state)=>{
-    return Math.floor(Math.max(500, Math.pow(1.1, state.idleLevel)))
-}
-
-export const getHolyFishChance = (state)=>{
-    if (state.holyFish < 0)
-        return 0;
-        
-    const exp = Math.floor(Math.pow(state.tapLevel,2)*Math.log2(state.fishCount)*Math.sqrt(state.tapsSinceHoly + 1))
-    const regularchance = exp / Math.pow(2,state.holyFish) / 100000
-    var maxchance = 1
-    if (state.tapsSinceHoly <= 0)
-        maxchance = 0
-    else if (state.tapsSinceHoly <= 10 )
-        maxchance = 0.01
-    else if (state.tapsSinceHoly <= 20 )
-        maxchance = 0.1
-    return Math.min(maxchance, regularchance)
 }

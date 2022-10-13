@@ -1,8 +1,10 @@
-import './App.css';
 import React, { useState, useEffect, useReducer} from 'react'
-import {saveReducer, getSaveGame, save, getTapLevelCost, getIdleLevelCost} from './savestate'
-import HatButton from './HatButton'
-import {spaces} from './utilities'
+
+import './App.css';
+import {saveReducer, getSaveGame, getStartingX, save} from './savestate'
+import FormulaTable from './FormulaTable'
+import ValueTable from './ValueTable'
+import {spaces, formatNumber, notify} from './utilities'
 
 function App() {
   const [ playTime, setPlayTime ] = useState(0)
@@ -10,29 +12,58 @@ function App() {
   const [ , setTotalClicks ] = useState(0) 
   const [ state, updateState] = useReducer(saveReducer, playTime === 0 && getSaveGame())
 
-  const onFishingClick = ()=>{
-    updateState({name: "tap"})
+  const resetXValues = ()=>{
+    updateState({name: "resetXValues"})
+    setTotalClicks((x)=>x+1)
+    //notify.success("New Achievement", "Back to Zero")
+  }
+
+  const resetShop = ()=>{
+    updateState({name: "upgradeXTier"})
+    updateState({name: "resetShop"})
     setTotalClicks((x)=>x+1)
   }
 
-  const upgradeTapLevel = ()=>{
-    updateState({name: "taplevel"})
+  const performAlphaReset = (id)=>{
+    updateState({name: "resetShop"})
+    updateState({name: "alphaReset"})
     setTotalClicks((x)=>x+1)
   }
 
-  const upgradeIdleLevel = ()=>{
-    updateState({name: "idlelevel"})
-    setTotalClicks((x)=>x+1)
-  }
-
-  const unlockFishology = ()=>{
-    updateState({name: "unlockfishology"})
+  const buyAlphaUpgrade = (id)=>{
+    updateState({name: "alphaUpgrade", id: id})
     setTotalClicks((x)=>x+1)
   }
 
   const resetSave = ()=>{
-    updateState({name: "reset"})
+    if (window.confirm("This resets everything and you do not get anything in return. Are you really sure?")) {
+      if (window.confirm("Are you really really sure?")) {
+        if (window.confirm("Are you totally absolutely enthusiastically sure?")) {
+          updateState({name: "reset"})
+          setTotalClicks((x)=>x+1)
+          notify.warning("Game Reset")
+        }
+      }
+    }
+  }
+
+  const saveGame = ()=>{
+    save(state)
+    notify.success("Game Saved")
+  }
+
+  const load = ()=>{
+    if (window.confirm("This loads your last saved game, your current progress will be lost. Proceed?")) {
+      updateState({name: "load"})
+      setTotalClicks((x)=>x+1)
+      notify.success("Game Loaded")
+    }
+  }
+
+  const cheat = ()=>{
+    updateState({name: "cheat"})
     setTotalClicks((x)=>x+1)
+    notify.warning("Cheated!!!")
   }
 
   useEffect(()=>{
@@ -47,17 +78,86 @@ function App() {
     updateState({name: "idle"})
   },[playTime])
 
+  const shopFormulas=[
+    "x'=1",
+    "x+1",
+    "x''=1",
+    "x'''=1",
+    "x'''=4",
+    "x'''=sqrt(#R)",
+    "x'''=(#U^2)/12",
+    "x''=2",
+    "x+5",
+    "x''=3",
+    "x'=16",
+    "x'+x''+x'''",
+    "x''=#U",
+    "x+10",
+    "x'+1",
+    "x+20",
+    "x'=1000*x''",
+    "x+50",
+    "x+100",
+    "x''+x'''^2",
+
+    "x+500",
+    "x'+3",
+    "x''=sqrt(x)",
+    "x+x'",
+    "x'+220",
+    "x'''+1",
+    "x'=420K",
+    "x''+1",
+    "x+50M",
+    "x''+33",
+    "x+x'*x'''",
+
+    "x'=(x'+0.01x)^0.9",
+    "x''+10B",
+    "x+50P",
+  ]
+
+  const differentialTargets = [30e3,30e9,30e21,Infinity]
+  const differentialTarget = differentialTargets[state.highestXTier]
+  const alphaTarget = 1e12
+
+  const formulasForXReset = state.inventorySize - state.formulaUnlockCount + 1
+
+  const inventoryFormulas = Object.assign(new Array(state.inventorySize).fill(), state.myFormulas)
   return (<>
-    <div>
-      <h2>Fishing Deluxe</h2>
-      <p>{spaces()}<button onClick={onFishingClick}>Fishing</button>{state.flags.fishtext && <>{spaces()} You have {state.fishCount} fish{state.holyFish > 0 && <> and {state.holyFish} holy fish</>}!</>}</p>
-      <p>{state.flags.taplevel && <>{spaces()}<button disabled={state.fishCount<getTapLevelCost(state)} onClick={upgradeTapLevel}>Improve Fishing Rod</button>{spaces()}Cost: {getTapLevelCost(state)} Fish{spaces()}Rod Level: {state.tapLevel}</>}</p>
-      <p>{state.flags.idlelevel && <>{spaces()}<button disabled={state.fishCount<getIdleLevelCost(state)} onClick={upgradeIdleLevel}>Hire Fishing Buddy</button>{spaces()}Cost: {getIdleLevelCost(state)} Fish{spaces()}Buddies: {state.idleLevel}</>}</p>
-      <HatButton state={state} updateState={updateState} setTotalClicks={setTotalClicks}/>
-      <p>{state.flags.fishology && !state.spells[0] && <>{spaces()}<button disabled={state.holyFish < 5} onClick={unlockFishology}>Unlock Fishology</button>Cost: Requires 5 Holy Fish</>}</p>
-      <p>{state.spells[0] && <>{spaces()}Fishology has yet to be implemented. Sorry!</>}</p>
-      {state.flags.idlelevel && <footer>{spaces()}<button onClick={()=>save(state)}>Save Game</button>{spaces()}<button onClick={resetSave}>Reset Game</button></footer>}
-    </div>
+    {Math.abs(state.xValue[0])>=1e18 && <h1 style={{fontSize: "40px", margin: 0, textAlign:"left"}}>x={Math.floor(state.xValue[0])}</h1>}
+    <div className="row"><div className="column">
+      {Math.abs(state.xValue[0])<1e18 && <h1 style={{fontSize: "40px", margin: 0, textAlign:"center"}}>x={Math.floor(state.xValue[0])}</h1>}
+      <h2>X Values</h2>
+        <ValueTable values={state.xValue} baseName={"x"} maxTier={state.highestXTier}/>
+        {state.inventorySize < state.formulaUnlockCount ? 
+          <p>{spaces()}<button onClick={resetXValues} disabled={!state.anyFormulaUsed}>X-Reset</button></p> :
+          <p>Unlock {formulasForXReset} more formula{formulasForXReset !== 1 && "s"} to enable X-Resets</p>
+        }
+        {state.highestXTier < 3 && (state.xValue[0] >= differentialTarget ? 
+          <p>{spaces()}<button onClick={resetShop}>S-Reset</button>{spaces()}Reset the shop for a new differential</p> :
+          <p>Reach x={formatNumber(differentialTarget)} to discover a new differential of x</p>)
+        }
+        {state.highestXTier === 3 && (state.xValue[0] >= alphaTarget ? 
+          <p>{spaces()}<button onClick={performAlphaReset}>&alpha;-Reset</button>{spaces()}Reset the game to increase your maximum alpha</p> :
+          <p>Reach x={formatNumber(alphaTarget)} to unlock the next layer</p>)
+        }
+      <p>&nbsp;</p><h2>My Formulas</h2>
+        <FormulaTable state={state} updateState={updateState} setTotalClicks={setTotalClicks} formulaNames={inventoryFormulas} context="my"/>
+      {state.maxAlpha > 0 && <><p>&nbsp;</p><h2>Alpha</h2>
+        <p>&alpha; = {state.alpha}</p>
+        <p>&alpha;<sub>max</sub> = {state.maxAlpha}</p>
+        <p>Your Alpha Max lets you start with x={getStartingX(state)} after resets</p>
+        <p><button disabled={state.alpha < 1 || state.boughtAlpha[0]} onClick={()=>{buyAlphaUpgrade(0)}}>Get an extra formula slot</button>{spaces()}{state.boughtAlpha[0] ? <>Already bought</>: <>Cost: &alpha; = 1</>}</p>
+        <p><button disabled={state.alpha < 2 || state.boughtAlpha[1]} onClick={()=>{buyAlphaUpgrade(1)}}>Double all idle production</button>{spaces()}{state.boughtAlpha[1] ? <>Already bought</>: <>Cost: &alpha; = 2</>}</p></>}
+    </div><div className="column">
+      <h2>Shop {state.myFormulas.length >= state.inventorySize && <>{spaces()}[FULL INVENTORY]</>}</h2>
+          <FormulaTable state={state} updateState={updateState} setTotalClicks={setTotalClicks} formulaNames={shopFormulas}/>
+    </div></div>
+    <p>&nbsp;</p>
+    <footer><p></p>{spaces()}<button onClick={saveGame}>Save Game</button>{spaces()}<button onClick={load}>Load</button>{spaces()}<button onClick={resetSave}>Hard Reset</button>
+    {spaces()}<button onClick={cheat}>Cheat</button>{spaces()}{Math.floor(playTime / 10)}{spaces()}
+    <p></p></footer>
     </>);
 }
 
