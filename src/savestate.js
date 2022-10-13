@@ -1,5 +1,10 @@
+import {milestoneList} from './AchievementScreen'
+import { notify } from './utilities'
+
 export const newSave = {
+    selectedTabKey: "FormulaScreen",
     xValue: [0,0,0,0],
+    xRecord: 0,
     highestXTier: 0,
     freeFormula: "x+1",
     formulaUnlocked: {},
@@ -16,13 +21,14 @@ export const newSave = {
     idleMultiplier: 1,
     boughtAlpha: [false,false],
     saveTimeStamp: 0,
+    mileStoneCount: 0,
 }
 
 export const getSaveGame = ()=>{
     const savedgame = window.localStorage.getItem('idleformulas')
     if (true||!savedgame) {
         console.log("New Game")
-        return {...newSave, saveTimeStamp: Date.now()}
+        return ({...structuredClone(newSave), saveTimeStamp: Date.now()})
     }
     else {
         console.log("Game Loaded")
@@ -71,14 +77,23 @@ export const saveReducer = (state, action)=>{
             }
             window.alert("You were away for " + Math.floor(deltaMilliSeconds / 60000) + " minutes.\nYour x increased by a factor of " + (state.xValue[0] / xBefore).toFixed(2))
         }
+
+        //Check if next milestone is reached
+        if (milestoneList[state.mileStoneCount]?.check(state)){
+            notify.success("New Milestone", milestoneList[state.mileStoneCount].name)
+            state.mileStoneCount++
+        }
         state.saveTimeStamp = timeStamp
         state.tickFormula=false
         break;
+    case "selectTab":
+        state.selectedTabKey = action.tabKey
+        break;
     case "reset":
-        state = {...newSave, saveTimeStamp: Date.now()};
+        state = {...structuredClone(newSave), saveTimeStamp: Date.now()};
         break;
     case "load":
-        state = loadGame() || state;
+        state = action.state || loadGame() || state;
         break;
     case "applyFormula":
         if (!state.tickFormula && (action.forceApply || state.xValue[action.formula.targetLevel] <= action.formula.applyFormula(state.xValue) || window.confirm("This will lower your X value. Are you sure?\n(You can skip this pop-up by using Shift+Click)"))) {

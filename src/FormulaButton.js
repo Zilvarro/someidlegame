@@ -355,7 +355,7 @@ export default function FormulaButton({state, updateState, setTotalClicks, formu
     if (!formula) { //--- BUTTON
         return ( 
             <tr><td align="left" className="block" style={{width:"auto"}}>
-                <button style={{width:"100%",padding:"8px"}} disabled={true}>-------</button>
+                <button className="fbutton" disabled={true}>-------</button>
             </td><td>
             </td><td>
             </td>
@@ -391,7 +391,7 @@ export default function FormulaButton({state, updateState, setTotalClicks, formu
     if (context === "my") { //APPLY BUTTON
         return (
             <tr><td align="left" className="block" style={{width:"auto"}}>
-                <button style={{width:"100%",padding:"8px"}} title={tooltip}
+                <button className="fbutton" title={tooltip}
                     disabled={(formula.applyNeed && state.xValue[0] < formula.applyNeed) || (formula.applyCost && state.xValue[0] < formula.applyCost)}
                     onClick={(evt)=>applyFormula(formula,evt)}>
                     {formula.description}
@@ -412,7 +412,7 @@ export default function FormulaButton({state, updateState, setTotalClicks, formu
     } else if (state.formulaBought[formulaName]) { //EQUIPPED
         return (
             <tr><td align="left" className="block" style={{width:"auto"}}>
-                <button disabled={true} style={{width:"100%",padding:"8px"}}>
+                <button disabled={true} className="fbutton">
                     EQUIPPED
                 </button>
             </td><td>
@@ -423,7 +423,7 @@ export default function FormulaButton({state, updateState, setTotalClicks, formu
     } else if (state.formulaUnlocked[formulaName]) { //GET BUTTON
         return (
             <tr><td align="left" className="block" style={{width:"auto"}}>
-                <button title={tooltip} style={{width:"100%",padding:"8px"}}
+                <button title={tooltip} className="fbutton"
                     disabled={state.myFormulas.length >= state.inventorySize}
                     onClick={()=>getFormula(formula)}>
                     GET {formula.description}
@@ -439,7 +439,7 @@ export default function FormulaButton({state, updateState, setTotalClicks, formu
         }
         return (
             <tr><td align="left" className="block" style={{"width":"auto"}}>
-                <button style={{width:"100%",padding:"8px"}} title={tooltip}
+                <button className="fbutton" title={tooltip}
                     disabled={state.xValue[0] < formula.unlockCost}
                     onClick={()=>unlockFormula(formula)}>
                     UNLOCK {formula.description}
