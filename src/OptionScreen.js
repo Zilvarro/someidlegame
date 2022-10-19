@@ -74,5 +74,6 @@ export default function OptionScreen({state, updateState, setTotalClicks}) {
         {spaces()}<MultiOptionButton settingName="hotKeys" statusList={["ON", "OFF"]} state={state} updateState={updateState} setTotalClicks={setTotalClicks}
           description="Hotkeys" tooltip="Controls whether hotkeys are enabled" tooltipList={["Hotkeys are enabled", "Hints are disabled"]}/>
       </p>
+      <p>Version {state.version}</p>
   </div>)
 }

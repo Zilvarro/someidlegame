@@ -3,6 +3,7 @@ import { notify } from './utilities'
 import formulaList from './FormulaDictionary'
 
 export const newSave = {
+    version: "0.01",
     selectedTabKey: "FormulaScreen",
     xValue: [0,0,0,0],
     xRecord: 0,
@@ -51,7 +52,7 @@ export const getSaveGame = ()=>{
             newgame.settings.autoLoad = "OFF"
             return newgame
         } else {
-            return savedgamejson
+            return {...structuredClone(newSave), ...savedgamejson, settings:{...structuredClone(newSave.settings), ...savedgamejson.settings}, saveTimeStamp: Date.now()}
         }
     }
 }
@@ -128,7 +129,7 @@ export const saveReducer = (state, action)=>{
 
         //Autosave
         const lastSaveMilliseconds = (timeStamp - state.saveTimeStamp)
-        if (state.settings.autoSave === "ON" && lastSaveMilliseconds >= 10000) { //TODO
+        if (state.mileStoneCount > 0 && state.settings.autoSave === "ON" && lastSaveMilliseconds >= 10000) { //TODO
             state.saveTimeStamp = Date.now()
             save(state)
         }
