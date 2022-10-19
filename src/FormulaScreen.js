@@ -7,13 +7,16 @@ export default function FormulaScreen({state, updateState, setTotalClicks}) {
     const resetXValues = ()=>{
       updateState({name: "resetXValues"})
       setTotalClicks((x)=>x+1)
-      //notify.success("New Achievement", "Back to Zero")
     }
     
     const resetShop = ()=>{
-      updateState({name: "upgradeXTier"})
-      updateState({name: "resetShop"})
-      setTotalClicks((x)=>x+1)
+      const shopMultipliers = [4, 12, 8000, 1]
+      const shopMultiplier = shopMultipliers[state.highestXTier]
+      if(window.confirm("A new differential of x and its formulas become available, but the shop is reset and the unlock cost for all non-basic formulas is " + shopMultiplier + " times as high.")) {
+        updateState({name: "upgradeXTier"})
+        updateState({name: "resetShop"})
+        setTotalClicks((x)=>x+1)
+      }
     }
     
     const performAlphaReset = (id)=>{
@@ -23,8 +26,10 @@ export default function FormulaScreen({state, updateState, setTotalClicks}) {
     }
   
     const buyAlphaUpgrade = (id)=>{
-      updateState({name: "alphaUpgrade", id: id})
-      setTotalClicks((x)=>x+1)
+      if(window.confirm("You lose all your differentials but you gain a powerful Alpha Point.")) {
+        updateState({name: "alphaUpgrade", id: id})
+        setTotalClicks((x)=>x+1)
+      }
     }
 
     const shopFormulas=[
@@ -59,16 +64,21 @@ export default function FormulaScreen({state, updateState, setTotalClicks}) {
       "x''+1",
       "x+50M",
       "x''+33",
-      "x+x'*x'''",
+      "x=10Q*x'''*x''/x'",
   
       "x'=(x'+0.01x)^0.9",
       "x''+10B",
+      "x'=5Q*x'''",
       "x+50P",
+
+      "x'''+log2(x)^2",
+      "x'''+log2(#F/#E)^13",
+      "x'''*sqrt(1B-x''')",
     ]
   
     const differentialTargets = [30e3,30e9,30e21,Infinity]
     const differentialTarget = differentialTargets[state.highestXTier]
-    const alphaTarget = 1e12
+    const alphaTarget = 30e33
   
     const formulasForXReset = state.inventorySize - state.formulaUnlockCount + 1
   
@@ -84,7 +94,7 @@ export default function FormulaScreen({state, updateState, setTotalClicks}) {
             <p>{spaces()}<button onClick={resetXValues} disabled={!state.anyFormulaUsed}>X-Reset</button></p> :
             <p>Unlock {formulasForXReset} more formula{formulasForXReset !== 1 && "s"} to enable X-Resets</p>
             }
-            {state.highestXTier < 3 && (state.xValue[0] >= differentialTarget ? 
+            {state.mileStoneCount >= 2 && state.highestXTier < 3 && (state.xValue[0] >= differentialTarget ? 
             <p>{spaces()}<button onClick={resetShop}>S-Reset</button>{spaces()}Reset the shop for a new differential</p> :
             <p>Reach x={formatNumber(differentialTarget)} to discover a new differential of x</p>)
             }

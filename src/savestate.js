@@ -1,5 +1,6 @@
 import {milestoneList} from './AchievementScreen'
 import { notify } from './utilities'
+import formulaList from './FormulaDictionary'
 
 export const newSave = {
     selectedTabKey: "FormulaScreen",
@@ -14,6 +15,7 @@ export const newSave = {
     anyFormulaUsed: true,
     xResetCount: 0,
     formulaUnlockCount: 0,
+    formulaApplyCount: 0,
     maxAlpha: 0,
     alpha: 0,
     tickFormula: false,
@@ -21,28 +23,47 @@ export const newSave = {
     idleMultiplier: 1,
     boughtAlpha: [false,false],
     saveTimeStamp: 0,
+    calcTimeStamp: 0,
     mileStoneCount: 0,
+    holdAction: null,
+    settings: {
+        valueReduction: "CONFIRM",
+        offlineProgress: "ON",
+        offlineProgressPopup: "ON",
+        autoSave: "ON",
+        autoLoad: "ON",
+        showHints: "ON",
+        hotKeys: "ON",
+    }
 }
 
 export const getSaveGame = ()=>{
     const savedgame = window.localStorage.getItem('idleformulas')
-    if (true||!savedgame) {
-        console.log("New Game")
-        return ({...structuredClone(newSave), saveTimeStamp: Date.now()})
+    if (!savedgame) {
+        return ({...structuredClone(newSave), saveTimeStamp: Date.now(), calcTimeStamp: Date.now()})
     }
-    else {
-        console.log("Game Loaded")
-        return JSON.parse(savedgame)
+    else{
+        const savedgamejson = JSON.parse(savedgame)
+        if (savedgamejson.settings.autoLoad === "OFF") {
+            notify.warning("Auto Load disabled")
+            let newgame = {...structuredClone(newSave), saveTimeStamp: Date.now(), calcTimeStamp: Date.now()}
+            newgame.settings.autoSave = "OFF"
+            newgame.settings.autoLoad = "OFF"
+            return newgame
+        } else {
+            return savedgamejson
+        }
     }
 }
 
 export const loadGame = ()=>{
     const savedgame = window.localStorage.getItem('idleformulas')
     if (!savedgame) {
-        window.alert("No savegame found!")
+        notify.error("No savegame found!")
         return undefined
     }
     else {
+        notify.success("Game Loaded")
         return JSON.parse(savedgame)
     }
 }
@@ -54,15 +75,14 @@ export const getStartingX = (state)=>{
 export const save = (state)=>{
     const currentgame = JSON.stringify(state)
     window.localStorage.setItem('idleformulas', currentgame)
-    window.alert("Game saved!")
 }
 
 export const saveReducer = (state, action)=>{
     switch(action.name){
     case "idle":
         const timeStamp = Date.now()
-        const deltaMilliSeconds = (timeStamp - state.saveTimeStamp)
-        if (deltaMilliSeconds < 60000) { //Quick Computation
+        const deltaMilliSeconds = (timeStamp - state.calcTimeStamp)
+        if (deltaMilliSeconds < 120000) { //Quick Computation
             for(let i=1; i<state.xValue.length; i++) {
                 state.xValue[i-1]+= deltaMilliSeconds * state.idleMultiplier * state.xValue[i] / 1000
             }
@@ -75,7 +95,27 @@ export const saveReducer = (state, action)=>{
                     state.xValue[j]+= Math.pow(deltaMilliSeconds / 1020, k-j) * state.idleMultiplier * state.xValue[k] * integrationFactor[k-j]
                 }
             }
-            window.alert("You were away for " + Math.floor(deltaMilliSeconds / 60000) + " minutes.\nYour x increased by a factor of " + (state.xValue[0] / xBefore).toFixed(2))
+            const factor = state.xValue[0] / xBefore
+            if (factor && factor !== Infinity && factor > 1.01){
+                window.alert("You were away for " + Math.floor(deltaMilliSeconds / 60000) + " minutes.\nYour x increased by a factor of " + factor.toFixed(2))
+            }
+        }
+
+        //Apply Mouse Hold / Touch Hold events
+        if (state.holdAction?.type === "ApplyFormula" && state.formulaUsed[state.holdAction.formulaName]){
+            if(state.holdAction.delay > 0) {
+                state.holdAction.delay--
+            } else {
+                const formula = formulaList[state.holdAction.formulaName]
+                if (!state.tickFormula && state.xValue[0] >= formula.applyCost && state.xValue[0] >= formula.applyNeed && (state.xValue[formula.targetLevel] <= formula.applyFormula(state.xValue, state))) {
+                    state.xValue[formula.targetLevel] = formula.applyFormula(state.xValue, state) //TODO this should do same as apply below + check cost/needed
+                    state.xValue[0] -= formula.applyCost
+                    state.formulaUsed[formula.formulaName] = true
+                    state.anyFormulaUsed = true
+                    state.tickFormula = true
+                    state.formulaApplyCount++
+                }
+            }
         }
 
         //Check if next milestone is reached
@@ -83,29 +123,55 @@ export const saveReducer = (state, action)=>{
             notify.success("New Milestone", milestoneList[state.mileStoneCount].name)
             state.mileStoneCount++
         }
-        state.saveTimeStamp = timeStamp
+        state.calcTimeStamp = timeStamp
         state.tickFormula=false
+
+        //Autosave
+        const lastSaveMilliseconds = (timeStamp - state.saveTimeStamp)
+        if (state.settings.autoSave === "ON" && lastSaveMilliseconds >= 10000) { //TODO
+            state.saveTimeStamp = Date.now()
+            save(state)
+        }
         break;
     case "selectTab":
         state.selectedTabKey = action.tabKey
         break;
     case "reset":
-        state = {...structuredClone(newSave), saveTimeStamp: Date.now()};
+        state = {...structuredClone(newSave), calcTimeStamp: Date.now(), saveTimeStamp: Date.now()};
         break;
     case "load":
         state = action.state || loadGame() || state;
         break;
+    case "changeSetting":
+        state.settings[action.settingName] = action.nextStatus
+        break;
+    case "changeHold":
+        state.holdAction = action.newValue
+        break;
+    case "swapFormulas":
+        const startIndex = state.myFormulas.indexOf(action.formulaName)
+        let targetIndex
+        if (action.partnerFormulaName){
+            targetIndex = state.myFormulas.indexOf(action.partnerFormulaName)
+        } else {
+            targetIndex = action.isDownward ? startIndex + 1 : startIndex - 1
+        }
+        if (state.myFormulas[startIndex] && state.myFormulas[targetIndex]) {
+            [state.myFormulas[startIndex], state.myFormulas[targetIndex]] = [state.myFormulas[targetIndex], state.myFormulas[startIndex]]
+        }
+        break;
     case "applyFormula":
-        if (!state.tickFormula && (action.forceApply || state.xValue[action.formula.targetLevel] <= action.formula.applyFormula(state.xValue) || window.confirm("This will lower your X value. Are you sure?\n(You can skip this pop-up by using Shift+Click)"))) {
-            state.xValue[action.formula.targetLevel] = action.formula.applyFormula(state.xValue)
+        if (!state.tickFormula && state.xValue[0] >= action.formula.applyCost && state.xValue[0] >= action.formula.applyNeed && (action.forceApply || state.xValue[action.formula.targetLevel] <= action.formula.applyFormula(state.xValue, state) || window.confirm("This will lower your X value. Are you sure?\n(You can skip this pop-up by using Shift+Click)"))) {
+            state.xValue[action.formula.targetLevel] = action.formula.applyFormula(state.xValue, state)
             state.xValue[0] -= action.formula.applyCost
             state.formulaUsed[action.formula.formulaName] = true
             state.anyFormulaUsed = true
             state.tickFormula = true
+            state.formulaApplyCount++
         }
         break;
     case "unlockFormula":
-        state.xValue[0] -= action.formula.unlockCost
+        state.xValue[0] -= action.formula.isFree ? 0 : action.formula.unlockCost
         state.formulaUnlocked[action.formula.formulaName] = true
         state.formulaUnlockCount++
         break;
@@ -131,6 +197,8 @@ export const saveReducer = (state, action)=>{
         state.formulaUnlocked = {}
         state.myFormulas = []
         state.formulaUnlockCount = 0
+        state.xResetCount = 0
+        state.formulaApplyCount = 0
         break;
     case "upgradeXTier":
         state.highestXTier++
@@ -143,6 +211,7 @@ export const saveReducer = (state, action)=>{
         state.highestXTier = 0
         state.freeFormula = ""
         state.xResetCount = 0
+        state.formulaApplyCount = 0
         break;
     case "alphaUpgrade":
         switch (action.id) {
@@ -160,10 +229,11 @@ export const saveReducer = (state, action)=>{
         state.boughtAlpha[action.id] = true
         break;
     case "cheat":
-        state.xValue[0] = 1e23
-        //state.idleMultiplier = 10
-        //state.maxAlpha++
-        //state.alpha++
+        if (action.idleMultiplier) {
+            state.idleMultiplier = action.idleMultiplier
+        } else {
+            state.xValue[0] = 1e30
+        }
         break;
     default:
         console.error("Action " + action.name + " not found.")

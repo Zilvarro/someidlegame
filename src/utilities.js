@@ -20,7 +20,7 @@ export const formatNumber = (number, decimals=0)=>{
         const aNumberSplits = sNumberString.split("e+")
         const fMultiplier = parseFloat(aNumberSplits[0]) * 1.0000000001
         const iExponent = parseInt(aNumberSplits[1])
-        const aSymbols = ["","K","M","B","T","Q","P","H","S","O","N","D"]
+        const aSymbols = ["","K","M","B","T","Q","P","S","V","O","N","D"]
         const sSymbol = aSymbols[Math.floor(iExponent / 2.9999)]
         const aExtras = [1,10,100]
         const iExtra = aExtras[iExponent % 3]

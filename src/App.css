@@ -44,7 +44,7 @@ button.fbutton[disabled]{
 .column {
     float: left;
     min-width: 30%;
-    max-width: 60%;
+    /* max-width: 60%; */
     padding: 10px;
     /* background: lightblue */
 }
