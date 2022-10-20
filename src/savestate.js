@@ -27,6 +27,7 @@ export const newSave = {
     calcTimeStamp: 0,
     mileStoneCount: 0,
     holdAction: null,
+    justLaunched: true,
     settings: {
         valueReduction: "CONFIRM",
         offlineProgress: "ON",
@@ -52,7 +53,7 @@ export const getSaveGame = ()=>{
             newgame.settings.autoLoad = "OFF"
             return newgame
         } else {
-            return {...structuredClone(newSave), ...savedgamejson, settings:{...structuredClone(newSave.settings), ...savedgamejson.settings}, saveTimeStamp: Date.now()}
+            return {...structuredClone(newSave), ...savedgamejson, settings:{...structuredClone(newSave.settings), ...savedgamejson.settings}, saveTimeStamp: Date.now(), justLaunched: true}
         }
     }
 }
@@ -65,7 +66,9 @@ export const loadGame = ()=>{
     }
     else {
         notify.success("Game Loaded")
-        return JSON.parse(savedgame)
+        const savedgamejson = JSON.parse(savedgame)
+        return {...structuredClone(newSave), ...savedgamejson, settings:{...structuredClone(newSave.settings), ...savedgamejson.settings}, saveTimeStamp: Date.now(), justLaunched: true}
+
     }
 }
 
@@ -78,6 +81,44 @@ export const save = (state)=>{
     window.localStorage.setItem('idleformulas', currentgame)
 }
 
+const applyFormulaToState = (state, formula, forceApply)=>{
+    //Can't afford
+    if (!forceApply && (state.xValue[0] < formula.applyCost || state.xValue[0] < formula.applyNeed))
+        return false
+
+    //Would lower the value
+    if (0.9999 * state.xValue[formula.targetLevel] > formula.applyFormula(state.xValue, state)) {
+        switch (state.settings.valueReduction) {
+            case "CONFIRM":
+                if (!forceApply && !window.confirm("This will lower your X value. Are you sure?\n(You can skip this pop-up by using Shift+Click)"))
+                    return false
+                break;
+            case "WARNING":
+                if (!forceApply) {
+                    notify.warning("Value would be reduced", "Shift+Click if this is intentional")
+                    return false
+                }
+                break;
+            case "PREVENT":
+                if (!forceApply)
+                    return false
+                break;
+            case "NEVER":
+                return false
+            case "APPLY":
+                break;
+            default:
+                return false
+        }
+    }
+
+    state.xValue[formula.targetLevel] = formula.applyFormula(state.xValue, state)
+    state.xValue[0] -= formula.applyCost
+    state.formulaUsed[formula.formulaName] = true
+    state.anyFormulaUsed = true
+    state.formulaApplyCount++
+}
+
 export const saveReducer = (state, action)=>{
     switch(action.name){
     case "idle":
@@ -87,7 +128,7 @@ export const saveReducer = (state, action)=>{
             for(let i=1; i<state.xValue.length; i++) {
                 state.xValue[i-1]+= deltaMilliSeconds * state.idleMultiplier * state.xValue[i] / 1000
             }
-        } else { //Offline Progress
+        } else if (state.settings.offlineProgress === "ON" || (state.settings.offlineProgress === "ACTIVE" && !state.justLaunched)) { //Offline Progress
             const integrationFactor = [1,1,1/2,1/6,1/24] //one over factorial
             const xBefore = state.xValue[0]
             for(let j=0; j<state.xValue.length; j++) { //tier to be calculated
@@ -97,9 +138,15 @@ export const saveReducer = (state, action)=>{
                 }
             }
             const factor = state.xValue[0] / xBefore
-            if (factor && factor !== Infinity && factor > 1.01){
-                window.alert("You were away for " + Math.floor(deltaMilliSeconds / 60000) + " minutes.\nYour x increased by a factor of " + factor.toFixed(2))
+            if (state.settings.offlineProgressPopup === "ON" || (state.settings.offlineProgressPopup === "LAUNCH" && state.justLaunched)){
+                if (factor && factor !== Infinity && factor > 1.01 ){
+                    window.alert("You were away for " + Math.floor(deltaMilliSeconds / 60000) + " minutes.\nYour x increased by a factor of " + factor.toFixed(2))
+                } else {
+                    window.alert("You were away for " + Math.floor(deltaMilliSeconds / 60000) + " minutes.")
+                }
             }
+        } else if (state.settings.offlineProgressPopup === "ON" || (state.settings.offlineProgressPopup === "LAUNCH" && state.justLaunched)){
+            window.alert("You were away for " + Math.floor(deltaMilliSeconds / 60000) + " minutes.")
         }
 
         //Apply Mouse Hold / Touch Hold events
@@ -108,13 +155,12 @@ export const saveReducer = (state, action)=>{
                 state.holdAction.delay--
             } else {
                 const formula = formulaList[state.holdAction.formulaName]
-                if (!state.tickFormula && state.xValue[0] >= formula.applyCost && state.xValue[0] >= formula.applyNeed && (state.xValue[formula.targetLevel] <= formula.applyFormula(state.xValue, state))) {
-                    state.xValue[formula.targetLevel] = formula.applyFormula(state.xValue, state) //TODO this should do same as apply below + check cost/needed
-                    state.xValue[0] -= formula.applyCost
-                    state.formulaUsed[formula.formulaName] = true
-                    state.anyFormulaUsed = true
-                    state.tickFormula = true
-                    state.formulaApplyCount++
+                if (!state.tickFormula){
+                    const isApplied = applyFormulaToState(state, formula, false)
+                    if (isApplied)
+                        state.tickFormula = true
+                    else
+                        state.holdAction = null
                 }
             }
         }
@@ -125,6 +171,7 @@ export const saveReducer = (state, action)=>{
             state.mileStoneCount++
         }
         state.calcTimeStamp = timeStamp
+        state.justLaunched = false
         state.tickFormula=false
 
         //Autosave
@@ -162,13 +209,9 @@ export const saveReducer = (state, action)=>{
         }
         break;
     case "applyFormula":
-        if (!state.tickFormula && state.xValue[0] >= action.formula.applyCost && state.xValue[0] >= action.formula.applyNeed && (action.forceApply || state.xValue[action.formula.targetLevel] <= action.formula.applyFormula(state.xValue, state) || window.confirm("This will lower your X value. Are you sure?\n(You can skip this pop-up by using Shift+Click)"))) {
-            state.xValue[action.formula.targetLevel] = action.formula.applyFormula(state.xValue, state)
-            state.xValue[0] -= action.formula.applyCost
-            state.formulaUsed[action.formula.formulaName] = true
-            state.anyFormulaUsed = true
+        if (!state.tickFormula) {
+            applyFormulaToState(state, action.formula, action.forceApply)
             state.tickFormula = true
-            state.formulaApplyCount++
         }
         break;
     case "unlockFormula":

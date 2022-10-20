@@ -63,10 +63,10 @@ export default function FormulaScreen({state, updateState, setTotalClicks}) {
       "x'=420K",
       "x''+1",
       "x+50M",
-      "x''+33",
+      "x''+130",
       "x=10Q*x'''*x''/x'",
   
-      "x'=(x'+0.01x)^0.9",
+      "x'+x^0.6",
       "x''+10B",
       "x'=5Q*x'''",
       "x+50P",

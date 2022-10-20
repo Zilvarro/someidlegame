@@ -7,6 +7,7 @@ export const spaces = ()=>{
 
 export const formatNumber = (number, decimals=0)=>{
     if (number < 0) return "-" + formatNumber(-number)
+    if (number >= 1e36) return number.toFixed(decimals)
     number *= 1.0000000001 //hopefully less Javascript Jank
 
     const sNumberString = Math.floor(number).toExponential(6)

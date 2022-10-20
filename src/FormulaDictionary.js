@@ -3,7 +3,7 @@ const formulaList = {
     "x+1": {
         formulaName: "x+1",
         description: <>x &rarr; x + 1</>,
-        unlockCost: 20,
+        unlockCost: 30,
         applyCost: 0,
         applyNeed: 0,
         targetLevel: 0,
@@ -208,8 +208,8 @@ const formulaList = {
         targetLevel: 2,
         applyFormula: (x)=>(x[2]+1),
     },
-    "x''+33": {
-        formulaName: "x''+33",
+    "x''+130": {
+        formulaName: "x''+130",
         description: <>x'' &rarr; x'' + 130</>,
         unlockCost: 37e9,
         applyCost: 49e6,
@@ -217,14 +217,14 @@ const formulaList = {
         targetLevel: 2,
         applyFormula: (x)=>(x[2]+130),
     },
-    "x'=(x'+0.01x)^0.9": {
-        formulaName: "x'=(x'+0.01x)^0.9",
-        description: <>x' &rarr; (x' + 0.01x)<sup>0.9</sup></>,
+    "x'+x^0.6": {
+        formulaName: "x'+x^0.6",
+        description: <>x' &rarr; x' + x<sup>0.6</sup></>,
         unlockCost: 100e9, //*12
-        applyCost: 100e6,
+        applyCost: 250e6,
         applyNeed: 0,
         targetLevel: 1,
-        applyFormula: (x)=>(x[1]+Math.pow(x[0],0.7)),
+        applyFormula: (x)=>(x[1]+Math.pow(x[0],0.6)),
     },
     "x''+10B": {
         formulaName: "x''+10B",
@@ -357,12 +357,13 @@ const formulaList = {
     },
     "x'''*sqrt(1B-x''')": {
         formulaName: "x'''*sqrt(1B-x''')",
-        description: <>x''' &rarr; x''' * sqrt(1B - x''')</>,
+        description: <>x''' &rarr; x''' * sqrt(300S - x''') / 500B</>,
         unlockCost: 20e27,
-        applyCost: 200e6,
+        applyCost: 1e9,
         applyNeed: 0,
         targetLevel: 3,
-        applyFormula: (x,state)=>(Math.floor(x[3]*Math.sqrt(1e9 - x[3]))),
+        applyFormula: (x,state)=>(Math.floor(x[3]*Math.sqrt(300e21 - x[3]) / 500e9)),
+        // applyFormula: (x,state)=>(Math.floor(x[3]*Math.sqrt(1e9 - x[3]))),
         explanation: "sqrt is the square root.",
     },
 }
