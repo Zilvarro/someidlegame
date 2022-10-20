@@ -355,8 +355,8 @@ const formulaList = {
         applyFormula: (x,state)=>(x[3] + Math.pow(Math.log2(state.formulaApplyCount / state.myFormulas.length),13)),
         explanation: "Boosted by formula applications (since S-Reset). Diminished by number of equipped formulas.",
     },
-    "x'''*sqrt(1B-x''')": {
-        formulaName: "x'''*sqrt(1B-x''')",
+    "x'''*sqrt(300S-x''')/500B": {
+        formulaName: "x'''*sqrt(300S-x''')/500B",
         description: <>x''' &rarr; x''' * sqrt(300S - x''') / 500B</>,
         unlockCost: 20e27,
         applyCost: 1e9,

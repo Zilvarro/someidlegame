@@ -3,7 +3,7 @@ import { notify } from './utilities'
 import formulaList from './FormulaDictionary'
 
 export const newSave = {
-    version: "0.01",
+    version: "0.02",
     selectedTabKey: "FormulaScreen",
     xValue: [0,0,0,0],
     xRecord: 0,
@@ -117,6 +117,7 @@ const applyFormulaToState = (state, formula, forceApply)=>{
     state.formulaUsed[formula.formulaName] = true
     state.anyFormulaUsed = true
     state.formulaApplyCount++
+    return true
 }
 
 export const saveReducer = (state, action)=>{
@@ -154,14 +155,10 @@ export const saveReducer = (state, action)=>{
             if(state.holdAction.delay > 0) {
                 state.holdAction.delay--
             } else {
-                const formula = formulaList[state.holdAction.formulaName]
-                if (!state.tickFormula){
-                    const isApplied = applyFormulaToState(state, formula, false)
-                    if (isApplied)
-                        state.tickFormula = true
-                    else
-                        state.holdAction = null
-                }
+            const formula = formulaList[state.holdAction.formulaName]
+                const isApplied = applyFormulaToState(state, formula, false)
+                if (!isApplied)
+                    state.holdAction = null
             }
         }
 
@@ -170,6 +167,11 @@ export const saveReducer = (state, action)=>{
             notify.success("New Milestone", milestoneList[state.mileStoneCount].name)
             state.mileStoneCount++
         }
+
+        //Kick out formulas that do not exist anymore (due to update etc)
+        if (state.justLaunched)
+            state.myFormulas = state.myFormulas.filter(formulaName => formulaList[formulaName]);
+
         state.calcTimeStamp = timeStamp
         state.justLaunched = false
         state.tickFormula=false

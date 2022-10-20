@@ -73,7 +73,7 @@ export default function FormulaScreen({state, updateState, setTotalClicks}) {
 
       "x'''+log2(x)^2",
       "x'''+log2(#F/#E)^13",
-      "x'''*sqrt(1B-x''')",
+      "x'''*sqrt(300S-x''')/500B",
     ]
   
     const differentialTargets = [30e3,30e9,30e21,Infinity]
