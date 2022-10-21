@@ -5,9 +5,8 @@ export const spaces = ()=>{
     return (<>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</>)
 }
 
-export const formatNumber = (number, decimals=0)=>{
-    if (number < 0) return "-" + formatNumber(-number)
-    if (number >= 1e36) return number.toFixed(decimals)
+export const formatNumber = (number, numberFormat, decimals=0)=>{
+    if (number < 0) return "-" + formatNumber(-number, decimals, numberFormat)
     number *= 1.0000000001 //hopefully less Javascript Jank
 
     const sNumberString = Math.floor(number).toExponential(6)
@@ -15,16 +14,40 @@ export const formatNumber = (number, decimals=0)=>{
         return "Infinity"
     } else if (isNaN(number)) {
         return "NaN"
-    } else if (number < 1e6 && decimals > 0) {
+    } else if (number < 1e6 && (decimals > 0 || numberFormat === "SCIENTIFIC")) {
         return number.toFixed(0)
     } else {
         const aNumberSplits = sNumberString.split("e+")
         const fMultiplier = parseFloat(aNumberSplits[0]) * 1.0000000001
         const iExponent = parseInt(aNumberSplits[1])
         const aSymbols = ["","K","M","B","T","Q","P","S","V","O","N","D"]
-        const sSymbol = aSymbols[Math.floor(iExponent / 2.9999)]
         const aExtras = [1,10,100]
-        const iExtra = aExtras[iExponent % 3]
+        let sSymbol
+        let iExtra
+        switch (numberFormat) {
+            case "SCIENTIFIC":
+                sSymbol = "e" + iExponent
+                iExtra = 1
+                break;
+            case "AMBIGOUS":
+                if (number >= 1e36) {
+                    sSymbol = "e?"
+                    iExtra = 1
+                } else {
+                    sSymbol = "?"
+                    iExtra = aExtras[iExponent % 3]
+                }
+                break;
+            default: //includes LETTER
+                if (number >= 1e36) {
+                    sSymbol = "e" + iExponent
+                    iExtra = 1
+                } else {
+                    sSymbol = aSymbols[Math.floor(iExponent / 2.9999)]
+                    iExtra = aExtras[iExponent % 3]
+                    break;
+                }
+        }
         if (!decimals && (fMultiplier * iExtra) % 0.1 > 0.005) {
             decimals = 2
         } else if (!decimals && (fMultiplier * iExtra) % 1 > 0.05) {

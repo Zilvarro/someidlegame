@@ -89,18 +89,18 @@ export default function FormulaScreen({state, updateState, setTotalClicks}) {
         <div className="row"><div className="column">
         {Math.abs(state.xValue[0])<1e18 && <h1 style={{fontSize: "40px", margin: 0, textAlign:"center"}}>x={Math.floor(state.xValue[0])}</h1>}
         <h2>X Values</h2>
-            <ValueTable values={state.xValue} baseName={"x"} maxTier={state.highestXTier}/>
+            <ValueTable values={state.xValue} baseName={"x"} maxTier={state.highestXTier} numberFormat={state.settings.numberFormat}/>
             {state.inventorySize < state.formulaUnlockCount ? 
             <p>{spaces()}<button onClick={resetXValues} disabled={!state.anyFormulaUsed}>X-Reset</button></p> :
             <p>Unlock {formulasForXReset} more formula{formulasForXReset !== 1 && "s"} to enable X-Resets</p>
             }
             {state.mileStoneCount >= 2 && state.highestXTier < 3 && (state.xValue[0] >= differentialTarget ? 
             <p>{spaces()}<button onClick={resetShop}>S-Reset</button>{spaces()}Reset the shop for a new differential</p> :
-            <p>Reach x={formatNumber(differentialTarget)} to discover a new differential of x</p>)
+            <p>Reach x={formatNumber(differentialTarget, state.settings.numberFormat)} to discover a new differential of x</p>)
             }
             {state.highestXTier === 3 && (state.xValue[0] >= alphaTarget ? 
             <p>{spaces()}<button onClick={performAlphaReset}>&alpha;-Reset</button>{spaces()}Reset the game to increase your maximum alpha</p> :
-            <p>Reach x={formatNumber(alphaTarget)} to unlock the next layer</p>)
+            <p>Reach x={formatNumber(alphaTarget, state.settings.numberFormat)} to unlock the next layer</p>)
             }
         <p>&nbsp;</p><h2>My Formulas</h2>
             <FormulaTable state={state} updateState={updateState} setTotalClicks={setTotalClicks} formulaNames={inventoryFormulas} context="my"/>

@@ -124,7 +124,11 @@ const formulaList = {
     },
     "x'=420K": {
         formulaName: "x'=420K",
-        description: <>x' &rarr; 420K</>,
+        descriptions: {
+            "LETTER": <>x' &rarr; 420K</>,
+            "SCIENTIFIC": <>x' &rarr; 420000</>,
+            "AMBIGOUS": <>x' &rarr; 420?</>,
+        },
         unlockCost: 69e6,
         applyCost: 69,
         applyNeed: 0,
@@ -133,7 +137,11 @@ const formulaList = {
     },
     "x+50M": {
         formulaName: "x+50M",
-        description: <>x &rarr; x + 50M</>,
+        descriptions: {
+            "LETTER": <>x &rarr; x + 50M</>,
+            "SCIENTIFIC": <>x &rarr; x + 5e7</>,
+            "AMBIGOUS": <>x &rarr; x + 50?</>,
+        },
         unlockCost: 500e6, //*4
         applyCost: 0,
         applyNeed: 1e6,
@@ -228,7 +236,11 @@ const formulaList = {
     },
     "x''+10B": {
         formulaName: "x''+10B",
-        description: <>x'' &rarr; x'' + 10B</>,
+        descriptions: {
+            "LETTER": <>x'' &rarr; x'' + 10B</>,
+            "SCIENTIFIC": <>x'' &rarr; x'' + 1e10</>,
+            "AMBIGOUS": <>x'' &rarr; x'' + 10?</>,
+        },
         unlockCost: 1e15, //??? check pricing
         applyCost: 200e6,
         applyNeed: 0,
@@ -237,7 +249,11 @@ const formulaList = {
     },
     "x+50P": {
         formulaName: "x+50P",
-        description: <>x &rarr; x + 50P</>,
+        descriptions: {
+            "LETTER": <>x &rarr; x + 50P</>,
+            "SCIENTIFIC": <>x &rarr; x + 5e19</>,
+            "AMBIGOUS": <>x &rarr; x + 50?</>,
+        },
         unlockCost: 1e17, //*48
         applyCost: 0, 
         applyNeed: 100e6,
@@ -317,7 +333,11 @@ const formulaList = {
     },
     "x=10Q*x'''*x''/x'": {
         formulaName: "x=10Q*x'''*x''/x'",
-        description: <>x &rarr; 10Q * x''' * x'' / x'</>,
+        descriptions: {
+            "LETTER": <>x &rarr; 10Q * x''' * x'' / x'</>,
+            "SCIENTIFIC": <>x &rarr; 1e16 * x''' * x'' / x'</>,
+            "AMBIGOUS": <>x &rarr; 10? * x''' * x'' / x'</>,
+        },
         unlockCost: 2e15,
         applyCost: 0,
         applyNeed: 1e9,
@@ -327,7 +347,11 @@ const formulaList = {
     },
     "x'=5Q*x'''": {
         formulaName: "x'=5Q*x'''",
-        description: <>x' &rarr; 5Q * x'''</>,
+        descriptions: {
+            "LETTER": <>x' &rarr; 5Q * x'''</>,
+            "SCIENTIFIC": <>x' &rarr; 5e15 * x'''</>,
+            "AMBIGOUS": <>x' &rarr; 5? * x'''</>,
+        },
         unlockCost: 120e18,
         applyCost: 1e10,
         applyNeed: 0,
@@ -358,6 +382,11 @@ const formulaList = {
     "x'''*sqrt(300S-x''')/500B": {
         formulaName: "x'''*sqrt(300S-x''')/500B",
         description: <>x''' &rarr; x''' * sqrt(300S - x''') / 500B</>,
+        descriptions: {
+            "LETTER": <>x''' &rarr; x''' * sqrt(300S - x''') / 500B</>,
+            "SCIENTIFIC": <>x''' &rarr; x''' * sqrt(3e23 - x''') / 5e11</>,
+            "AMBIGOUS": <>x''' &rarr; x''' * sqrt(300? - x''') / 500?</>,
+        },
         unlockCost: 20e27,
         applyCost: 1e9,
         applyNeed: 0,

@@ -34,7 +34,7 @@ export default function FormulaButton({state, updateState, setTotalClicks, formu
         )
     } 
 
-    var tooltip = formula.applyCost >= formula.applyNeed ? "Cost: x=" + formatNumber(formula.applyCost) : "Needed: x=" + formatNumber(formula.applyNeed)
+    var tooltip = formula.applyCost >= formula.applyNeed ? "Cost: x=" + formatNumber(formula.applyCost, state.settings.numberFormat) : "Needed: x=" + formatNumber(formula.applyNeed, state.settings.numberFormat)
     tooltip += formula && formula.explanation ? "\n" + formula.explanation : ""
     formula.isFree = (formulaName === state.freeFormula) 
 
@@ -56,6 +56,9 @@ export default function FormulaButton({state, updateState, setTotalClicks, formu
             formula.unlockMultiplier *= 8000
         }
     }
+
+    if (formula.numberFormat !== state.settings.numberFormat)
+        formula.description =  formula.descriptions?.[state.settings.numberFormat] || formula.description
 
     const mouseHandler = (e)=>{
         switch(e.type){
@@ -100,8 +103,8 @@ export default function FormulaButton({state, updateState, setTotalClicks, formu
                     {formula.description}
                 </button>
             </td><td>
-                {!!formula.applyCost && state.xValue[0] < formula.applyCost && <>{spaces()}Cost: x={formatNumber(formula.applyCost)}</> }
-                {!!formula.applyNeed && state.xValue[0] < formula.applyNeed && <>{spaces()}Needed: x={formatNumber(formula.applyNeed)}</>}
+                {!!formula.applyCost && state.xValue[0] < formula.applyCost && <>{spaces()}Cost: x={formatNumber(formula.applyCost, state.settings.numberFormat)}</> }
+                {!!formula.applyNeed && state.xValue[0] < formula.applyNeed && <>{spaces()}Needed: x={formatNumber(formula.applyNeed, state.settings.numberFormat)}</>}
                 {state.xValue[0] >= formula.applyNeed && state.xValue[0] >= formula.applyCost && !state.formulaUsed[formulaName] && <>{spaces()}Click to apply formula!</>}
                 {!state.formulaUsed[formulaName] && <>{spaces()}<button
                     onClick={()=>discardFormula(formula)}>
@@ -150,7 +153,7 @@ export default function FormulaButton({state, updateState, setTotalClicks, formu
             </td><td>
                 {spaces()}
             </td><td>
-                {!formula.isFree > 0 ? <>Unlock this formula for x={formatNumber(formula.unlockCost * formula.unlockMultiplier)}</> : <>First one is free!!!</>}
+                {!formula.isFree > 0 ? <>Unlock this formula for x={formatNumber(formula.unlockCost * formula.unlockMultiplier, state.settings.numberFormat)}</> : <>First one is free!!!</>}
             </td></tr>
         )
     }

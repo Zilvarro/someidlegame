@@ -34,6 +34,7 @@ export const newSave = {
         offlineProgressPopup: "ON",
         autoSave: "ON",
         autoLoad: "ON",
+        numberFormat: "LETTER",
         showHints: "ON",
         hotKeys: "ON",
     }
