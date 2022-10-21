@@ -409,7 +409,6 @@ const formulaList = {
     },
     "x'''*sqrt(300S-x''')/500B": {
         formulaName: "x'''*sqrt(300S-x''')/500B",
-        description: <>x''' &rarr; x''' * sqrt(300S - x''') / 500B</>,
         descriptions: {
             "LETTER": <>x''' &rarr; x''' * sqrt(300S - x''') / 500B</>,
             "SCIENTIFIC": <>x''' &rarr; x''' * sqrt(3e23 - x''') / 5e11</>,
@@ -421,6 +420,20 @@ const formulaList = {
         targetLevel: 3,
         applyFormula: (x,state)=>(Math.floor(x[3]*Math.sqrt(300e21 - x[3]) / 500e9)),
         explanation: "sqrt is the square root.",
+    },
+    "x'''+5S": {
+        formulaName: "x'''+5S",
+        description: <>x''' &rarr; x''' + 5S</>,
+        descriptions: {
+            "LETTER": <>x''' &rarr; x''' + 5S</>,
+            "SCIENTIFIC": <>x''' &rarr; x''' + 5e21</>,
+            "AMBIGOUS": <>x''' &rarr; x''' + 5?</>,
+        },
+        unlockCost: 999e33,
+        applyCost: 99e33,
+        applyNeed: 0,
+        targetLevel: 3,
+        applyFormula: (x,state)=>(x[3]+5e21),
     },
 }
 //Größenordnung nächstes S'''-Upgrade: 6S?
