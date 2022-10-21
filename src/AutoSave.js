@@ -13,7 +13,6 @@ class AutoSave extends React.Component{
 
   onUnload(e){
     if (this.saveState.settings.autoSave === "ON" && this.saveState.mileStoneCount > 0) {
-      this.saveState.saveTimeStamp = Date.now()
       this.save(this.saveState)
     }
   }

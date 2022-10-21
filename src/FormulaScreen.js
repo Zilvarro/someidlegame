@@ -73,6 +73,8 @@ export default function FormulaScreen({state, updateState, setTotalClicks}) {
 
       "x'''+log2(x)^2",
       "x'''+log2(#F/#E)^13",
+      "x'+20S",
+      "x''+20P",
       "x'''*sqrt(300S-x''')/500B",
     ]
   
@@ -85,9 +87,11 @@ export default function FormulaScreen({state, updateState, setTotalClicks}) {
     const inventoryFormulas = Object.assign(new Array(state.inventorySize).fill(), state.myFormulas)
 
     return (<>
-        {Math.abs(state.xValue[0])>=1e18 && <h1 style={{fontSize: "40px", margin: 0, textAlign:"left"}}>x={Math.floor(state.xValue[0])}</h1>}
+        {/* {Math.abs(state.xValue[0])>=1e18 && <h1 style={{fontSize: "40px", margin: 0, textAlign:"left"}}>x={formatNumber(state.xValue[0], state.settings.numberFormat, 8)}</h1>} */}
+        {<h1 style={{fontSize: "40px", marginLeft: "10px", textAlign:"left"}}>x={formatNumber(state.xValue[0], state.settings.numberFormat, 8)}</h1>}
         <div className="row"><div className="column">
-        {Math.abs(state.xValue[0])<1e18 && <h1 style={{fontSize: "40px", margin: 0, textAlign:"center"}}>x={Math.floor(state.xValue[0])}</h1>}
+        {/* {<h1 style={{fontSize: "40px", margin: 0, textAlign:"center"}}>x={formatNumber(state.xValue[0], state.settings.numberFormat, 8)}</h1>} */}
+        {/* {Math.abs(state.xValue[0])<1e18 && <h1 style={{fontSize: "40px", margin: 0, textAlign:"center"}}>x={formatNumber(state.xValue[0], state.settings.numberFormat, 8)}</h1>} */}
         <h2>X Values</h2>
             <ValueTable values={state.xValue} baseName={"x"} maxTier={state.highestXTier} numberFormat={state.settings.numberFormat}/>
             {state.inventorySize < state.formulaUnlockCount ? 
@@ -104,6 +108,9 @@ export default function FormulaScreen({state, updateState, setTotalClicks}) {
             }
         <p>&nbsp;</p><h2>My Formulas</h2>
             <FormulaTable state={state} updateState={updateState} setTotalClicks={setTotalClicks} formulaNames={inventoryFormulas} context="my"/>
+            {state.mileStoneCount >= 1 && state.mileStoneCount <=2 && 
+            <p>Hint: You can apply formulas repeatedly by holding the button or using Enter</p>
+            }
         {state.maxAlpha > 0 && <><p>&nbsp;</p><h2>Alpha</h2>
             <p>&alpha; = {state.alpha}</p>
             <p>&alpha;<sub>max</sub> = {state.maxAlpha}</p>

@@ -35,7 +35,8 @@ export default function FormulaButton({state, updateState, setTotalClicks, formu
     } 
 
     var tooltip = formula.applyCost >= formula.applyNeed ? "Cost: x=" + formatNumber(formula.applyCost, state.settings.numberFormat) : "Needed: x=" + formatNumber(formula.applyNeed, state.settings.numberFormat)
-    tooltip += formula && formula.explanation ? "\n" + formula.explanation : ""
+    const delimiter = state.settings.shopPrices ? " / " : "\n"
+    tooltip += formula && formula.explanation ? delimiter + formula.explanation : ""
     formula.isFree = (formulaName === state.freeFormula) 
 
     if (!formula.effectLevel) {
@@ -78,15 +79,6 @@ export default function FormulaButton({state, updateState, setTotalClicks, formu
         }
 
     }
-    const onDrop = (e)=>{
-        updateState({name:"swapFormulas", formulaName:e.dataTransfer.getData("formulaname"), partnerFormulaName:formula.formulaName})
-    }
-    const onDragOver = (e)=>{
-        e.preventDefault()
-    }
-    const onDragStart = (e)=>{
-        e.dataTransfer.setData("formulaname", formula.formulaName)
-    }
     const moveFormulaUp = (e)=>{
         updateState({name:"swapFormulas", formulaName:formula.formulaName, isDownward:false})
     }
@@ -97,7 +89,7 @@ export default function FormulaButton({state, updateState, setTotalClicks, formu
     if (context === "my") { //APPLY BUTTON
         return (
             <tr><td align="left" className="block" style={{width:"auto"}}>
-                <button className="fbutton" title={tooltip} draggable={!state.formulaUsed[formula.formulaName]} onDrop={onDrop} onDragOver={onDragOver} onDragStart={onDragStart}
+                <button className="fbutton" title={tooltip}
                     disabled={(formula.applyNeed && state.xValue[0] < formula.applyNeed) || (formula.applyCost && state.xValue[0] < formula.applyCost)}
                     onClick={(evt)=>applyFormula(formula,evt)} onMouseDown={mouseHandler} onMouseUp={mouseHandler} onMouseLeave={mouseHandler} onTouchStart={mouseHandler} onTouchEnd={mouseHandler}>
                     {formula.description}
@@ -137,6 +129,7 @@ export default function FormulaButton({state, updateState, setTotalClicks, formu
             </td><td>
                 {spaces()}
             </td><td>
+                {state.settings.shopPrices === "ON" && tooltip}
             </td></tr>
         )
     } else { //UNLOCK BUTTON

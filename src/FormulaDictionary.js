@@ -254,7 +254,7 @@ const formulaList = {
             "SCIENTIFIC": <>x &rarr; x + 5e19</>,
             "AMBIGOUS": <>x &rarr; x + 50?</>,
         },
-        unlockCost: 1e17, //*48
+        unlockCost: 4e17, //*48
         applyCost: 0, 
         applyNeed: 100e6,
         targetLevel: 0,
@@ -379,6 +379,34 @@ const formulaList = {
         applyFormula: (x,state)=>(x[3] + Math.pow(Math.log2(state.formulaApplyCount / state.myFormulas.length),13)),
         explanation: "Boosted by formula applications (since S-Reset). Diminished by number of equipped formulas.",
     },
+    "x'+20S": {
+        formulaName: "x'+20S",
+        descriptions: {
+            "LETTER": <>x' &rarr; x' + 20S</>,
+            "SCIENTIFIC": <>x' &rarr; x' + 2e22</>,
+            "AMBIGOUS": <>x' &rarr; x' + 20?</>,
+        },
+        unlockCost: 2e23, //*96K
+        applyCost: 1e15,
+        applyNeed: 0,
+        targetLevel: 1,
+        applyFormula: (x,state)=>(x[1] + 20e21),
+        explanation: "Boosted by formula applications (since S-Reset). Diminished by number of equipped formulas.",
+    },
+    "x''+20P": {
+        formulaName: "x''+20P",
+        descriptions: {
+            "LETTER": <>x'' &rarr; x'' + 20P</>,
+            "SCIENTIFIC": <>x'' &rarr; x'' + 2e19</>,
+            "AMBIGOUS": <>x'' &rarr; x' + 20?</>,
+        },
+        unlockCost: 25e24, //*8K
+        applyCost: 1e21,
+        applyNeed: 0,
+        targetLevel: 2,
+        applyFormula: (x,state)=>(x[2] + 20e18),
+        explanation: "Boosted by formula applications (since S-Reset). Diminished by number of equipped formulas.",
+    },
     "x'''*sqrt(300S-x''')/500B": {
         formulaName: "x'''*sqrt(300S-x''')/500B",
         description: <>x''' &rarr; x''' * sqrt(300S - x''') / 500B</>,
@@ -387,12 +415,11 @@ const formulaList = {
             "SCIENTIFIC": <>x''' &rarr; x''' * sqrt(3e23 - x''') / 5e11</>,
             "AMBIGOUS": <>x''' &rarr; x''' * sqrt(300? - x''') / 500?</>,
         },
-        unlockCost: 20e27,
+        unlockCost: 10e30,
         applyCost: 1e9,
         applyNeed: 0,
         targetLevel: 3,
         applyFormula: (x,state)=>(Math.floor(x[3]*Math.sqrt(300e21 - x[3]) / 500e9)),
-        // applyFormula: (x,state)=>(Math.floor(x[3]*Math.sqrt(1e9 - x[3]))),
         explanation: "sqrt is the square root.",
     },
 }

@@ -9,7 +9,7 @@ export const formatNumber = (number, numberFormat, decimals=0)=>{
     if (number < 0) return "-" + formatNumber(-number, decimals, numberFormat)
     number *= 1.0000000001 //hopefully less Javascript Jank
 
-    const sNumberString = Math.floor(number).toExponential(6)
+    const sNumberString = Math.floor(number).toExponential(10)
     if (number===Infinity) {
         return "Infinity"
     } else if (isNaN(number)) {

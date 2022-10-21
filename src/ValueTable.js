@@ -1,6 +1,5 @@
 import {formatNumber} from './utilities'
 export default function ValueTable({values, baseName, maxTier, numberFormat}) {
-    console.log(numberFormat)
     return (
         <table><tbody>
             {values.slice(0,maxTier + 1).map((value, index)=>

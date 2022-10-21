@@ -2,8 +2,9 @@ import {milestoneList} from './AchievementScreen'
 import { notify } from './utilities'
 import formulaList from './FormulaDictionary'
 
+export const version = "0.03"
 export const newSave = {
-    version: "0.02",
+    version: version,
     selectedTabKey: "FormulaScreen",
     xValue: [0,0,0,0],
     xRecord: 0,
@@ -35,6 +36,7 @@ export const newSave = {
         autoSave: "ON",
         autoLoad: "ON",
         numberFormat: "LETTER",
+        shopPrices: "OFF",
         showHints: "ON",
         hotKeys: "ON",
     }
@@ -78,6 +80,8 @@ export const getStartingX = (state)=>{
 }
 
 export const save = (state)=>{
+    state.version = version
+    state.saveTimeStamp = Date.now()
     const currentgame = JSON.stringify(state)
     window.localStorage.setItem('idleformulas', currentgame)
 }
@@ -152,7 +156,7 @@ export const saveReducer = (state, action)=>{
         }
 
         //Apply Mouse Hold / Touch Hold events
-        if (state.holdAction?.type === "ApplyFormula" && state.formulaUsed[state.holdAction.formulaName]){
+        if (state.holdAction?.type === "ApplyFormula"){
             if(state.holdAction.delay > 0) {
                 state.holdAction.delay--
             } else {
@@ -180,7 +184,6 @@ export const saveReducer = (state, action)=>{
         //Autosave
         const lastSaveMilliseconds = (timeStamp - state.saveTimeStamp)
         if (state.mileStoneCount > 0 && state.settings.autoSave === "ON" && lastSaveMilliseconds >= 10000) { //TODO
-            state.saveTimeStamp = Date.now()
             save(state)
         }
         break;
@@ -188,6 +191,7 @@ export const saveReducer = (state, action)=>{
         state.selectedTabKey = action.tabKey
         break;
     case "reset":
+        debugger;
         state = {...structuredClone(newSave), calcTimeStamp: Date.now(), saveTimeStamp: Date.now()};
         break;
     case "load":
