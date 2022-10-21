@@ -146,7 +146,7 @@ export default function FormulaButton({state, updateState, setTotalClicks, formu
             </td><td>
                 {spaces()}
             </td><td>
-                {!formula.isFree > 0 ? <>Unlock this formula for x={formatNumber(formula.unlockCost * formula.unlockMultiplier, state.settings.numberFormat)}</> : <>First one is free!!!</>}
+                {!formula.isFree > 0 ? <>Unlock for x={formatNumber(formula.unlockCost * formula.unlockMultiplier, state.settings.numberFormat)}</> : <>First formula is free!!!</>}
             </td></tr>
         )
     }
