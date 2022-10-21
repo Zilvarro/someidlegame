@@ -88,11 +88,8 @@ export default function FormulaScreen({state, updateState, setTotalClicks}) {
     const inventoryFormulas = Object.assign(new Array(state.inventorySize).fill(), state.myFormulas)
 
     return (<>
-        {/* {Math.abs(state.xValue[0])>=1e18 && <h1 style={{fontSize: "40px", margin: 0, textAlign:"left"}}>x={formatNumber(state.xValue[0], state.settings.numberFormat, 8)}</h1>} */}
         {<h1 style={{fontSize: "40px", marginLeft: "10px", textAlign:"left"}}>x={formatNumber(state.xValue[0], state.settings.numberFormat, 8)}</h1>}
         <div className="row"><div className="column">
-        {/* {<h1 style={{fontSize: "40px", margin: 0, textAlign:"center"}}>x={formatNumber(state.xValue[0], state.settings.numberFormat, 8)}</h1>} */}
-        {/* {Math.abs(state.xValue[0])<1e18 && <h1 style={{fontSize: "40px", margin: 0, textAlign:"center"}}>x={formatNumber(state.xValue[0], state.settings.numberFormat, 8)}</h1>} */}
         <h2>X Values</h2>
             <ValueTable values={state.xValue} baseName={"x"} maxTier={state.highestXTier} numberFormat={state.settings.numberFormat}/>
             {state.inventorySize < state.formulaUnlockCount ? 

@@ -436,7 +436,4 @@ const formulaList = {
         applyFormula: (x,state)=>(x[3]+5e21),
     },
 }
-//Größenordnung nächstes S'''-Upgrade: 6S?
-//Beschränkter x''' Selbstmultiplikator?
-//Negativ ermöglichender Logarithmus?
 export default formulaList
