@@ -1,4 +1,6 @@
-export default function MultiOptionButton({state, updateState, settingName, description, statusList, tooltip, tooltipList}) {
+export default function MultiOptionButton({state, updateState, settingName, description, statusList, visible=true, tooltip, tooltipList}) {
+    if (!visible) return undefined
+
     const currentStatus = state.settings[settingName]
     const currentIndex = statusList.indexOf(currentStatus)
     const nextIndex = (currentIndex + 1) % statusList.length

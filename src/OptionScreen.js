@@ -49,8 +49,8 @@ export default function OptionScreen({state, updateState, setTotalClicks}) {
   return (<div style={{padding: "10px"}}>
     <h1>Options</h1>
       <p>
-        {spaces()}<button onClick={saveGame}>Save Game</button>
-        {spaces()}<button onClick={exportGame}>Export</button>
+        {spaces()}<button onClick={saveGame} disabled={state.mileStoneCount < 1}>Save Game</button>
+        {spaces()}<button onClick={exportGame} disabled={state.mileStoneCount < 1}>Export</button>
         {spaces()}<MultiOptionButton settingName="autoSave" statusList={["ON","OFF"]} state={state} updateState={updateState} setTotalClicks={setTotalClicks}
           description="Auto Save" tooltip="Controls whether the game saves automatically" tooltipList={["Saves automatically every 10 seconds and tries to save (depends on browser) before closing tab","Game is not saved automatically"]}/>
       </p><p> 
@@ -65,14 +65,17 @@ export default function OptionScreen({state, updateState, setTotalClicks}) {
         {spaces()}<MultiOptionButton settingName="offlineProgressPopup" statusList={["ON","LAUNCH","OFF"]} state={state} updateState={updateState} setTotalClicks={setTotalClicks}
           description="Offline Progress Pop-Up" tooltip="Controls whether the offline progress popup is shown" tooltipList={["Shown at launch and after inactive periods","Only shown at launch/loading", "Never shown"]}/>
       </p><p>
+        {spaces()}<MultiOptionButton settingName="numberFormat" statusList={["LETTER","SCIENTIFIC","AMBIGOUS"]} state={state} updateState={updateState} setTotalClicks={setTotalClicks}
+          description="Number Format" tooltip="Controls how numbers are displayed" tooltipList={["Use letters for thousands: K,M,B,T,Q,P,S,V,O,N,D","Use scientific notation", "Use ambigous notation"]}/>
+      </p><p>
         {spaces()}<MultiOptionButton settingName="valueReduction" statusList={["CONFIRM","WARNING","PREVENT","NEVER","APPLY"]} state={state} updateState={updateState} setTotalClicks={setTotalClicks}
           description="Decreasing Formula" tooltip="Controls behavior when trying to apply a formula that reduces the value" tooltipList={["Show confirmation popup that can be skipped by holding Shift","Apply when Shift is held, show warning otherwise.", "Prevent formula application unless Shift is held", "Never apply", "Always apply"]}/>
       </p><p>
         {spaces()}<MultiOptionButton settingName="shopPrices" statusList={["OFF","ON"]} state={state} updateState={updateState} setTotalClicks={setTotalClicks}
           description="Shop Price Labels" tooltip="Controls how formula prices and additional info are shown in Shop" tooltipList={["Shop Prices are only shown in Tooltips","Shop Prices are shown in Label."]}/>
       </p><p>
-        {spaces()}<MultiOptionButton settingName="numberFormat" statusList={["LETTER","SCIENTIFIC","AMBIGOUS"]} state={state} updateState={updateState} setTotalClicks={setTotalClicks}
-          description="Number Format" tooltip="Controls how numbers are displayed" tooltipList={["Use letters for thousands: K,M,B,T,Q,P,S,V,O,N,D","Use scientific notation", "Use ambigous notation"]}/>
+        {spaces()}<MultiOptionButton settingName="colorizedFormulas" statusList={["NEW","EFFECT","TARGET","ALL","OFF"]} state={state} updateState={updateState} setTotalClicks={setTotalClicks}
+          description="Formula Colors" tooltip="Controls how formulas are highlighted with colors" tooltipList={["Formulas discovered with last S-Reset", "Colored by highest differential in the formula", "Colored by differential that is affected", "All colored the same", "Not colored"]}/>
         {/* {spaces()}<MultiOptionButton settingName="showHints" statusList={["ON", "OFF"]} state={state} updateState={updateState} setTotalClicks={setTotalClicks}
           description="Show Hints" tooltip="Controls whether hints are shown" tooltipList={["Hints are shown", "Hints are not shown"]}/>
         {spaces()}<MultiOptionButton settingName="hotKeys" statusList={["ON", "OFF"]} state={state} updateState={updateState} setTotalClicks={setTotalClicks}

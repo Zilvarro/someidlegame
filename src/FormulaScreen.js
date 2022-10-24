@@ -73,8 +73,8 @@ export default function FormulaScreen({state, updateState, setTotalClicks}) {
 
       "x'''+log2(x)^2",
       "x'''+log2(#F/#E)^13",
-      "x'+20S",
-      "x''+20P",
+      "x'+30S",
+      "x''+40P",
       "x'''*sqrt(300S-x''')/500B",
       "x'''+5S",
     ]
@@ -93,7 +93,7 @@ export default function FormulaScreen({state, updateState, setTotalClicks}) {
         <h2>X Values</h2>
             <ValueTable values={state.xValue} baseName={"x"} maxTier={state.highestXTier} numberFormat={state.settings.numberFormat}/>
             {state.inventorySize < state.formulaUnlockCount ? 
-            <p>{spaces()}<button onClick={resetXValues} disabled={!state.anyFormulaUsed}>X-Reset</button></p> :
+            <p>{spaces()}<button onClick={resetXValues} disabled={!state.anyFormulaUsed}>X-Reset</button>{state.mileStoneCount === 1 && <>{spaces()}&larr; Reset x, but you can adapt your equipped formulas.</>}</p> :
             <p>Unlock {formulasForXReset} more formula{formulasForXReset !== 1 && "s"} to enable X-Resets</p>
             }
             {state.mileStoneCount >= 2 && state.highestXTier < 3 && (state.xValue[0] >= differentialTarget ? 

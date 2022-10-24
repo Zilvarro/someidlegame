@@ -2,7 +2,7 @@ import {milestoneList} from './AchievementScreen'
 import { notify } from './utilities'
 import formulaList from './FormulaDictionary'
 
-export const version = "0.03"
+export const version = "0.04"
 export const newSave = {
     version: version,
     selectedTabKey: "FormulaScreen",
@@ -39,6 +39,7 @@ export const newSave = {
         shopPrices: "OFF",
         showHints: "ON",
         hotKeys: "ON",
+        colorizedFormulas: "NEW",
     }
 }
 

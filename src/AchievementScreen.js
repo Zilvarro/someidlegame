@@ -29,11 +29,11 @@ export const milestoneList = [
     name:"So It Begins",
     description:<>Perform an &alpha;-Reset</>,
     check: (state)=>(state.maxAlpha >= 1),
-  },{
-    id:"AlphaUpgrades",
-    name:"Alpha Chad",
-    description:<>Get all Alpha Upgrades</>,
-    check: (state)=>(false),
+  // },{
+  //   id:"AlphaUpgrades",
+  //   name:"Alpha Chad",
+  //   description:<>Get all Alpha Upgrades</>,
+  //   check: (state)=>(false),
   },
 ]
 
