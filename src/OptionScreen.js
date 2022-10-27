@@ -4,16 +4,21 @@ import {save} from './savestate'
 import {spaces, notify} from './utilities'
 import MultiOptionButton from './MultiOptionButton'
 
-export default function OptionScreen({state, updateState, setTotalClicks}) {
+export default function OptionScreen({state, popup, updateState, setTotalClicks}) {
   const saveGame = ()=>{
     save(state)
     notify.success("Game Saved")
   }
   
   const load = ()=>{
-    if (state.mileStoneCount < 2 || window.confirm("This loads your last saved game, your current progress will be lost. Proceed?")) {
+    if (state.mileStoneCount < 2) {
       updateState({name: "load"})
       setTotalClicks((x)=>x+1)
+    } else {
+      popup.confirm("This loads your last saved game, your current progress will be lost. Proceed?",()=>{
+        updateState({name: "load"})
+        setTotalClicks((x)=>x+1)
+      })
     }
   }
 

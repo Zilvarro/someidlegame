@@ -67,14 +67,14 @@ const formulaList = {
         isBasic: true,
         applyFormula: (x)=>(1),
     },
-    "x'=16": {
-        formulaName: "x'=16",
-        description: <>x' &rarr; 16</>,
+    "x'=24": {
+        formulaName: "x'=24",
+        description: <>x' &rarr; 24</>,
         unlockCost: 600,
         applyCost: 30,
         applyNeed: 0,
         targetLevel: 1,
-        applyFormula: (x)=>(16),
+        applyFormula: (x)=>(24),
     },
     "x'+1": {
         formulaName: "x'+1",
@@ -85,14 +85,14 @@ const formulaList = {
         targetLevel: 1,
         applyFormula: (x)=>(x[1] + 1),
     },
-    "x+500": {
-        formulaName: "x+500",
-        description: <>x &rarr; x + 500</>,
-        unlockCost: 100000, //*4
+    "x+1000": {
+        formulaName: "x+1000",
+        description: <>x &rarr; x + 1000</>,
+        unlockCost: 80000, //*4
         applyCost: 0,
         applyNeed: 10000,
         targetLevel: 0,
-        applyFormula: (x)=>(x[0] + 500),
+        applyFormula: (x)=>(x[0] + 1000),
     },
     "x'+3": {
         formulaName: "x'+3",
@@ -276,7 +276,7 @@ const formulaList = {
         formulaName: "x'''=(#U^2)/12",
         description: <>x''' &rarr; #U<sup>2</sup>/12</>,
         unlockCost: 1e6,
-        applyCost: 300,
+        applyCost: 10000,
         applyNeed: 0,
         targetLevel: 3,
         applyFormula: (x,state)=>(Math.floor(Math.pow(state.formulaUnlockCount,2)/12)),
@@ -292,14 +292,14 @@ const formulaList = {
         targetLevel: 3,
         applyFormula: (x)=>(4),
     },
-    "x'''=sqrt(#R)": {
-        formulaName: "x'''=sqrt(#R)",
-        description: <>x''' &rarr; sqrt(#R)</>,
+    "x'''=sqrt(2*#R)": {
+        formulaName: "x'''=sqrt(2*#R)",
+        description: <>x''' &rarr; sqrt(2*#R)</>,
         unlockCost: 50000,
-        applyCost: 20000,
+        applyCost: 3000,
         applyNeed: 0,
         targetLevel: 3,
-        applyFormula: (x,state)=>(Math.floor(Math.sqrt(state.xResetCount))),
+        applyFormula: (x,state)=>(Math.floor(Math.sqrt(2*state.xResetCount))),
         explanation: "Boosted by number of X-Resets (since S-Reset).",
     },
     "x'+x''+x'''": {
@@ -362,7 +362,7 @@ const formulaList = {
     "x'''+log2(x)^2": {
         formulaName: "x'''+log2(x)^2",
         description: <>x''' &rarr; x''' + log<sub>2</sub>(x)<sup>2</sup></>,
-        unlockCost: 150e21,
+        unlockCost: 30e21,
         applyCost: 5e6,
         applyNeed: 0,
         targetLevel: 3,

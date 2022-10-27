@@ -3,33 +3,35 @@ import ValueTable from './ValueTable'
 import {getStartingX} from './savestate'
 import {spaces,formatNumber} from './utilities'
 
-export default function FormulaScreen({state, updateState, setTotalClicks}) {
+export default function FormulaScreen({state, updateState, setTotalClicks, popup}) {
     const resetXValues = ()=>{
-      updateState({name: "resetXValues"})
-      setTotalClicks((x)=>x+1)
+      popup.confirm("Your x values are reset, but you can change your equipped formulas.",()=>{
+          updateState({name: "resetXValues"})
+          setTotalClicks((x)=>x+1)
+      })
     }
     
     const resetShop = ()=>{
       const shopMultipliers = [4, 12, 8000, 1]
       const shopMultiplier = shopMultipliers[state.highestXTier]
-      if(window.confirm("A new differential of x and its formulas become available, but the shop is reset and the unlock cost for all non-basic formulas is " + shopMultiplier + " times as high.")) {
+      popup.confirm("A new differential of x and its formulas become available, but the shop is reset and the unlock cost for all non-basic formulas is " + shopMultiplier + " times as high.",()=>{
         updateState({name: "upgradeXTier"})
         updateState({name: "resetShop"})
         setTotalClicks((x)=>x+1)
-      }
+      })
     }
     
-    const performAlphaReset = (id)=>{
-      updateState({name: "resetShop"})
-      updateState({name: "alphaReset"})
-      setTotalClicks((x)=>x+1)
+    const performAlphaReset = ()=>{
+      popup.confirm("You lose all your differentials but you gain a powerful Alpha Point.",()=>{
+        updateState({name: "alphaReset"})
+        updateState({name: "resetShop"})
+        setTotalClicks((x)=>x+1)
+      })
     }
   
     const buyAlphaUpgrade = (id)=>{
-      if(window.confirm("You lose all your differentials but you gain a powerful Alpha Point.")) {
         updateState({name: "alphaUpgrade", id: id})
         setTotalClicks((x)=>x+1)
-      }
     }
 
     const shopFormulas=[
@@ -43,7 +45,7 @@ export default function FormulaScreen({state, updateState, setTotalClicks}) {
       "x''=2",
       "x+5",
       "x''=3",
-      "x'=16",
+      "x'=24",
       "x'+x''+x'''",
       "x''=#U",
       "x+10",
@@ -54,7 +56,7 @@ export default function FormulaScreen({state, updateState, setTotalClicks}) {
       "x+100",
       "x''+x'''^2",
   
-      "x+500",
+      "x+1000",
       "x'+3",
       "x''=sqrt(x)",
       "x+x'",
@@ -69,9 +71,9 @@ export default function FormulaScreen({state, updateState, setTotalClicks}) {
       "x'+x^0.6",
       "x''+10B",
       "x'=5Q*x'''",
+      "x'''+log2(x)^2",
       "x+50P",
 
-      "x'''+log2(x)^2",
       "x'''+log2(#F/#E)^13",
       "x'+30S",
       "x''+40P",
@@ -105,7 +107,7 @@ export default function FormulaScreen({state, updateState, setTotalClicks}) {
             <p>Reach x={formatNumber(alphaTarget, state.settings.numberFormat)} to unlock the next layer</p>)
             }
         <p>&nbsp;</p><h2>My Formulas</h2>
-            <FormulaTable state={state} updateState={updateState} setTotalClicks={setTotalClicks} formulaNames={inventoryFormulas} context="my"/>
+            <FormulaTable state={state} updateState={updateState} popup={popup} setTotalClicks={setTotalClicks} formulaNames={inventoryFormulas} context="my"/>
             {state.mileStoneCount >= 1 && state.mileStoneCount <=2 && 
             <p>Hint: You can apply formulas repeatedly by holding the button or using Enter</p>
             }
@@ -117,7 +119,7 @@ export default function FormulaScreen({state, updateState, setTotalClicks}) {
             <p><button disabled={state.alpha < 2 || state.boughtAlpha[1]} onClick={()=>{buyAlphaUpgrade(1)}}>Double all idle production</button>{spaces()}{state.boughtAlpha[1] ? <>Already bought</>: <>Cost: &alpha; = 2</>}</p></>}
         </div><div className="column">
         <h2>Shop {state.myFormulas.length >= state.inventorySize && <>{spaces()}[FULL INVENTORY]</>}</h2>
-            <FormulaTable state={state} updateState={updateState} setTotalClicks={setTotalClicks} formulaNames={shopFormulas}/>
+            <FormulaTable state={state} updateState={updateState} popup={popup} setTotalClicks={setTotalClicks} formulaNames={shopFormulas}/>
         </div></div>
     </>)
 }

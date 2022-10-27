@@ -8,13 +8,18 @@ import FormulaScreen from './FormulaScreen'
 import OptionScreen from './OptionScreen'
 import AchievementScreen from './AchievementScreen'
 import AutoSave from './AutoSave'
+import {PopupDialog, makeShowPopup} from './PopupDialog'
 
 function App() {
   const [ playTime, setPlayTime ] = useState(0)
   const [ , setTimer ] = useState()
   const [ , setTotalClicks ] = useState(0) 
+  const [ popupState , setPopupState ] = useState({text: "", options: [], visible:false}) 
+  
   const [ state, updateState] = useReducer(saveReducer, playTime === 0 && getSaveGame())
 
+  const popup = makeShowPopup(popupState, setPopupState)
+  
   useEffect(()=>{
     setTimer((t)=>{
       setInterval(()=>{
@@ -25,8 +30,8 @@ function App() {
 
   useEffect(()=>{
     if (playTime > 0)
-      updateState({name: "idle"})
-  },[playTime])
+      updateState({name: "idle", popup:popup})
+  },[playTime, popup])
 
   const selectTab = (tabKey)=>{
     updateState({name: "selectTab", tabKey: tabKey})
@@ -45,9 +50,10 @@ function App() {
 
   return (<>
     <AutoSave saveState={state}/>
+    <PopupDialog popupState={popupState} setPopupState={setPopupState}/>
     <TabContent selectedTabKey={state.selectedTabKey}>
-      <FormulaScreen tabKey="FormulaScreen" state={state} updateState={updateState} setTotalClicks={setTotalClicks}/>
-      <OptionScreen tabKey="OptionScreen" state={state} updateState={updateState} setTotalClicks={setTotalClicks}/>
+      <FormulaScreen tabKey="FormulaScreen" popup={popup} state={state} updateState={updateState} setTotalClicks={setTotalClicks}/>
+      <OptionScreen tabKey="OptionScreen" popup={popup} state={state} updateState={updateState} setTotalClicks={setTotalClicks}/>
       <AchievementScreen tabKey="AchievementScreen" state={state}/>
     </TabContent>
     <p>&nbsp;</p>

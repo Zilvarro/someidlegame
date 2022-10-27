@@ -1,10 +1,18 @@
 import {spaces,formatNumber} from './utilities'
 import formulaList from './FormulaDictionary'
 
-export default function FormulaButton({state, updateState, setTotalClicks, formulaName, context}) {
+export default function FormulaButton({state, popup, updateState, setTotalClicks, formulaName, context}) {
     const applyFormula = (formula,evt)=>{
-        updateState({name: "applyFormula", formula: formula, forceApply: evt.shiftKey})
-        setTotalClicks((x)=>x+1)
+        const newValue = formula.applyFormula(state.xValue, state)
+        if (0.9999 * state.xValue[formula.targetLevel] > newValue) {
+            popup.confirm("This will lower your X value. Are you sure?\n(You can skip this pop-up by using Shift+Click)",()=>{
+                updateState({name: "applyFormula", formula: formula, updateState: updateState, forceApply: true})
+                setTotalClicks((x)=>x+1)
+            })
+        } else {
+            updateState({name: "applyFormula", formula: formula, updateState: updateState, forceApply: evt.shiftKey})
+            setTotalClicks((x)=>x+1)
+        }
     }
 
     const unlockFormula = (formula)=>{
@@ -37,7 +45,9 @@ export default function FormulaButton({state, updateState, setTotalClicks, formu
     var tooltip = formula.applyCost >= formula.applyNeed ? "Cost: x=" + formatNumber(formula.applyCost, state.settings.numberFormat) : "Needed: x=" + formatNumber(formula.applyNeed, state.settings.numberFormat)
     const delimiter = state.settings.shopPrices ? " / " : "\n"
     tooltip += formula && formula.explanation ? delimiter + formula.explanation : ""
-    formula.isFree = (formulaName === state.freeFormula) 
+
+    const freeFormulas = ["x+1","x'=1","x'=1","x'=1"]
+    formula.isFree = formula.formulaName === freeFormulas[state.highestXTier]
 
     if (!formula.effectLevel) {
         formula.effectLevel = formula.targetLevel
@@ -90,7 +100,7 @@ export default function FormulaButton({state, updateState, setTotalClicks, formu
         case "mouseup":
         case "mouseleave":
         case "touchend":
-            if (state.holdAction){
+            if (state.holdAction && (state.holdAction.formulaName===formula.formulaName)){
                 updateState({name:"changeHold", newValue:null})
             }
             break
@@ -166,7 +176,7 @@ export default function FormulaButton({state, updateState, setTotalClicks, formu
             </td><td>
                 {spaces()}
             </td><td>
-                {!formula.isFree > 0 ? <>Unlock for x={formatNumber(formula.unlockCost * formula.unlockMultiplier, state.settings.numberFormat)}</> : <>First formula is free!!!</>}
+                {!formula.isFree ? <>Unlock for x={formatNumber(formula.unlockCost * formula.unlockMultiplier, state.settings.numberFormat)}</> : <>First formula is free!!!</>}
             </td></tr>
         )
     }
