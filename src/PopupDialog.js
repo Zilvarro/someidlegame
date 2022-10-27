@@ -17,8 +17,9 @@ export const makeShowPopup = (popupState, setPopupState) => {
 
 export function PopupDialog({popupState, setPopupState}) {
     const closePopup = (option) => {
-        popupState.callback?.(option)
+        const callback = popupState.callback
         setPopupState({text: "", options: [], callback: ()=>true, visible:false})
+        callback?.(option)
     }
 
     return (

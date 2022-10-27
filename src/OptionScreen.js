@@ -39,17 +39,16 @@ export default function OptionScreen({state, popup, updateState, setTotalClicks}
   }
 
   const resetSave = ()=>{
-    if (window.confirm("This resets everything and you do not get anything in return. Are you really sure?")) {
-      if (window.confirm("Are you really really sure?")) {
-        if (window.confirm("Are you totally absolutely enthusiastically sure?")) {
+    popup.confirm("This resets everything and you do not get anything in return. Are you really sure?",()=>{
+      popup.confirm("Are you really really sure?",()=>{
+        popup.confirm("Are you totally absolutely enthusiastically sure?",()=>{
           updateState({name: "reset"})
           setTotalClicks((x)=>x+1)
           notify.warning("Game Reset")
-        }
-      }
-    }
+        })
+      })
+    })
   }
-
 
   return (<div style={{padding: "10px"}}>
     <h1>Options</h1>
