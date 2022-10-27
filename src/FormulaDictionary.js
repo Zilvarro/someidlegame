@@ -49,7 +49,7 @@ const formulaList = {
     "x+100": {
         formulaName: "x+100",
         description: <>x &rarr; x + 100</>,
-        unlockCost: 12000,
+        unlockCost: 10000,
         applyCost: 0,
         applyNeed: 2000,
         targetLevel: 0,

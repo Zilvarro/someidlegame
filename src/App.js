@@ -2,11 +2,11 @@ import React, { useState, useEffect, useReducer} from 'react'
 
 import './App.css';
 import {saveReducer, getSaveGame} from './savestate'
-import {spaces} from './utilities'
 import TabContent from './TabContent'
 import FormulaScreen from './FormulaScreen'
 import OptionScreen from './OptionScreen'
 import AchievementScreen from './AchievementScreen'
+import AlphaScreen from './AlphaScreen'
 import AutoSave from './AutoSave'
 import {PopupDialog, makeShowPopup} from './PopupDialog'
 
@@ -30,7 +30,7 @@ function App() {
 
   useEffect(()=>{
     if (playTime > 0)
-      updateState({name: "idle", popup:popup})
+      updateState({name: "idle", popup:popup, playTime:playTime})
   },[playTime, popup])
 
   const selectTab = (tabKey)=>{
@@ -38,33 +38,29 @@ function App() {
     setTotalClicks((x)=>x+1)
   }
 
-  // const onSliderChange = (e)=>{
-  //   updateState({name: "cheat", idleMultiplier: e.target.valueAsNumber})
-  //   setTotalClicks((x)=>x+1)
-  // }
-
-  // const cheat = ()=>{
-  //   updateState({name: "cheat"})
-  //   setTotalClicks((x)=>x+1)
-  // }
-
   return (<>
     <AutoSave saveState={state}/>
     <PopupDialog popupState={popupState} setPopupState={setPopupState}/>
     <TabContent selectedTabKey={state.selectedTabKey}>
       <FormulaScreen tabKey="FormulaScreen" popup={popup} state={state} updateState={updateState} setTotalClicks={setTotalClicks}/>
+      <AlphaScreen tabKey="AlphaScreen" popup={popup} state={state} updateState={updateState} setTotalClicks={setTotalClicks}/>
       <OptionScreen tabKey="OptionScreen" popup={popup} state={state} updateState={updateState} setTotalClicks={setTotalClicks}/>
       <AchievementScreen tabKey="AchievementScreen" state={state}/>
     </TabContent>
     <p>&nbsp;</p>
-    <footer><p></p>
-    {spaces()}<button onClick={()=>selectTab("FormulaScreen")}>Formulas</button>
-    {spaces()}<button onClick={()=>selectTab("AchievementScreen")}>Milestones</button>
-    {spaces()}<button onClick={()=>selectTab("OptionScreen")}>Options</button>
+    <footer>
+    {state.mileStoneCount < 6 && <button style={{backgroundColor: "#FFFFFF", border:"2px solid", padding:"5px", margin:"5px", marginLeft:"10px", fontWeight:"bold"}} onClick={()=>selectTab("FormulaScreen")}>Formulas</button>}
+    {state.mileStoneCount >= 6 && <button style={{backgroundColor: "#99FF99", border:"2px solid", padding:"5px", margin:"5px", marginLeft:"10px", fontWeight:"bold"}} onClick={()=>selectTab("FormulaScreen")}>Formulas</button>}
+    {state.mileStoneCount >= 6 && <button style={{backgroundColor: "#ff5555", border:"2px solid", padding:"5px", margin:"5px", fontWeight:"bold"}} onClick={()=>selectTab("AlphaScreen")}>Alpha</button>}
+    {/* {state.mileStoneCount >= 1 && <button style={{backgroundColor: "#55ffbb", border:"2px solid", padding:"5px", margin:"5px", fontWeight:"bold"}} onClick={()=>selectTab("WorldScreen")}>World</button>}
+    {state.mileStoneCount >= 1 && <button style={{backgroundColor: "#663366", border:"2px solid", padding:"5px", margin:"5px", fontWeight:"bold"}} onClick={()=>selectTab("VoidScreen")}>Void</button>}
+    {state.mileStoneCount >= 1 && <button style={{backgroundColor: "#ffff88", border:"2px solid", padding:"5px", margin:"5px", fontWeight:"bold"}} onClick={()=>selectTab("DestinyScreen")}>Destiny</button>} */}
+    <button style={{margin:"5px"}} onClick={()=>selectTab("AchievementScreen")}>Milestones</button>
+    <button style={{margin:"5px"}} onClick={()=>selectTab("OptionScreen")}>Options</button>
     {/* {spaces()}<button onClick={cheat}>Cheat</button>
     {spaces()}<input type="range" onChange={onSliderChange} id="idleMult" name="idleMult" min="1" max="20" value="1"/>&nbsp;{state.idleMultiplier}
     {spaces()}{Math.floor(playTime / 10)}{spaces()} */}
-    <p></p></footer>
+    </footer>
   </>);
 }
 

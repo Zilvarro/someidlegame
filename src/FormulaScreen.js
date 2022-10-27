@@ -1,6 +1,5 @@
 import FormulaTable from './FormulaTable'
 import ValueTable from './ValueTable'
-import {getStartingX} from './savestate'
 import {spaces,formatNumber} from './utilities'
 
 export default function FormulaScreen({state, updateState, setTotalClicks, popup}) {
@@ -27,11 +26,6 @@ export default function FormulaScreen({state, updateState, setTotalClicks, popup
         updateState({name: "resetShop"})
         setTotalClicks((x)=>x+1)
       })
-    }
-  
-    const buyAlphaUpgrade = (id)=>{
-        updateState({name: "alphaUpgrade", id: id})
-        setTotalClicks((x)=>x+1)
     }
 
     const shopFormulas=[
@@ -89,35 +83,41 @@ export default function FormulaScreen({state, updateState, setTotalClicks, popup
   
     const inventoryFormulas = Object.assign(new Array(state.inventorySize).fill(), state.myFormulas)
 
+    const progressBarWidth = Math.min(100 * Math.log10(Math.max(state.xValue[0],1)) / Math.log10(alphaTarget),99).toFixed(0) + "%"
+
     return (<>
         {<h1 style={{fontSize: "40px", marginLeft: "10px", textAlign:"left"}}>x={formatNumber(state.xValue[0], state.settings.numberFormat, 8)}</h1>}
         <div className="row"><div className="column">
         <h2>X Values</h2>
             <ValueTable values={state.xValue} baseName={"x"} maxTier={state.highestXTier} numberFormat={state.settings.numberFormat}/>
-            {state.inventorySize < state.formulaUnlockCount ? 
-            <p>{spaces()}<button onClick={resetXValues} disabled={!state.anyFormulaUsed}>X-Reset</button>{state.mileStoneCount === 1 && <>{spaces()}&larr; Reset x, but you can adapt your equipped formulas.</>}</p> :
-            <p>Unlock {formulasForXReset} more formula{formulasForXReset !== 1 && "s"} to enable X-Resets</p>
+            <p></p>
+            {(state.mileStoneCount >= 2 || state.inventorySize < state.formulaUnlockCount) &&
+              <>{spaces()}<button onClick={resetXValues} disabled={!state.anyFormulaUsed}>X-Reset</button>{state.mileStoneCount === 1 && <>{spaces()}&larr; Reset x, but you can adapt your equipped formulas.</>}</>
             }
-            {state.mileStoneCount >= 2 && state.highestXTier < 3 && (state.xValue[0] >= differentialTarget ? 
-            <p>{spaces()}<button onClick={resetShop}>S-Reset</button>{spaces()}Reset the shop for a new differential</p> :
-            <p>Reach x={formatNumber(differentialTarget, state.settings.numberFormat)} to discover a new differential of x</p>)
+            {(state.mileStoneCount >= 3 || (state.mileStoneCount === 2 && state.xValue[0] >= differentialTarget)) && state.highestXTier < 3 && 
+              <>{spaces()}<button disabled={state.xValue[0] < differentialTarget} onClick={resetShop}>S-Reset</button>{state.mileStoneCount === 2 && <>{spaces()}&larr; Reset the shop for a new differential</>}</>
             }
-            {state.highestXTier === 3 && (state.xValue[0] >= alphaTarget ? 
-            <p>{spaces()}<button onClick={performAlphaReset}>&alpha;-Reset</button>{spaces()}Reset the game to increase your maximum alpha</p> :
-            <p>Reach x={formatNumber(alphaTarget, state.settings.numberFormat)} to unlock the next layer</p>)
+            {state.mileStoneCount >= 6 && state.highestXTier === 3 &&
+              <>{spaces()}<button disabled={state.xValue[0] < alphaTarget} onClick={performAlphaReset}>&alpha;-Reset</button>{spaces()}</>
             }
+            {state.mileStoneCount < 2 && state.inventorySize < state.formulaUnlockCount && <p>Unlock {formulasForXReset} more formula{formulasForXReset !== 1 && "s"} to enable X-Resets</p>}
+            {state.mileStoneCount >= 2 && state.highestXTier < 3 && state.xValue[0] < differentialTarget && <p>Reach x={formatNumber(differentialTarget, state.settings.numberFormat)} for the next S-Reset</p>}
+            {state.mileStoneCount >= 6 && state.highestXTier === 3 && state.xValue[0] < alphaTarget && <p>Reach x={formatNumber(alphaTarget)} to perform an &alpha;-Reset</p>}
+            
+            {state.mileStoneCount < 6 && (state.xValue[0] >= alphaTarget && state.mileStoneCount >= 5 ?
+                <button onClick={performAlphaReset} style={{backgroundColor:"#99FF99", fontWeight:"bold", border:"2px solid", height:"20px", width:"80%"}}>
+                  UNLOCK A NEW LAYER
+                </button>
+            : 
+              <div style={{color:"#000000", backgroundColor:"#ffffff", border:"2px solid", height:"20px",width:"80%"}}>
+                <div style={{backgroundColor:"#99FF99", border:"0px", height:"20px", width:progressBarWidth}}></div>
+              </div>
+            )}
         <p>&nbsp;</p><h2>My Formulas</h2>
             <FormulaTable state={state} updateState={updateState} popup={popup} setTotalClicks={setTotalClicks} formulaNames={inventoryFormulas} context="my"/>
             {state.mileStoneCount >= 1 && state.mileStoneCount <=2 && 
             <p>Hint: You can apply formulas repeatedly by holding the button or using Enter</p>
             }
-        {state.maxAlpha > 0 && <><p>&nbsp;</p><h2>Alpha</h2>
-            <p>&alpha; = {state.alpha}</p>
-            <p>&alpha;<sub>max</sub> = {state.maxAlpha}</p>
-            <p>Your Alpha Max lets you start with x={getStartingX(state)} after resets</p>
-            <p><button disabled={state.alpha < 1 || state.boughtAlpha[0]} onClick={()=>{buyAlphaUpgrade(0)}}>Get an extra formula slot</button>{spaces()}{state.boughtAlpha[0] ? <>Already bought</>: <>Cost: &alpha; = 1</>}</p>
-            <p><button disabled={state.alpha < 2 || state.boughtAlpha[1]} onClick={()=>{buyAlphaUpgrade(1)}}>Double all idle production</button>{spaces()}{state.boughtAlpha[1] ? <>Already bought</>: <>Cost: &alpha; = 2</>}</p></>}
-        </div><div className="column">
         <h2>Shop {state.myFormulas.length >= state.inventorySize && <>{spaces()}[FULL INVENTORY]</>}</h2>
             <FormulaTable state={state} updateState={updateState} popup={popup} setTotalClicks={setTotalClicks} formulaNames={shopFormulas}/>
         </div></div>

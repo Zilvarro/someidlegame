@@ -5,6 +5,7 @@ import formulaList from './FormulaDictionary'
 export const version = "0.07"
 export const newSave = {
     version: version,
+    progressionLayer: 0,
     selectedTabKey: "FormulaScreen",
     xValue: [0,0,0,0],
     xRecord: 0,
@@ -28,6 +29,7 @@ export const newSave = {
     mileStoneCount: 0,
     holdAction: null,
     justLaunched: true,
+    lastPlayTime: 0,
     settings: {
         valueReduction: "CONFIRM",
         offlineProgress: "ON",
@@ -82,8 +84,7 @@ export const getStartingX = (state)=>{
 export const save = (state)=>{
     state.version = version
     state.saveTimeStamp = Date.now()
-    state.holdAction = null
-    const currentgame = JSON.stringify(state)
+    const currentgame = JSON.stringify({...state, holdAction:null})
     window.localStorage.setItem('idleformulas', currentgame)
 }
 
@@ -142,6 +143,9 @@ export const saveReducer = (state, action)=>{
     const popup = action.popup
     switch(action.name){
     case "idle":
+        if (action.playTime === state.lastPlayTime) break
+
+        state.lastPlayTime = action.playTime
         const timeStamp = Date.now()
         const deltaMilliSeconds = (timeStamp - state.calcTimeStamp)
         if (deltaMilliSeconds < 120000) { //Quick Computation
@@ -176,8 +180,9 @@ export const saveReducer = (state, action)=>{
             } else {
             const formula = formulaList[state.holdAction.formulaName]
                 const isApplied = applyFormulaToState(state, formula, false)
-                if (!isApplied)
+                if (!isApplied) {
                     state.holdAction = null
+                }
             }
         }
 
@@ -270,6 +275,7 @@ export const saveReducer = (state, action)=>{
     case "alphaReset":
         state.alpha++
         state.maxAlpha++
+        state.progressionLayer = Math.max(state.progressionLayer, 1)
         state.highestXTier = 0
         state.xResetCount = 0
         state.formulaApplyCount = 0
