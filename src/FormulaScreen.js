@@ -118,6 +118,7 @@ export default function FormulaScreen({state, updateState, setTotalClicks, popup
             {state.mileStoneCount >= 1 && state.mileStoneCount <=2 && 
             <p>Hint: You can apply formulas repeatedly by holding the button or using Enter</p>
             }
+        </div><div className="column">
         <h2>Shop {state.myFormulas.length >= state.inventorySize && <>{spaces()}[FULL INVENTORY]</>}</h2>
             <FormulaTable state={state} updateState={updateState} popup={popup} setTotalClicks={setTotalClicks} formulaNames={shopFormulas}/>
         </div></div>

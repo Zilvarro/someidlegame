@@ -33,8 +33,11 @@ export const milestoneList = [
     id:"Alpha",
     name:"So It Begins",
     description:<>Perform an &alpha;-Reset</>,
+    teaseName:"?? ?? ??????",
+    teaseDescription:<>??????? ?? ???????</>,
     check: (state)=>(state.maxAlpha >= 1),
     tier: 1,
+    teased: 0
   // },{
   //   id:"AlphaUpgrades",
   //   name:"Alpha Chad",
@@ -55,7 +58,10 @@ export default function AchievementScreen({state}) {
 }
 
 function Milestone({milestone,isReached, state}) {
+  if (!isReached && milestone.teased === state.progressionLayer)
+    return <li style={{margin:"5px", color: "000000"}}>[{milestone.teaseName}]&nbsp;&nbsp;{milestone.teaseDescription}</li>
+
   if (milestone.tier > state.progressionLayer) return undefined
-  const mileStoneColors=["#99FF99","#ff5555","#55ffbb","#663366","#ffff88"]
+  const mileStoneColors=["#99FF99","#ff7777","#55ffbb","#663366","#ffff88"]
   return <li style={{margin:"5px", color: isReached ? mileStoneColors[milestone.tier] : "000000"}}>[{milestone.name}]&nbsp;&nbsp;{milestone.description}</li>
 }
