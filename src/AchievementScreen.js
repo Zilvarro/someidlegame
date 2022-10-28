@@ -61,7 +61,7 @@ function Milestone({milestone,isReached, state}) {
   if (!isReached && milestone.teased === state.progressionLayer)
     return <li style={{margin:"5px", color: "000000"}}>[{milestone.teaseName}]&nbsp;&nbsp;{milestone.teaseDescription}</li>
 
-  if (milestone.tier > state.progressionLayer) return undefined
+  if (!isReached && milestone.tier > state.progressionLayer) return undefined
   const mileStoneColors=["#99FF99","#ff7777","#55ffbb","#663366","#ffff88"]
   return <li style={{margin:"5px", color: isReached ? mileStoneColors[milestone.tier] : "000000"}}>[{milestone.name}]&nbsp;&nbsp;{milestone.description}</li>
 }
