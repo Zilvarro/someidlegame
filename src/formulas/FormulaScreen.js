@@ -1,6 +1,6 @@
 import FormulaTable from './FormulaTable'
 import ValueTable from './ValueTable'
-import {spaces,formatNumber} from './utilities'
+import {spaces,formatNumber} from '../utilities'
 
 export default function FormulaScreen({state, updateState, setTotalClicks, popup}) {
     const resetXValues = ()=>{
@@ -34,7 +34,7 @@ export default function FormulaScreen({state, updateState, setTotalClicks, popup
       "x''=1",
       "x'''=1",
       "x'''=4",
-      "x'''=sqrt(#R)",
+      "x'''=sqrt(2*#R)",
       "x'''=(#U^2)/12",
       "x''=2",
       "x+5",
@@ -79,19 +79,16 @@ export default function FormulaScreen({state, updateState, setTotalClicks, popup
     const differentialTarget = differentialTargets[state.highestXTier]
     const alphaTarget = 30e33
   
-    const formulasForXReset = state.inventorySize - state.formulaUnlockCount + 1
-  
     const inventoryFormulas = Object.assign(new Array(state.inventorySize).fill(), state.myFormulas)
 
     const progressBarWidth = Math.min(100 * Math.log10(Math.max(state.xValue[0],1)) / Math.log10(alphaTarget),99).toFixed(0) + "%"
 
-    return (<>
-        {<h1 style={{fontSize: "40px", marginLeft: "10px", textAlign:"left"}}>x={formatNumber(state.xValue[0], state.settings.numberFormat, 8)}</h1>}
-        <div className="row"><div className="column">
-        <h2>X Values</h2>
+    return (<div style={{color:"#99FF99"}}>
+        <div className="row" style={{marginTop:"0px"}}><div className="column">
+        <h2 style={{marginTop:"0px"}}>X Values</h2>
             <ValueTable values={state.xValue} baseName={"x"} maxTier={state.highestXTier} numberFormat={state.settings.numberFormat}/>
             <p></p>
-            {(state.mileStoneCount >= 2 || state.inventorySize < state.formulaUnlockCount) &&
+            {(state.mileStoneCount >= 2 || state.formulaUnlockCount >= 4) &&
               <>{spaces()}<button onClick={resetXValues} disabled={!state.anyFormulaUsed}>X-Reset</button>{state.mileStoneCount === 1 && <>{spaces()}&larr; Reset x, but you can adapt your equipped formulas.</>}</>
             }
             {(state.mileStoneCount >= 3 || (state.mileStoneCount === 2 && state.xValue[0] >= differentialTarget)) && state.highestXTier < 3 && 
@@ -100,10 +97,10 @@ export default function FormulaScreen({state, updateState, setTotalClicks, popup
             {state.mileStoneCount >= 6 && state.highestXTier === 3 &&
               <>{spaces()}<button disabled={state.xValue[0] < alphaTarget} onClick={performAlphaReset}>&alpha;-Reset</button>{spaces()}</>
             }
-            {state.mileStoneCount < 2 && state.inventorySize < state.formulaUnlockCount && <p>Unlock {formulasForXReset} more formula{formulasForXReset !== 1 && "s"} to enable X-Resets</p>}
+            {state.mileStoneCount === 1 && state.formulaUnlockCount < 4 && <p>Unlock {4 - state.formulaUnlockCount} more formula{state.formulaUnlockCount !== 3 && "s"} to enable X-Resets</p>}
             {state.mileStoneCount >= 2 && state.highestXTier < 3 && state.xValue[0] < differentialTarget && <p>Reach x={formatNumber(differentialTarget, state.settings.numberFormat)} for the next S-Reset</p>}
             {state.mileStoneCount >= 6 && state.highestXTier === 3 && state.xValue[0] < alphaTarget && <p>Reach x={formatNumber(alphaTarget)} to perform an &alpha;-Reset</p>}
-            
+            <p></p>
             {state.mileStoneCount < 6 && (state.xValue[0] >= alphaTarget && state.mileStoneCount >= 5 ?
                 <button onClick={performAlphaReset} style={{backgroundColor:"#99FF99", fontWeight:"bold", border:"2px solid", height:"20px", width:"80%"}}>
                   UNLOCK A NEW LAYER
@@ -119,8 +116,8 @@ export default function FormulaScreen({state, updateState, setTotalClicks, popup
             <p>Hint: You can apply formulas repeatedly by holding the button or using Enter</p>
             }
         </div><div className="column">
-        <h2>Shop {state.myFormulas.length >= state.inventorySize && <>{spaces()}[FULL INVENTORY]</>}</h2>
+        <h2 style={{marginTop:"0px"}}>Shop {state.myFormulas.length >= state.inventorySize && <>{spaces()}[FULL INVENTORY]</>}</h2>
             <FormulaTable state={state} updateState={updateState} popup={popup} setTotalClicks={setTotalClicks} formulaNames={shopFormulas}/>
         </div></div>
-    </>)
+    </div>)
 }

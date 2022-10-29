@@ -2,11 +2,13 @@ import React, { useState, useEffect, useReducer} from 'react'
 
 import './App.css';
 import {saveReducer, getSaveGame} from './savestate'
+import {formatNumber} from './utilities'
 import TabContent from './TabContent'
-import FormulaScreen from './FormulaScreen'
+import FormulaScreen from './formulas/FormulaScreen'
 import OptionScreen from './OptionScreen'
 import AchievementScreen from './AchievementScreen'
-import AlphaScreen from './AlphaScreen'
+import AlphaScreen from './alpha/AlphaScreen'
+import LetterScreen from './letters/LetterScreen'
 import AutoSave from './AutoSave'
 import {PopupDialog, makeShowPopup} from './PopupDialog'
 
@@ -41,22 +43,29 @@ function App() {
   return (<>
     <AutoSave saveState={state}/>
     <PopupDialog popupState={popupState} setPopupState={setPopupState}/>
+    <h1 style={{fontSize: "40px", marginLeft: "10px", marginBottom: "10px", textAlign:"left"}}>x={formatNumber(state.xValue[0], state.settings.numberFormat, 8)}</h1>
     <TabContent selectedTabKey={state.selectedTabKey}>
       <FormulaScreen tabKey="FormulaScreen" popup={popup} state={state} updateState={updateState} setTotalClicks={setTotalClicks}/>
       <AlphaScreen tabKey="AlphaScreen" popup={popup} state={state} updateState={updateState} setTotalClicks={setTotalClicks}/>
-      <OptionScreen tabKey="OptionScreen" popup={popup} state={state} updateState={updateState} setTotalClicks={setTotalClicks}/>
       <AchievementScreen tabKey="AchievementScreen" state={state}/>
+      <LetterScreen tabKey="LetterScreen" state={state}/>
+      <OptionScreen tabKey="OptionScreen" popup={popup} state={state} updateState={updateState} setTotalClicks={setTotalClicks}/>
     </TabContent>
     <p>&nbsp;</p>
     <footer>
-    {state.mileStoneCount < 6 && <button style={{backgroundColor: "#FFFFFF", border:"2px solid", padding:"5px", margin:"5px", marginLeft:"10px", fontWeight:"bold"}} onClick={()=>selectTab("FormulaScreen")}>Formulas</button>}
-    {state.mileStoneCount >= 6 && <button style={{backgroundColor: "#99FF99", border:"2px solid", padding:"5px", margin:"5px", marginLeft:"10px", fontWeight:"bold"}} onClick={()=>selectTab("FormulaScreen")}>Formulas</button>}
-    {state.mileStoneCount >= 6 && <button style={{backgroundColor: "#ff7777", border:"2px solid", padding:"5px", margin:"5px", fontWeight:"bold"}} onClick={()=>selectTab("AlphaScreen")}>Alpha</button>}
-    {/* {state.mileStoneCount >= 1 && <button style={{backgroundColor: "#55ffbb", border:"2px solid", padding:"5px", margin:"5px", fontWeight:"bold"}} onClick={()=>selectTab("WorldScreen")}>World</button>}
-    {state.mileStoneCount >= 1 && <button style={{backgroundColor: "#663366", border:"2px solid", padding:"5px", margin:"5px", fontWeight:"bold"}} onClick={()=>selectTab("VoidScreen")}>Void</button>}
-    {state.mileStoneCount >= 1 && <button style={{backgroundColor: "#ffff88", border:"2px solid", padding:"5px", margin:"5px", fontWeight:"bold"}} onClick={()=>selectTab("DestinyScreen")}>Destiny</button>} */}
-    <button style={{margin:"5px"}} onClick={()=>selectTab("AchievementScreen")}>Milestones</button>
-    <button style={{margin:"5px"}} onClick={()=>selectTab("OptionScreen")}>Options</button>
+    <span style={{display:"inline-block"}}>
+      {state.mileStoneCount < 6 && <button style={{backgroundColor: "#FFFFFF", border:"2px solid", padding:"5px", margin:"5px", marginLeft:"10px", fontWeight:"bold"}} onClick={()=>selectTab("FormulaScreen")}>Formulas</button>}
+      {state.mileStoneCount >= 6 && <button style={{backgroundColor: "#99FF99", border:"2px solid", padding:"5px", margin:"5px", marginLeft:"10px", fontWeight:"bold"}} onClick={()=>selectTab("FormulaScreen")}>Formulas</button>}
+      {state.mileStoneCount >= 1 && <button style={{backgroundColor: "#ff7777", border:"2px solid", padding:"5px", margin:"5px", fontWeight:"bold"}} onClick={()=>selectTab("AlphaScreen")}>Alpha</button>}
+      {/* {state.mileStoneCount >= 1 && <button style={{backgroundColor: "#55ffbb", border:"2px solid", padding:"5px", margin:"5px", fontWeight:"bold"}} onClick={()=>selectTab("WorldScreen")}>World</button>}
+      {state.mileStoneCount >= 1 && <button style={{backgroundColor: "#663366", border:"2px solid", padding:"5px", margin:"5px", fontWeight:"bold"}} onClick={()=>selectTab("VoidScreen")}>Void</button>}
+      {state.mileStoneCount >= 1 && <button style={{backgroundColor: "#ffff88", border:"2px solid", padding:"5px", margin:"5px", fontWeight:"bold"}} onClick={()=>selectTab("DestinyScreen")}>Destiny</button>} */}
+    </span>
+    <span style={{display:"inline-block", marginLeft:"10px"}}>
+      <button style={{margin:"5px"}} onClick={()=>selectTab("AchievementScreen")}>Milestones</button>
+      <button style={{margin:"5px"}} onClick={()=>selectTab("LetterScreen")}>Letters</button>
+      <button style={{margin:"5px"}} onClick={()=>selectTab("OptionScreen")}>Options</button>
+    </span>
     {/* {spaces()}<button onClick={cheat}>Cheat</button>
     {spaces()}<input type="range" onChange={onSliderChange} id="idleMult" name="idleMult" min="1" max="20" value="1"/>&nbsp;{state.idleMultiplier}
     {spaces()}{Math.floor(playTime / 10)}{spaces()} */}

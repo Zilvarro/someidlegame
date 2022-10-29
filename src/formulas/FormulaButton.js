@@ -1,4 +1,4 @@
-import {spaces,formatNumber} from './utilities'
+import {spaces,formatNumber} from '../utilities'
 import formulaList from './FormulaDictionary'
 
 export default function FormulaButton({state, popup, updateState, setTotalClicks, formulaName, context}) {

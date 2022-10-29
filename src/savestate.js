@@ -1,8 +1,9 @@
 import {milestoneList} from './AchievementScreen'
 import { notify } from './utilities'
-import formulaList from './FormulaDictionary'
+import formulaList from './formulas/FormulaDictionary'
 
-export const version = "0.07"
+export const version = "0.08"
+//TODO disable Alpha screen without corresponding milestone
 export const newSave = {
     version: version,
     progressionLayer: 0,
@@ -24,6 +25,7 @@ export const newSave = {
     inventorySize: 3,
     idleMultiplier: 1,
     boughtAlpha: [false,false],
+    alphaUpgrades: {},
     saveTimeStamp: 0,
     calcTimeStamp: 0,
     mileStoneCount: 0,
@@ -78,7 +80,7 @@ export const loadGame = ()=>{
 }
 
 export const getStartingX = (state)=>{
-    return 12*Math.pow(state.maxAlpha,2);
+    return 10*Math.pow(state.maxAlpha,2);
 }
 
 export const save = (state)=>{
@@ -281,19 +283,22 @@ export const saveReducer = (state, action)=>{
         state.formulaApplyCount = 0
         break;
     case "alphaUpgrade":
-        switch (action.id) {
-        case 0:
-            state.alpha -= 1
-            state.inventorySize = 4
-            break;
-        case 1:
-            state.alpha -= 2
-            state.idleMultiplier = 2
-            break;
-        default:
-            console.error("Alpha Upgrade " + action.id + " not found.")
+        // switch (action.id) {
+        // case 0:
+        //     state.alpha -= 1
+        //     state.inventorySize = 4
+        //     break;
+        // case 1:
+        //     state.alpha -= 2
+        //     state.idleMultiplier = 2
+        //     break;
+        // default:
+        //     console.error("Alpha Upgrade " + action.upgrade.id + " not found.")
+        // }
+        if (state.alpha >= action.upgrade.cost) {
+            state.alpha-=action.upgrade.cost
+            state.alphaUpgrades[action.upgrade.id] = true
         }
-        state.boughtAlpha[action.id] = true
         break;
     case "cheat":
         if (action.idleMultiplier) {

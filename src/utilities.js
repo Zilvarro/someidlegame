@@ -29,7 +29,7 @@ export const formatNumber = (number, numberFormat, decimals=0)=>{
                 sSymbol = "e" + iExponent
                 iExtra = 1
                 break;
-            case "AMBIGOUS":
+            case "AMBIGUOUS":
                 if (number >= 1e36) {
                     sSymbol = "e?"
                     iExtra = 1

@@ -1,4 +1,4 @@
-import {formatNumber} from './utilities'
+import {formatNumber} from '../utilities'
 export default function ValueTable({values, baseName, maxTier, numberFormat}) {
     return (
         <table><tbody>

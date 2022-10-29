@@ -127,7 +127,7 @@ const formulaList = {
         descriptions: {
             "LETTER": <>x' &rarr; 420K</>,
             "SCIENTIFIC": <>x' &rarr; 420000</>,
-            "AMBIGOUS": <>x' &rarr; 420?</>,
+            "AMBIGUOUS": <>x' &rarr; 420?</>,
         },
         unlockCost: 69e6,
         applyCost: 69,
@@ -140,7 +140,7 @@ const formulaList = {
         descriptions: {
             "LETTER": <>x &rarr; x + 50M</>,
             "SCIENTIFIC": <>x &rarr; x + 5e7</>,
-            "AMBIGOUS": <>x &rarr; x + 50?</>,
+            "AMBIGUOUS": <>x &rarr; x + 50?</>,
         },
         unlockCost: 500e6, //*4
         applyCost: 0,
@@ -239,7 +239,7 @@ const formulaList = {
         descriptions: {
             "LETTER": <>x'' &rarr; x'' + 10B</>,
             "SCIENTIFIC": <>x'' &rarr; x'' + 1e10</>,
-            "AMBIGOUS": <>x'' &rarr; x'' + 10?</>,
+            "AMBIGUOUS": <>x'' &rarr; x'' + 10?</>,
         },
         unlockCost: 1e15, //??? check pricing
         applyCost: 200e6,
@@ -252,7 +252,7 @@ const formulaList = {
         descriptions: {
             "LETTER": <>x &rarr; x + 50P</>,
             "SCIENTIFIC": <>x &rarr; x + 5e19</>,
-            "AMBIGOUS": <>x &rarr; x + 50?</>,
+            "AMBIGUOUS": <>x &rarr; x + 50?</>,
         },
         unlockCost: 4e17, //*48
         applyCost: 0, 
@@ -336,7 +336,7 @@ const formulaList = {
         descriptions: {
             "LETTER": <>x &rarr; 10Q * x''' * x'' / x'</>,
             "SCIENTIFIC": <>x &rarr; 1e16 * x''' * x'' / x'</>,
-            "AMBIGOUS": <>x &rarr; 10? * x''' * x'' / x'</>,
+            "AMBIGUOUS": <>x &rarr; 10? * x''' * x'' / x'</>,
         },
         unlockCost: 2e15,
         applyCost: 0,
@@ -350,7 +350,7 @@ const formulaList = {
         descriptions: {
             "LETTER": <>x' &rarr; 5Q * x'''</>,
             "SCIENTIFIC": <>x' &rarr; 5e15 * x'''</>,
-            "AMBIGOUS": <>x' &rarr; 5? * x'''</>,
+            "AMBIGUOUS": <>x' &rarr; 5? * x'''</>,
         },
         unlockCost: 120e18,
         applyCost: 1e10,
@@ -384,7 +384,7 @@ const formulaList = {
         descriptions: {
             "LETTER": <>x' &rarr; x' + 30S</>,
             "SCIENTIFIC": <>x' &rarr; x' + 3e22</>,
-            "AMBIGOUS": <>x' &rarr; x' + 30?</>,
+            "AMBIGUOUS": <>x' &rarr; x' + 30?</>,
         },
         unlockCost: 2e23, //*96K
         applyCost: 1e15,
@@ -397,7 +397,7 @@ const formulaList = {
         descriptions: {
             "LETTER": <>x'' &rarr; x'' + 40P</>,
             "SCIENTIFIC": <>x'' &rarr; x'' + 4e19</>,
-            "AMBIGOUS": <>x'' &rarr; x' + 40?</>,
+            "AMBIGUOUS": <>x'' &rarr; x' + 40?</>,
         },
         unlockCost: 25e24, //*8K
         applyCost: 1e21,
@@ -410,7 +410,7 @@ const formulaList = {
         descriptions: {
             "LETTER": <>x''' &rarr; x''' * sqrt(300S - x''') / 500B</>,
             "SCIENTIFIC": <>x''' &rarr; x''' * sqrt(3e23 - x''') / 5e11</>,
-            "AMBIGOUS": <>x''' &rarr; x''' * sqrt(300? - x''') / 500?</>,
+            "AMBIGUOUS": <>x''' &rarr; x''' * sqrt(300? - x''') / 500?</>,
         },
         unlockCost: 5e30,
         applyCost: 1e9,
@@ -425,7 +425,7 @@ const formulaList = {
         descriptions: {
             "LETTER": <>x''' &rarr; x''' + 5S</>,
             "SCIENTIFIC": <>x''' &rarr; x''' + 5e21</>,
-            "AMBIGOUS": <>x''' &rarr; x''' + 5?</>,
+            "AMBIGUOUS": <>x''' &rarr; x''' + 5?</>,
         },
         unlockCost: 900e33,
         applyCost: 100e33,

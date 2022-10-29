@@ -6,7 +6,7 @@ export const makeShowPopup = (popupState, setPopupState) => {
             setPopupState({text: text, options: options, callback: callback, visible: true})
         },
         alert: (text, callback)=>{
-            setPopupState({text: text, options: ["OK"], callback: callback, visible: true})
+            setPopupState({text: text, options: ["CLOSE"], callback: callback, visible: true})
         },
         confirm: (text, callback)=>{
             const mycallback = (option)=>(option==="YES" && callback(option))
