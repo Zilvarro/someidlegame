@@ -17,6 +17,7 @@ function App() {
   const [ , setTimer ] = useState()
   const [ , setTotalClicks ] = useState(0) 
   const [ popupState , setPopupState ] = useState({text: "", options: [], visible:false}) 
+  const [ iconState , setIconState ] = useState(0) 
   
   const [ state, updateState] = useReducer(saveReducer, playTime === 0 && getSaveGame())
 
@@ -35,9 +36,24 @@ function App() {
       updateState({name: "idle", popup:popup, playTime:playTime})
   },[playTime, popup])
 
+  useEffect(() => {
+    let link = document.querySelector("link[rel~='icon']");
+    if (!link) {
+      link = document.createElement('link');
+      link.rel = 'icon';
+      document.getElementsByTagName('head')[0].appendChild(link);
+    }
+    const filenames = ["IconNeutral.png", "IconFormulas.png", "IconAlpha.png", "IconNeutral.png"]
+    link.href = window.location.href + "/" + filenames[iconState]
+  }, [iconState]);
+
   const selectTab = (tabKey)=>{
     updateState({name: "selectTab", tabKey: tabKey})
     setTotalClicks((x)=>x+1)
+  }
+
+  if (iconState !== state.progressionLayer + 1) {
+    setIconState(state.progressionLayer + 1)
   }
 
   return (<>
