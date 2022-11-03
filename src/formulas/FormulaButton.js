@@ -1,7 +1,8 @@
 import {spaces,formatNumber} from '../utilities'
 import formulaList from './FormulaDictionary'
+import {getInventorySize} from '../savestate'
 
-export default function FormulaButton({state, popup, updateState, setTotalClicks, formulaName, context}) {
+export default function FormulaButton({state, popup, updateState, setTotalClicks, formulaName, context, myIndex}) {
     const applyFormula = (formula,evt)=>{
         const newValue = formula.applyFormula(state.xValue, state)
         if (0.9999 * state.xValue[formula.targetLevel] > newValue) {
@@ -31,9 +32,16 @@ export default function FormulaButton({state, popup, updateState, setTotalClicks
     }
 
     var formula = formulaList[formulaName]
+
+    const toggleAutoApply = (event)=>{
+        event.preventDefault()
+        updateState({name:"toggleAutoApply", index:myIndex})
+    }
+
     if (!formula) { //--- BUTTON
         return ( 
-            <tr><td align="left" className="block" style={{width:"auto"}}>
+            <tr>{state.alphaUpgrades.AAPP && <td><input onClick={toggleAutoApply} style={{transform:"scale(1.2)"}} type="checkbox" checked={state.autoApply[myIndex]} readOnly></input></td>}
+                <td align="left" className="block" style={{width:"auto"}}>
                 <button className="fbutton" style={{backgroundColor:"#ffffff"}} disabled={true}>-------</button>
             </td><td>
             </td><td>
@@ -42,7 +50,7 @@ export default function FormulaButton({state, popup, updateState, setTotalClicks
         )
     } 
 
-    var tooltip = formula.applyCost >= formula.applyNeed ? "Cost: x=" + formatNumber(formula.applyCost, state.settings.numberFormat) : "Needed: x=" + formatNumber(formula.applyNeed, state.settings.numberFormat)
+    var tooltip = formula.applyCost >= formula.applyNeed ? (state.alphaUpgrades.FREF ? "Need":"Cost") + ": x=" + formatNumber(formula.applyCost, state.settings.numberFormat) : "Need: x=" + formatNumber(formula.applyNeed, state.settings.numberFormat)
     const delimiter = state.settings.shopPrices ? " / " : "\n"
     tooltip += formula && formula.explanation ? delimiter + formula.explanation : ""
 
@@ -71,7 +79,6 @@ export default function FormulaButton({state, popup, updateState, setTotalClicks
             break
         default:
     }
-
 
     formula.unlockMultiplier = 1
     if (formula.isBasic) {
@@ -118,16 +125,18 @@ export default function FormulaButton({state, popup, updateState, setTotalClicks
 
     if (context === "my") { //APPLY BUTTON
         return (
-            <tr><td align="left" className="block" style={{width:"auto"}}>
+            <tr>{state.alphaUpgrades.AAPP && <td><input onClick={toggleAutoApply} style={{transform:"scale(1.2)"}} type="checkbox" checked={state.autoApply[myIndex]} readOnly></input></td>}
+                <td align="left" className="block" style={{width:"auto"}}>
                 <button className="fbutton" title={tooltip} style={{backgroundColor: buttonColor}}
-                    disabled={(formula.applyNeed && state.xValue[0] < formula.applyNeed) || (formula.applyCost && state.xValue[0] < formula.applyCost)}
+                    disabled={!state.formulaUnlocked[formulaName] || (formula.applyNeed && state.xValue[0] < formula.applyNeed) || (formula.applyCost && state.xValue[0] < formula.applyCost)}
                     onClick={(evt)=>applyFormula(formula,evt)} onMouseDown={mouseHandler} onMouseUp={mouseHandler} onMouseLeave={mouseHandler} onTouchStart={mouseHandler} onTouchEnd={mouseHandler}>
                     {formula.description}
                 </button>
             </td><td>
-                {!!formula.applyCost && state.xValue[0] < formula.applyCost && <>{spaces()}Cost: x={formatNumber(formula.applyCost, state.settings.numberFormat)}</> }
-                {!!formula.applyNeed && state.xValue[0] < formula.applyNeed && <>{spaces()}Needed: x={formatNumber(formula.applyNeed, state.settings.numberFormat)}</>}
-                {state.xValue[0] >= formula.applyNeed && state.xValue[0] >= formula.applyCost && !state.formulaUsed[formulaName] && <>{spaces()}Click to apply formula!</>}
+                {!state.formulaUnlocked[formulaName] && <>{spaces()}Unlocks at x={formatNumber(formula.unlockCost * formula.unlockMultiplier, state.settings.numberFormat)}</> }
+                {state.formulaUnlocked[formulaName] && !!formula.applyCost && state.xValue[0] < formula.applyCost && <>{spaces()}{state.alphaUpgrades.FREF ? "Need":"Cost"}: x={formatNumber(formula.applyCost, state.settings.numberFormat)}</> }
+                {state.formulaUnlocked[formulaName] && !!formula.applyNeed && state.xValue[0] < formula.applyNeed && <>{spaces()}Need: x={formatNumber(formula.applyNeed, state.settings.numberFormat)}</>}
+                {state.formulaUnlocked[formulaName] && state.xValue[0] >= formula.applyNeed && state.xValue[0] >= formula.applyCost && !state.formulaUsed[formulaName] && <>{spaces()}Click to apply formula!</>}
                 {!state.formulaUsed[formulaName] && <>{spaces()}<button
                     onClick={()=>discardFormula(formula)}>
                     UNEQUIP
@@ -152,7 +161,7 @@ export default function FormulaButton({state, popup, updateState, setTotalClicks
         return (
             <tr><td align="left" className="block" style={{width:"auto"}}>
                 <button title={tooltip} className="fbutton" style={{backgroundColor: buttonColor}}
-                    disabled={state.myFormulas.length >= state.inventorySize}
+                    disabled={state.myFormulas.length >= getInventorySize(state)}
                     onClick={()=>getFormula(formula)}>
                     GET {formula.description}
                 </button>
@@ -176,7 +185,7 @@ export default function FormulaButton({state, popup, updateState, setTotalClicks
             </td><td>
                 {spaces()}
             </td><td>
-                {!formula.isFree ? <>Unlock for x={formatNumber(formula.unlockCost * formula.unlockMultiplier, state.settings.numberFormat)}</> : <>First formula is free!!!</>}
+                {!formula.isFree ? <>Unlock{state.alphaUpgrades.AUNL ? "s" : ""} {state.alphaUpgrades.UREF ? "at" : "for" } x={formatNumber(formula.unlockCost * formula.unlockMultiplier, state.settings.numberFormat)}</> : <>First formula is free!!!</>}
             </td></tr>
         )
     }

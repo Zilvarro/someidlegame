@@ -1,6 +1,54 @@
 import FormulaTable from './FormulaTable'
 import ValueTable from './ValueTable'
 import {spaces,formatNumber} from '../utilities'
+import {getInventorySize, differentialTargets, alphaTarget} from '../savestate'
+
+export const shopFormulas=[
+  "x'=1",
+  "x+1",
+  "x''=1",
+  "x'''=1",
+  "x'''=4",
+  "x'''=sqrt(2*#R)",
+  "x'''=(#U^2)/12",
+  "x''=2",
+  "x+5",
+  "x''=3",
+  "x'=24",
+  "x'+x''+x'''",
+  "x''=#U",
+  "x+10",
+  "x'+1",
+  "x+20",
+  "x'=1000*x''",
+  "x+50",
+  "x+100",
+  "x''+x'''^2",
+
+  "x+1000",
+  "x'+3",
+  "x''=sqrt(x)",
+  "x+x'",
+  "x'+220",
+  "x'''+1",
+  "x'=420K",
+  "x''+1",
+  "x+50M",
+  "x''+130",
+  "x=10Q*x'''*x''/x'",
+
+  "x'+x^0.6",
+  "x''+10B",
+  "x'=5Q*x'''",
+  "x'''+log2(x)^2",
+  "x+50P",
+
+  "x'''+log2(#F/#E)^13",
+  "x'+30S",
+  "x''+40P",
+  "x'''*sqrt(300S-x''')/500B",
+  "x'''+5S",
+]
 
 export default function FormulaScreen({state, updateState, setTotalClicks, popup}) {
     const resetXValues = ()=>{
@@ -28,58 +76,17 @@ export default function FormulaScreen({state, updateState, setTotalClicks, popup
       })
     }
 
-    const shopFormulas=[
-      "x'=1",
-      "x+1",
-      "x''=1",
-      "x'''=1",
-      "x'''=4",
-      "x'''=sqrt(2*#R)",
-      "x'''=(#U^2)/12",
-      "x''=2",
-      "x+5",
-      "x''=3",
-      "x'=24",
-      "x'+x''+x'''",
-      "x''=#U",
-      "x+10",
-      "x'+1",
-      "x+20",
-      "x'=1000*x''",
-      "x+50",
-      "x+100",
-      "x''+x'''^2",
-  
-      "x+1000",
-      "x'+3",
-      "x''=sqrt(x)",
-      "x+x'",
-      "x'+220",
-      "x'''+1",
-      "x'=420K",
-      "x''+1",
-      "x+50M",
-      "x''+130",
-      "x=10Q*x'''*x''/x'",
-  
-      "x'+x^0.6",
-      "x''+10B",
-      "x'=5Q*x'''",
-      "x'''+log2(x)^2",
-      "x+50P",
+    const memorize = ()=>{
+      updateState({name: "memorize"})
+    }
 
-      "x'''+log2(#F/#E)^13",
-      "x'+30S",
-      "x''+40P",
-      "x'''*sqrt(300S-x''')/500B",
-      "x'''+5S",
-    ]
-  
-    const differentialTargets = [30e3,30e9,30e21,Infinity]
+    const remember = ()=>{
+      updateState({name: "remember"})
+    }
+
     const differentialTarget = differentialTargets[state.highestXTier]
-    const alphaTarget = 30e33
   
-    const inventoryFormulas = Object.assign(new Array(state.inventorySize).fill(), state.myFormulas)
+    const inventoryFormulas = Object.assign(new Array(getInventorySize(state)).fill(), state.myFormulas)
 
     const progressBarWidth = Math.min(100 * Math.log10(Math.max(state.xValue[0],1)) / Math.log10(alphaTarget),99).toFixed(0) + "%"
 
@@ -113,11 +120,19 @@ export default function FormulaScreen({state, updateState, setTotalClicks, popup
         <p>&nbsp;</p><h2>My Formulas</h2>
             <FormulaTable state={state} updateState={updateState} popup={popup} setTotalClicks={setTotalClicks} formulaNames={inventoryFormulas} context="my"/>
             {state.mileStoneCount >= 1 && state.mileStoneCount <=2 && 
-            <p>Hint: You can apply formulas repeatedly by holding the button or using Enter</p>
+              <p>Hint: You can apply formulas repeatedly by holding the button or using Enter</p>
             }
+            {state.alphaUpgrades.MEEQ && <>
+              <p>
+                <button onClick={memorize} title={"Saves equip layout so you can use it again later"}>Memorize</button>
+                {spaces()}<button onClick={remember} title={"Loads saved equip layout for current S-Reset"}>Remember</button>
+              </p>
+            </>}
         </div><div className="column">
-        <h2 style={{marginTop:"0px"}}>Shop {state.myFormulas.length >= state.inventorySize && <>{spaces()}[FULL INVENTORY]</>}</h2>
+        <h2 style={{marginTop:"0px"}}>Shop {state.myFormulas.length >= getInventorySize(state) && <>{spaces()}[FULL INVENTORY]</>}</h2>
+          <div style={{overflow:"auto", height:"70vh"}}>
             <FormulaTable state={state} updateState={updateState} popup={popup} setTotalClicks={setTotalClicks} formulaNames={shopFormulas}/>
+          </div>
         </div></div>
     </div>)
 }

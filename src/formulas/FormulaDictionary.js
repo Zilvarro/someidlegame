@@ -343,7 +343,7 @@ const formulaList = {
         applyNeed: 1e9,
         targetLevel: 0,
         effectLevel: 3,
-        applyFormula: (x)=>(1e16*x[3]*x[2]/x[1]),
+        applyFormula: (x)=>(x[1] === 0 ? NaN : 1e16*x[3]*x[2]/x[1]),
     },
     "x'=5Q*x'''": {
         formulaName: "x'=5Q*x'''",
@@ -366,7 +366,7 @@ const formulaList = {
         applyCost: 5e6,
         applyNeed: 0,
         targetLevel: 3,
-        applyFormula: (x)=>(x[3] + Math.pow(Math.log2(x[0]),2)),
+        applyFormula: (x)=>(x[0] === 0 ? NaN : x[3] + Math.pow(Math.log2(x[0]),2)),
         explanation: "log2 is the base 2 logarithm"
     },
     "x'''+log2(#F/#E)^13": {
@@ -376,7 +376,7 @@ const formulaList = {
         applyCost: 1e20,
         applyNeed: 0,
         targetLevel: 3,
-        applyFormula: (x,state)=>(x[3] + Math.pow(Math.log2(state.formulaApplyCount / state.myFormulas.length),13)),
+        applyFormula: (x,state)=>(state.formulaApplyCount === 0 ? NaN : x[3] + Math.pow(Math.log2(state.formulaApplyCount / state.myFormulas.length),13)),
         explanation: "Boosted by formula applications (since S-Reset). Diminished by number of equipped formulas.",
     },
     "x'+30S": {

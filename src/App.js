@@ -59,7 +59,7 @@ function App() {
   return (<>
     <AutoSave saveState={state}/>
     <PopupDialog popupState={popupState} setPopupState={setPopupState}/>
-    <h1 style={{fontSize: "40px", marginLeft: "10px", marginBottom: "10px", textAlign:"left"}}>x={formatNumber(state.xValue[0], state.settings.numberFormat, 8)}</h1>
+    <h1 style={{fontSize: "40px", marginLeft: "10px", marginBottom: "10px", textAlign:"left"}}>x={formatNumber(state.xValue[0], state.settings.numberFormat, 6)}</h1>
     <TabContent selectedTabKey={state.selectedTabKey}>
       <FormulaScreen tabKey="FormulaScreen" popup={popup} state={state} updateState={updateState} setTotalClicks={setTotalClicks}/>
       <AlphaScreen tabKey="AlphaScreen" popup={popup} state={state} updateState={updateState} setTotalClicks={setTotalClicks}/>
@@ -67,6 +67,7 @@ function App() {
       <LetterScreen tabKey="LetterScreen" state={state}/>
       <OptionScreen tabKey="OptionScreen" popup={popup} state={state} updateState={updateState} setTotalClicks={setTotalClicks}/>
     </TabContent>
+    <p>&nbsp;</p>
     <p>&nbsp;</p>
     <footer>
     <span style={{display:"inline-block"}}>

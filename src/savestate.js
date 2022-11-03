@@ -1,6 +1,7 @@
 import {milestoneList} from './AchievementScreen'
 import { notify } from './utilities'
 import formulaList from './formulas/FormulaDictionary'
+import {shopFormulas} from './formulas/FormulaScreen'
 
 export const version = "0.08"
 //TODO disable Alpha screen without corresponding milestone
@@ -15,6 +16,8 @@ export const newSave = {
     formulaBought: {},
     formulaUsed: {},
     myFormulas: [],
+    autoApply: [false,false,false,false,false],
+    equipLayouts: [[],[],[],[]],
     anyFormulaUsed: true,
     xResetCount: 0,
     formulaUnlockCount: 0,
@@ -22,16 +25,19 @@ export const newSave = {
     maxAlpha: 0,
     alpha: 0,
     tickFormula: false,
-    inventorySize: 3,
     idleMultiplier: 1,
     boughtAlpha: [false,false],
     alphaUpgrades: {},
+    autoUnlockIndex: 0,
     saveTimeStamp: 0,
     calcTimeStamp: 0,
     mileStoneCount: 0,
     holdAction: null,
     justLaunched: true,
     lastPlayTime: 0,
+    currentAlphaTime: 0,
+    bestAlphaTime: Infinity,
+    passiveAlphaTime: 0,
     settings: {
         valueReduction: "CONFIRM",
         offlineProgress: "ON",
@@ -45,6 +51,9 @@ export const newSave = {
         colorizedFormulas: "NEW",
     }
 }
+
+export const differentialTargets = [30e3,30e9,30e21,Infinity]
+export const alphaTarget = 30e33
 
 export const getSaveGame = ()=>{
     const savedgame = window.localStorage.getItem('idleformulas')
@@ -83,6 +92,10 @@ export const getStartingX = (state)=>{
     return 10*Math.pow(state.maxAlpha,2);
 }
 
+export const getInventorySize = (state)=>{
+    return state.alphaUpgrades.SLOT ? 4 : 3
+}
+
 export const save = (state)=>{
     state.version = version
     state.saveTimeStamp = Date.now()
@@ -90,13 +103,53 @@ export const save = (state)=>{
     window.localStorage.setItem('idleformulas', currentgame)
 }
 
-const applyFormulaToState = (state, formula, forceApply, updateState)=>{
+const performAlphaReset = (state)=>{
+    state.alpha++
+    state.maxAlpha++
+    state.progressionLayer = Math.max(state.progressionLayer, 1)
+    state.bestAlphaTime = Math.min(state.currentAlphaTime, state.bestAlphaTime)
+    state.currentAlphaTime = 0
+    state.highestXTier = 0
+    state.xResetCount = 0
+    state.formulaApplyCount = 0
+    state.autoUnlockIndex = 0
+    if (state.alphaUpgrades.AREM) {
+        state.myFormulas = structuredClone(state.equipLayouts[state.highestXTier])
+        state.formulaBought = state.myFormulas.reduce((a,v)=>({...a, [v]:true}),{})
+    }
+    return state
+}
+
+const performShopReset = (state)=>{
+    state.xValue = [getStartingX(state),0,0,0]
+    state.formulaUsed = {}
+    state.anyFormulaUsed = false
+    state.formulaBought = {}
+    state.formulaUnlocked = {}
+    state.myFormulas = []
+    state.formulaUnlockCount = 0
+    state.xResetCount = 0
+    state.formulaApplyCount = 0
+    state.autoUnlockIndex = 0
+    return state
+}
+
+const upgradeXTier = (state)=>{
+    state.highestXTier++
+    if (state.alphaUpgrades.AREM) {
+        state.myFormulas = structuredClone(state.equipLayouts[state.highestXTier])
+        state.formulaBought = state.myFormulas.reduce((a,v)=>({...a, [v]:true}),{})
+    }
+    return state
+}
+
+const applyFormulaToState = (state, formula, forceApply)=>{
     //Can't afford
-    if (!forceApply && (state.xValue[0] < formula.applyCost || state.xValue[0] < formula.applyNeed))
+    if (state.xValue[0] < formula.applyCost || state.xValue[0] < formula.applyNeed)
         return false
 
     const actuallyApply = () => {
-        if (state.xValue[formula.targetLevel] !== newValue) { //Cost only deducted if value changes
+        if (!state.alphaUpgrades.FREF && state.xValue[formula.targetLevel] !== newValue) { //Cost only deducted if value changes
             state.xValue[0] -= formula.applyCost
         }
         state.xValue[formula.targetLevel] = formula.applyFormula(state.xValue, state)
@@ -149,12 +202,15 @@ export const saveReducer = (state, action)=>{
 
         state.lastPlayTime = action.playTime
         const timeStamp = Date.now()
-        const deltaMilliSeconds = (timeStamp - state.calcTimeStamp)
+        let deltaMilliSeconds = (timeStamp - state.calcTimeStamp)
+        
         if (deltaMilliSeconds < 120000) { //Quick Computation
+            state.currentAlphaTime += deltaMilliSeconds
             for(let i=1; i<state.xValue.length; i++) {
                 state.xValue[i-1]+= deltaMilliSeconds * state.idleMultiplier * state.xValue[i] / 1000
             }
         } else if (state.settings.offlineProgress === "ON" || (state.settings.offlineProgress === "ACTIVE" && !state.justLaunched)) { //Offline Progress
+            state.currentAlphaTime += deltaMilliSeconds
             const integrationFactor = [1,1,1/2,1/6,1/24] //one over factorial
             const xBefore = state.xValue[0]
             for(let j=0; j<state.xValue.length; j++) { //tier to be calculated
@@ -172,6 +228,7 @@ export const saveReducer = (state, action)=>{
                 }
             }
         } else if (state.settings.offlineProgressPopup === "ON" || (state.settings.offlineProgressPopup === "LAUNCH" && state.justLaunched)){
+            deltaMilliSeconds = 0 //prevents further progress
             popup.alert("You were away for " + Math.floor(deltaMilliSeconds / 60000) + " minutes.")
         }
 
@@ -188,6 +245,12 @@ export const saveReducer = (state, action)=>{
             }
         }
 
+        for (let i = 0; i<5; i++) {
+            if (state.autoApply[i] && state.myFormulas.length > i) {
+                applyFormulaToState(state,formulaList[state.myFormulas[i]],false)
+            }
+        }
+        
         //Check if next milestone is reached
         if (milestoneList[state.mileStoneCount]?.check(state)){
             notify.success("New Milestone", milestoneList[state.mileStoneCount].name)
@@ -195,12 +258,44 @@ export const saveReducer = (state, action)=>{
         }
 
         //Kick out formulas that do not exist anymore (due to update etc)
-        if (state.justLaunched)
+        if (state.justLaunched) {
             state.myFormulas = state.myFormulas.filter(formulaName => formulaList[formulaName]);
+            state.holdAction = null
+        }
 
         state.calcTimeStamp = timeStamp
         state.justLaunched = false
         state.tickFormula=false
+
+        //Auto Unlocker
+        if (state.alphaUpgrades.AUNL  && state.autoUnlockIndex < shopFormulas.length) {
+            let formula = formulaList[shopFormulas[state.autoUnlockIndex]]
+            if (formula.effectLevel <= state.highestXTier && (state.xValue[0] >= formula.unlockCost * formula.unlockMultiplier || formula.isFree)) {
+                state.formulaUnlocked[formula.formulaName] = true
+                state.formulaUnlockCount++
+            }
+            while (state.autoUnlockIndex < shopFormulas.length && (state.formulaUnlocked[formula.formulaName] || formula.effectLevel > state.highestXTier)) {
+                state.autoUnlockIndex++
+                formula = formulaList[shopFormulas[state.autoUnlockIndex]]
+            }
+        }
+
+        //Passive Alpha
+        if (state.alphaUpgrades.PALP) {
+            state.passiveAlphaTime += deltaMilliSeconds
+            if (state.passiveAlphaTime >= 10 * state.bestAlphaTime) {
+                state.alpha += Math.floor(state.passiveAlphaTime / state.bestAlphaTime / 10)
+                state.passiveAlphaTime %= 10 * state.bestAlphaTime
+            }
+        }
+
+        //Auto Resetters
+        if (state.alphaUpgrades.ARES && state.xValue[0] >= alphaTarget) {
+            performAlphaReset(state)
+        } else if (state.alphaUpgrades.SRES && state.xValue[0] >= differentialTargets[state.highestXTier]) {
+            upgradeXTier(state)
+            performShopReset(state)
+        }
 
         //Autosave
         const lastSaveMilliseconds = (timeStamp - state.saveTimeStamp)
@@ -242,7 +337,8 @@ export const saveReducer = (state, action)=>{
         }
         break;
     case "unlockFormula":
-        state.xValue[0] -= action.formula.isFree ? 0 : action.formula.unlockCost * action.formula.unlockMultiplier
+        if (!state.alphaUpgrades.UREF)
+            state.xValue[0] -= action.formula.isFree ? 0 : action.formula.unlockCost * action.formula.unlockMultiplier
         state.formulaUnlocked[action.formula.formulaName] = true
         state.formulaUnlockCount++
         break;
@@ -261,40 +357,15 @@ export const saveReducer = (state, action)=>{
         state.xResetCount++
         break;
     case "resetShop":
-        state.xValue = [getStartingX(state),0,0,0]
-        state.formulaUsed = {}
-        state.anyFormulaUsed = false
-        state.formulaBought = {}
-        state.formulaUnlocked = {}
-        state.myFormulas = []
-        state.formulaUnlockCount = 0
-        state.xResetCount = 0
-        state.formulaApplyCount = 0
+        performShopReset(state)
         break;
     case "upgradeXTier":
-        state.highestXTier++
+        upgradeXTier(state)
         break;
     case "alphaReset":
-        state.alpha++
-        state.maxAlpha++
-        state.progressionLayer = Math.max(state.progressionLayer, 1)
-        state.highestXTier = 0
-        state.xResetCount = 0
-        state.formulaApplyCount = 0
+        performAlphaReset(state)
         break;
     case "alphaUpgrade":
-        // switch (action.id) {
-        // case 0:
-        //     state.alpha -= 1
-        //     state.inventorySize = 4
-        //     break;
-        // case 1:
-        //     state.alpha -= 2
-        //     state.idleMultiplier = 2
-        //     break;
-        // default:
-        //     console.error("Alpha Upgrade " + action.upgrade.id + " not found.")
-        // }
         if (state.alpha >= action.upgrade.cost) {
             state.alpha-=action.upgrade.cost
             state.alphaUpgrades[action.upgrade.id] = true
@@ -306,6 +377,20 @@ export const saveReducer = (state, action)=>{
         } else {
             state.xValue[0] = 1e30
         }
+        break;
+    case "memorize":
+        state.equipLayouts[state.highestXTier] = structuredClone(state.myFormulas)
+        break;
+    case "remember":
+        state.myFormulas = structuredClone(state.equipLayouts[state.highestXTier])
+        state.formulaBought = state.myFormulas.reduce((a,v)=>({...a, [v]:true}),{})
+        break;
+    case "toggleAutoApply":
+        const checked = state.autoApply[action.index]
+        if (!state.alphaUpgrades.SAPP) {
+            state.autoApply = [false,false,false,false,false]
+        }
+        state.autoApply[action.index] = !checked
         break;
     default:
         console.error("Action " + action.name + " not found.")
