@@ -2,14 +2,17 @@ import {milestoneList} from './AchievementScreen'
 import { notify } from './utilities'
 import formulaList from './formulas/FormulaDictionary'
 import {shopFormulas} from './formulas/FormulaScreen'
+import * as progresscalculation from './progresscalculation'
 
-export const version = "0.08"
+export const version = "0.09"
 //TODO disable Alpha screen without corresponding milestone
 export const newSave = {
     version: version,
     progressionLayer: 0,
     selectedTabKey: "FormulaScreen",
     xValue: [0,0,0,0],
+    productionBonus: [1,1,1,1],
+    formulaEfficiency: [1,1,1,1],
     xRecord: 0,
     highestXTier: 0,
     formulaUnlocked: {},
@@ -143,57 +146,6 @@ const upgradeXTier = (state)=>{
     return state
 }
 
-const applyFormulaToState = (state, formula, forceApply)=>{
-    //Can't afford
-    if (state.xValue[0] < formula.applyCost || state.xValue[0] < formula.applyNeed)
-        return false
-
-    const actuallyApply = () => {
-        if (!state.alphaUpgrades.FREF && state.xValue[formula.targetLevel] !== newValue) { //Cost only deducted if value changes
-            state.xValue[0] -= formula.applyCost
-        }
-        state.xValue[formula.targetLevel] = formula.applyFormula(state.xValue, state)
-        state.formulaUsed[formula.formulaName] = true
-        state.anyFormulaUsed = true
-        state.formulaApplyCount++
-    }
-
-    //Would lower the value
-    const newValue = formula.applyFormula(state.xValue, state)
-    if (0.9999 * state.xValue[formula.targetLevel] > newValue) {
-        switch (state.settings.valueReduction) {
-            case "CONFIRM":
-                if (!forceApply) {
-                    // popup.confirm("This will lower your X value. Are you sure?\n(You can skip this pop-up by using Shift+Click)",actuallyApply)
-                    // return false
-
-                    // if (!window.confirm("This will lower your X value. Are you sure?\n(You can skip this pop-up by using Shift+Click)")) {
-                        return false
-                    // }
-                }
-                break;
-            case "WARNING":
-                if (!forceApply) {
-                    notify.warning("Value would be reduced", "Shift+Click if this is intentional")
-                    return false
-                }
-                break;
-            case "PREVENT":
-                if (!forceApply)
-                    return false
-                break;
-            case "NEVER":
-                return false
-            case "APPLY":
-                break;
-            default:
-                return false
-        }
-    }
-    actuallyApply()
-    return true
-}
-
 export const saveReducer = (state, action)=>{
     const popup = action.popup
     switch(action.name){
@@ -211,14 +163,8 @@ export const saveReducer = (state, action)=>{
             }
         } else if (state.settings.offlineProgress === "ON" || (state.settings.offlineProgress === "ACTIVE" && !state.justLaunched)) { //Offline Progress
             state.currentAlphaTime += deltaMilliSeconds
-            const integrationFactor = [1,1,1/2,1/6,1/24] //one over factorial
             const xBefore = state.xValue[0]
-            for(let j=0; j<state.xValue.length; j++) { //tier to be calculated
-                for(let k=j+1; k<state.xValue.length; k++) { //higher tiers that affect it
-                    //~2% time penalty on offline progress to hopefully ensure offline is not better than online idling
-                    state.xValue[j]+= Math.pow(deltaMilliSeconds / 1020, k-j) * state.idleMultiplier * state.xValue[k] * integrationFactor[k-j]
-                }
-            }
+            state = progresscalculation.applyIdleProgress(state, deltaMilliSeconds)
             const factor = state.xValue[0] / xBefore
             if (state.settings.offlineProgressPopup === "ON" || (state.settings.offlineProgressPopup === "LAUNCH" && state.justLaunched)){
                 if (factor && factor !== Infinity && factor > 1.01 ){
@@ -238,7 +184,7 @@ export const saveReducer = (state, action)=>{
                 state.holdAction.delay--
             } else {
             const formula = formulaList[state.holdAction.formulaName]
-                const isApplied = applyFormulaToState(state, formula, false)
+                const isApplied = progresscalculation.applyFormulaToState(state, formula, false)
                 if (!isApplied) {
                     state.holdAction = null
                 }
@@ -247,7 +193,7 @@ export const saveReducer = (state, action)=>{
 
         for (let i = 0; i<5; i++) {
             if (state.autoApply[i] && state.myFormulas.length > i) {
-                applyFormulaToState(state,formulaList[state.myFormulas[i]],false)
+                progresscalculation.applyFormulaToState(state,formulaList[state.myFormulas[i]],false, true)
             }
         }
         
@@ -332,7 +278,7 @@ export const saveReducer = (state, action)=>{
         break;
     case "applyFormula":
         if (!state.tickFormula) {
-            applyFormulaToState(state, action.formula, action.forceApply)
+            progresscalculation.applyFormulaToState(state, action.formula, action.forceApply)
             state.tickFormula = true
         }
         break;
@@ -372,11 +318,8 @@ export const saveReducer = (state, action)=>{
         }
         break;
     case "cheat":
-        if (action.idleMultiplier) {
-            state.idleMultiplier = action.idleMultiplier
-        } else {
-            state.xValue[0] = 1e30
-        }
+        state.idleMultiplier = 1
+        state.alpha++
         break;
     case "memorize":
         state.equipLayouts[state.highestXTier] = structuredClone(state.myFormulas)

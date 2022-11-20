@@ -38,11 +38,45 @@ export const milestoneList = [
     check: (state)=>(state.maxAlpha >= 1),
     tier: 1,
     teased: 0
-  // },{
-  //   id:"AlphaUpgrades",
-  //   name:"Alpha Chad",
-  //   description:<>Get all Alpha Upgrades</>,
-  //   check: (state)=>(false),
+  },{
+    id:"Research",
+    name:"Research",
+    description:<>Do some Research</>,
+    check: (state)=>(false),
+    tier: 1,
+  },{
+    id:"Challenge",
+    name:"Challenge",
+    description:<>Clear a Challenge</>,
+    check: (state)=>(false),
+    tier: 1,
+  },{
+    id:"AllUpgrades",
+    name:"All Alpha Upgrades",
+    description:<>Buy all Alpha Upgrades</>,
+    check: (state)=>(false),
+    tier: 1,
+  },{
+    id:"AllChallenges",
+    name:"All Challenges",
+    description:<>Clear all Challenges</>,
+    check: (state)=>(false),
+    tier: 1,
+  },{
+    id:"Much Alpha",
+    name:"Much Alpha",
+    description:<>Reach &alpha; = TBD</>,
+    check: (state)=>(false),
+    tier: 1,
+  },{
+    id:"World Reset",
+    name:"Essence of the World",
+    description:<>Perform a World Reset</>,
+    check: (state)=>(false),
+    teaseName:"?? ?? ??????",
+    teaseDescription:<>??????? ?? ???????</>,
+    tier: 2,
+    teased: 1,
   },
 ]
 

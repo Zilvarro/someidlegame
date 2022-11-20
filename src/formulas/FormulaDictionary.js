@@ -8,7 +8,7 @@ const formulaList = {
         applyNeed: 0,
         targetLevel: 0,
         isBasic: true,
-        applyFormula: (x)=>(x[0] + 1),
+        applyFormula: (eff, x)=>(x[0] + 1 * eff),
     },
     "x+5": {
         formulaName: "x+5",
@@ -17,7 +17,7 @@ const formulaList = {
         applyCost: 0,
         applyNeed: 20,
         targetLevel: 0,
-        applyFormula: (x)=>(x[0] + 5),
+        applyFormula: (eff, x)=>(x[0] + 5 * eff),
     },
     "x+10": {
         formulaName: "x+10",
@@ -26,7 +26,7 @@ const formulaList = {
         applyCost: 0,
         applyNeed: 100,
         targetLevel: 0,
-        applyFormula: (x)=>(x[0] + 10),
+        applyFormula: (eff, x)=>(x[0] + 10 * eff),
     },
     "x+20": {
         formulaName: "x+20",
@@ -35,7 +35,7 @@ const formulaList = {
         applyCost: 0,
         applyNeed: 300,
         targetLevel: 0,
-        applyFormula: (x)=>(x[0] + 20),
+        applyFormula: (eff, x)=>(x[0] + 20 * eff),
     },
     "x+50": {
         formulaName: "x+50",
@@ -44,7 +44,7 @@ const formulaList = {
         applyCost: 0,
         applyNeed: 800,
         targetLevel: 0,
-        applyFormula: (x)=>(x[0] + 50),
+        applyFormula: (eff, x)=>(x[0] + 50 * eff),
     },
     "x+100": {
         formulaName: "x+100",
@@ -53,7 +53,7 @@ const formulaList = {
         applyCost: 0,
         applyNeed: 2000,
         targetLevel: 0,
-        applyFormula: (x)=>(x[0] + 100),
+        applyFormula: (eff, x)=>(x[0] + 100 * eff),
     },
 
     //Tier 2 Formulas
@@ -65,7 +65,7 @@ const formulaList = {
         applyNeed: 0,
         targetLevel: 1,
         isBasic: true,
-        applyFormula: (x)=>(1),
+        applyFormula: (eff, x)=>(1 * eff),
     },
     "x'=24": {
         formulaName: "x'=24",
@@ -74,7 +74,7 @@ const formulaList = {
         applyCost: 30,
         applyNeed: 0,
         targetLevel: 1,
-        applyFormula: (x)=>(24),
+        applyFormula: (eff, x)=>(24 * eff),
     },
     "x'+1": {
         formulaName: "x'+1",
@@ -83,7 +83,7 @@ const formulaList = {
         applyCost: 50,
         applyNeed: 0,
         targetLevel: 1,
-        applyFormula: (x)=>(x[1] + 1),
+        applyFormula: (eff, x)=>(x[1] + 1 * eff),
     },
     "x+1000": {
         formulaName: "x+1000",
@@ -92,7 +92,7 @@ const formulaList = {
         applyCost: 0,
         applyNeed: 10000,
         targetLevel: 0,
-        applyFormula: (x)=>(x[0] + 1000),
+        applyFormula: (eff, x)=>(x[0] + 1000 * eff),
     },
     "x'+3": {
         formulaName: "x'+3",
@@ -101,7 +101,7 @@ const formulaList = {
         applyCost: 300,
         applyNeed: 0,
         targetLevel: 1,
-        applyFormula: (x)=>(x[1] + 3),
+        applyFormula: (eff, x)=>(x[1] + 3 * eff),
     },
     "x+x'": {
         formulaName: "x+x'",
@@ -111,7 +111,7 @@ const formulaList = {
         applyNeed: 10,
         targetLevel: 0,
         effectLevel: 1,
-        applyFormula: (x)=>(x[0] + x[1]),
+        applyFormula: (eff, x)=>(x[0] + x[1] * eff),
     },
     "x'+220": {
         formulaName: "x'+220",
@@ -120,7 +120,7 @@ const formulaList = {
         applyCost: 100000,
         applyNeed: 0,
         targetLevel: 1,
-        applyFormula: (x)=>(x[1] + 220),
+        applyFormula: (eff, x)=>(x[1] + 220 * eff),
     },
     "x'=420K": {
         formulaName: "x'=420K",
@@ -133,7 +133,7 @@ const formulaList = {
         applyCost: 69,
         applyNeed: 0,
         targetLevel: 1,
-        applyFormula: (x)=>(420000),
+        applyFormula: (eff, x)=>(420000 * eff),
     },
     "x+50M": {
         formulaName: "x+50M",
@@ -146,7 +146,7 @@ const formulaList = {
         applyCost: 0,
         applyNeed: 1e6,
         targetLevel: 0,
-        applyFormula: (x)=>(x[0] + 50e6),
+        applyFormula: (eff, x)=>(x[0] + 50e6 * eff),
     },
 
     //Tier 3 Formulas
@@ -158,7 +158,7 @@ const formulaList = {
         applyNeed: 0,
         targetLevel: 2,
         isBasic: true,
-        applyFormula: (x)=>(1),
+        applyFormula: (eff, x)=>(1 * eff),
     },
     "x''=2": {
         formulaName: "x''=2",
@@ -167,7 +167,7 @@ const formulaList = {
         applyCost: 100,
         applyNeed: 0,
         targetLevel: 2,
-        applyFormula: (x)=>(2),
+        applyFormula: (eff, x)=>(2 * eff),
     },
     "x''=3": {
         formulaName: "x''=3",
@@ -176,7 +176,7 @@ const formulaList = {
         applyCost: 1000,
         applyNeed: 0,
         targetLevel: 2,
-        applyFormula: (x)=>(3),
+        applyFormula: (eff, x)=>(3 * eff),
     },
     "x''=#U": {
         formulaName: "x''=#U",
@@ -185,7 +185,7 @@ const formulaList = {
         applyCost: 5000,
         applyNeed: 0,
         targetLevel: 2,
-        applyFormula: (x,state)=>(Math.floor(Math.pow(1.25,state.formulaUnlockCount))),
+        applyFormula: (eff, x,state)=>(Math.floor(Math.pow(1.25,state.formulaUnlockCount)) * eff),
         explanation: "Boosted by number of unlocked formulas.",
     },
     "x'=1000*x''": {
@@ -196,7 +196,7 @@ const formulaList = {
         applyNeed: 0,
         targetLevel: 1,
         effectLevel: 2,
-        applyFormula: (x)=>(Math.floor(1000*x[2])),
+        applyFormula: (eff, x)=>(Math.floor(1000*x[2] * eff)),
     },
     "x''=sqrt(x)": {
         formulaName: "x''=sqrt(x)",
@@ -205,7 +205,7 @@ const formulaList = {
         applyCost: 100000,
         applyNeed: 0,
         targetLevel: 2,
-        applyFormula: (x)=>(Math.floor(Math.pow(x[0],0.3))),
+        applyFormula: (eff, x)=>(Math.floor(Math.pow(x[0],0.3) * eff)),
     },
     "x''+1": {
         formulaName: "x''+1",
@@ -214,7 +214,7 @@ const formulaList = {
         applyCost: 100000,
         applyNeed: 0,
         targetLevel: 2,
-        applyFormula: (x)=>(x[2]+1),
+        applyFormula: (eff, x)=>(x[2]+1 * eff),
     },
     "x''+130": {
         formulaName: "x''+130",
@@ -223,7 +223,7 @@ const formulaList = {
         applyCost: 49e6,
         applyNeed: 0,
         targetLevel: 2,
-        applyFormula: (x)=>(x[2]+130),
+        applyFormula: (eff, x)=>(x[2]+130 * eff),
     },
     "x'+x^0.6": {
         formulaName: "x'+x^0.6",
@@ -232,7 +232,7 @@ const formulaList = {
         applyCost: 250e6,
         applyNeed: 0,
         targetLevel: 1,
-        applyFormula: (x)=>(x[1]+Math.pow(x[0],0.6)),
+        applyFormula: (eff, x)=>(x[1]+Math.pow(x[0],0.6) * eff),
     },
     "x''+10B": {
         formulaName: "x''+10B",
@@ -245,7 +245,7 @@ const formulaList = {
         applyCost: 200e6,
         applyNeed: 0,
         targetLevel: 2,
-        applyFormula: (x)=>(x[2]+10e9),
+        applyFormula: (eff, x)=>(x[2]+10e9 * eff),
     },
     "x+50P": {
         formulaName: "x+50P",
@@ -258,7 +258,7 @@ const formulaList = {
         applyCost: 0, 
         applyNeed: 100e6,
         targetLevel: 0,
-        applyFormula: (x)=>(x[0]+50e18),
+        applyFormula: (eff, x)=>(x[0]+50e18 * eff),
     },
 
     //Tier 4 Formulas
@@ -270,7 +270,7 @@ const formulaList = {
         applyNeed: 0,
         targetLevel: 3,
         isBasic: true,
-        applyFormula: (x)=>(1),
+        applyFormula: (eff, x)=>(1 * eff),
     },
     "x'''=(#U^2)/12": {
         formulaName: "x'''=(#U^2)/12",
@@ -279,7 +279,7 @@ const formulaList = {
         applyCost: 10000,
         applyNeed: 0,
         targetLevel: 3,
-        applyFormula: (x,state)=>(Math.floor(Math.pow(state.formulaUnlockCount,2)/12)),
+        applyFormula: (eff, x,state)=>(Math.floor(Math.pow(state.formulaUnlockCount,2)/12 * eff)),
         explanation: "Boosted by number of unlocked formulas.",
         
     },
@@ -290,7 +290,7 @@ const formulaList = {
         applyCost: 100,
         applyNeed: 0,
         targetLevel: 3,
-        applyFormula: (x)=>(4),
+        applyFormula: (eff, x)=>(4 * eff),
     },
     "x'''=sqrt(2*#R)": {
         formulaName: "x'''=sqrt(2*#R)",
@@ -299,7 +299,7 @@ const formulaList = {
         applyCost: 3000,
         applyNeed: 0,
         targetLevel: 3,
-        applyFormula: (x,state)=>(Math.floor(Math.sqrt(2*state.xResetCount))),
+        applyFormula: (eff, x,state)=>(Math.floor(Math.sqrt(2*state.xResetCount) * eff)),
         explanation: "Boosted by number of X-Resets (since S-Reset).",
     },
     "x'+x''+x'''": {
@@ -310,7 +310,7 @@ const formulaList = {
         applyNeed: 0,
         targetLevel: 1,
         effectLevel: 3,
-        applyFormula: (x)=>x[1]+x[2]+x[3],
+        applyFormula: (eff, x)=>x[1]+x[2] * eff+x[3] * eff,
     },
     "x''+x'''^2": {
         formulaName: "x''+x'''^2",
@@ -320,7 +320,7 @@ const formulaList = {
         applyNeed: 0,
         targetLevel: 2,
         effectLevel: 3,
-        applyFormula: (x)=>x[2]+Math.pow(x[3],2),
+        applyFormula: (eff, x)=>x[2]+Math.pow(x[3],2) * eff,
     },
     "x'''+1": {
         formulaName: "x'''+1",
@@ -329,7 +329,7 @@ const formulaList = {
         applyCost: 400,
         applyNeed: 0,
         targetLevel: 3,
-        applyFormula: (x)=>(x[3]+1),
+        applyFormula: (eff, x)=>(x[3]+1 * eff),
     },
     "x=10Q*x'''*x''/x'": {
         formulaName: "x=10Q*x'''*x''/x'",
@@ -343,7 +343,7 @@ const formulaList = {
         applyNeed: 1e9,
         targetLevel: 0,
         effectLevel: 3,
-        applyFormula: (x)=>(x[1] === 0 ? NaN : 1e16*x[3]*x[2]/x[1]),
+        applyFormula: (eff, x)=>(x[1] === 0 ? NaN : 1e16*x[3]*x[2]/x[1] * eff),
     },
     "x'=5Q*x'''": {
         formulaName: "x'=5Q*x'''",
@@ -357,7 +357,7 @@ const formulaList = {
         applyNeed: 0,
         targetLevel: 1,
         effectLevel: 3,
-        applyFormula: (x)=>(5e15*x[3]),
+        applyFormula: (eff, x)=>(5e15*x[3] * eff),
     },
     "x'''+log2(x)^2": {
         formulaName: "x'''+log2(x)^2",
@@ -366,7 +366,7 @@ const formulaList = {
         applyCost: 5e6,
         applyNeed: 0,
         targetLevel: 3,
-        applyFormula: (x)=>(x[0] === 0 ? NaN : x[3] + Math.pow(Math.log2(x[0]),2)),
+        applyFormula: (eff, x)=>(x[0] === 0 ? NaN : x[3] + Math.pow(Math.log2(x[0]),2) * eff),
         explanation: "log2 is the base 2 logarithm"
     },
     "x'''+log2(#F/#E)^13": {
@@ -376,7 +376,7 @@ const formulaList = {
         applyCost: 1e20,
         applyNeed: 0,
         targetLevel: 3,
-        applyFormula: (x,state)=>(state.formulaApplyCount === 0 ? NaN : x[3] + Math.pow(Math.log2(state.formulaApplyCount / state.myFormulas.length),13)),
+        applyFormula: (eff, x,state)=>(state.formulaApplyCount === 0 ? NaN : x[3] + Math.pow(Math.log2(state.formulaApplyCount / state.myFormulas.length),13) * eff),
         explanation: "Boosted by formula applications (since S-Reset). Diminished by number of equipped formulas.",
     },
     "x'+30S": {
@@ -390,7 +390,7 @@ const formulaList = {
         applyCost: 1e15,
         applyNeed: 0,
         targetLevel: 1,
-        applyFormula: (x,state)=>(x[1] + 30e21),
+        applyFormula: (eff, x)=>(x[1] + 30e21 * eff),
     },
     "x''+40P": {
         formulaName: "x''+40P",
@@ -403,7 +403,7 @@ const formulaList = {
         applyCost: 1e21,
         applyNeed: 0,
         targetLevel: 2,
-        applyFormula: (x,state)=>(x[2] + 40e18),
+        applyFormula: (eff, x)=>(x[2] + 40e18 * eff),
     },
     "x'''*sqrt(300S-x''')/500B": {
         formulaName: "x'''*sqrt(300S-x''')/500B",
@@ -416,8 +416,9 @@ const formulaList = {
         applyCost: 1e9,
         applyNeed: 0,
         targetLevel: 3,
-        applyFormula: (x,state)=>(Math.floor(x[3]*Math.sqrt(300e21 - x[3]) / 500e9)),
+        applyFormula: (eff, x)=>(Math.floor(x[3]*Math.sqrt(250e21 + 50e21 * eff - x[3]) / 500e9)),
         explanation: "sqrt is the square root.",
+        complex: true,
     },
     "x'''+5S": {
         formulaName: "x'''+5S",
@@ -431,7 +432,7 @@ const formulaList = {
         applyCost: 100e33,
         applyNeed: 0,
         targetLevel: 3,
-        applyFormula: (x,state)=>(x[3]+5e21),
+        applyFormula: (eff, x,state)=>(x[3]+5e21 * eff),
     },
 }
 export default formulaList

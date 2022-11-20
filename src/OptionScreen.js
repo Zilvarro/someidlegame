@@ -50,6 +50,11 @@ export default function OptionScreen({state, popup, updateState, setTotalClicks}
     })
   }
 
+  const cheat = ()=>{
+    updateState({name: "cheat"})
+    notify.warning("CHEATER", "You cheated not only the game, but yourself!")
+  }
+
   return (<div style={{padding: "10px"}}>
     <h1>Options</h1>
       <p>
@@ -87,6 +92,9 @@ export default function OptionScreen({state, popup, updateState, setTotalClicks}
       </p>
       <p>
         {spaces()}<button onClick={resetSave}>Hard Reset</button>
+      </p>
+      <p>
+        {spaces()}<button onClick={cheat}>Cheat +1 &alpha;</button>
       </p>
       <p>Version {state.version}</p>
   </div>)
