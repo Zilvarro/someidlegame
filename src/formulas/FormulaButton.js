@@ -4,8 +4,7 @@ import {getInventorySize} from '../savestate'
 
 export default function FormulaButton({state, popup, updateState, setTotalClicks, formulaName, context, myIndex}) {
     const applyFormula = (formula,evt)=>{
-        const newValue = formula.applyFormula(state.xValue, state)
-        if (0.9999 * state.xValue[formula.targetLevel] > newValue) {
+        if (state.settings.valueReduction === "CONFIRM" && 0.9999 * state.xValue[formula.targetLevel] > formula.applyFormula(state.formulaEfficiency[formula.targetLevel],state.xValue, state)) {
             popup.confirm("This will lower your X value. Are you sure?\n(You can skip this pop-up by using Shift+Click)",()=>{
                 updateState({name: "applyFormula", formula: formula, updateState: updateState, forceApply: true})
                 setTotalClicks((x)=>x+1)

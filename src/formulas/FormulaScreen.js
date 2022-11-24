@@ -71,7 +71,6 @@ export default function FormulaScreen({state, updateState, setTotalClicks, popup
     const performAlphaReset = ()=>{
       popup.confirm("You lose all your differentials but you gain a powerful Alpha Point.",()=>{
         updateState({name: "alphaReset"})
-        updateState({name: "resetShop"})
         setTotalClicks((x)=>x+1)
       })
     }
@@ -90,7 +89,7 @@ export default function FormulaScreen({state, updateState, setTotalClicks, popup
 
     const progressBarWidth = Math.min(100 * Math.log10(Math.max(state.xValue[0],1)) / Math.log10(alphaTarget),99).toFixed(0) + "%"
 
-    return (<div style={{color:"#99FF99"}}>
+    return (<div style={{color: state.mileStoneCount >=3 ? "#99FF99" : "FFFFFF"}}>
         <div className="row" style={{marginTop:"0px"}}><div className="column">
         <h2 style={{marginTop:"0px"}}>X Values</h2>
             <ValueTable values={state.xValue} baseName={"x"} maxTier={state.highestXTier} numberFormat={state.settings.numberFormat}/>
@@ -130,7 +129,7 @@ export default function FormulaScreen({state, updateState, setTotalClicks, popup
             </>}
         </div><div className="column">
         <h2 style={{marginTop:"0px"}}>Shop {state.myFormulas.length >= getInventorySize(state) && <>{spaces()}[FULL INVENTORY]</>}</h2>
-          <div style={{overflow:"auto", height:"70vh"}}>
+          <div style={state.settings.shopScroll === "ON" ? {overflow:"auto", height:"70vh"} : {}}>
             <FormulaTable state={state} updateState={updateState} popup={popup} setTotalClicks={setTotalClicks} formulaNames={shopFormulas}/>
           </div>
         </div></div>

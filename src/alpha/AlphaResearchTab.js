@@ -1,10 +1,10 @@
-// import {getStartingX} from '../savestate'
-// import {formatNumber} from '../utilities'
+import AlphaResearchBar from './AlphaResearchBar.js'
 
 export default function AlphaResearchTab({state, updateState, setTotalClicks}) {
 return (
     <div>{<>
         <h2>Research</h2>
+        <AlphaResearchBar key="research" research={"test"} state={state} updateState={updateState}/>
         <p>Starting x: 10
             <br/>&rarr;Unspent Alpha (x100)
             <br/>&rarr;Alpha Upgrade (x16)

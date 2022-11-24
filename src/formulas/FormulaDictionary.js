@@ -185,7 +185,7 @@ const formulaList = {
         applyCost: 5000,
         applyNeed: 0,
         targetLevel: 2,
-        applyFormula: (eff, x,state)=>(Math.floor(Math.pow(1.25,state.formulaUnlockCount)) * eff),
+        applyFormula: (eff, x,state)=>(Math.floor(Math.pow(1.25,state.formulaUnlockCount) * eff)),
         explanation: "Boosted by number of unlocked formulas.",
     },
     "x'=1000*x''": {

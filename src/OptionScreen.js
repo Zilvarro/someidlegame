@@ -83,6 +83,9 @@ export default function OptionScreen({state, popup, updateState, setTotalClicks}
         {spaces()}<MultiOptionButton settingName="shopPrices" statusList={["OFF","ON"]} state={state} updateState={updateState} setTotalClicks={setTotalClicks}
           description="Shop Price Labels" tooltip="Controls how formula prices and additional info are shown in Shop" tooltipList={["Shop Prices are only shown in Tooltips","Shop Prices are shown in Label."]}/>
       </p><p>
+        {spaces()}<MultiOptionButton settingName="shopScroll" statusList={["ON","OFF"]} state={state} updateState={updateState} setTotalClicks={setTotalClicks}
+          description="Shop Scrollbar" tooltip="Controls whether the formula shop has a separate scroll bar" tooltipList={["Shop has a scroll bar","Shop does not have a scroll bar."]}/>
+      </p><p>
         {spaces()}<MultiOptionButton settingName="colorizedFormulas" statusList={["NEW","EFFECT","TARGET","ALL","OFF"]} state={state} updateState={updateState} setTotalClicks={setTotalClicks}
           description="Formula Colors" tooltip="Controls how formulas are highlighted with colors" tooltipList={["Formulas discovered with last S-Reset", "Colored by highest differential in the formula", "Colored by differential that is affected", "All colored the same", "Not colored"]}/>
         {/* {spaces()}<MultiOptionButton settingName="showHints" statusList={["ON", "OFF"]} state={state} updateState={updateState} setTotalClicks={setTotalClicks}

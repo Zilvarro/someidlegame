@@ -2,8 +2,8 @@ import formulaList from './formulas/FormulaDictionary'
 import { notify } from './utilities'
 
 export const applyFormulaToState = (state, formula, forceApply, silent)=>{
-    //Can't afford
-    if (state.xValue[0] < formula.applyCost || state.xValue[0] < formula.applyNeed)
+    //Can't afford or not yet unlocked
+    if (state.xValue[0] < formula.applyCost || state.xValue[0] < formula.applyNeed || !state.formulaUnlocked[formula.formulaName])
         return false
 
     const actuallyApply = () => {
@@ -51,7 +51,7 @@ export const applyFormulaToState = (state, formula, forceApply, silent)=>{
 }
 
 export const applyIdleProgress = (state, deltaMilliSeconds) => {
-    const intervalCount = 10
+    const intervalCount = 12
     const intervalSize = deltaMilliSeconds / intervalCount *0.98
     for (let i = 0; i < intervalCount; i++) {
         state = simulateOfflineProgress(state, intervalSize)
@@ -81,7 +81,7 @@ export const applyProduction = (state, deltaMilliSeconds, applierBonus = [0,0,0,
     for(let j=0; j<state.xValue.length; j++) { //tier to be calculated
         let multiplier = 1
         for(let k=j+1; k<state.xValue.length; k++) { //higher tiers that affect it
-            state.xValue[j]+= Math.pow(deltaMilliSeconds / 1000, k-j)  * multiplier * (state.idleMultiplier * productionBonus[k] * state.xValue[k] + 10 * applierBonus[k]) * integrationFactor[k-j]
+            state.xValue[j]+= Math.pow(deltaMilliSeconds / 1000, k-j)  * multiplier * (state.idleMultiplier * productionBonus[k] * state.xValue[k] + state.autoApplyRate * applierBonus[k]) * integrationFactor[k-j]
             multiplier *= state.idleMultiplier * productionBonus[k]
         }
     }
@@ -95,19 +95,25 @@ export const simulateOfflineProgress = (state, deltaMilliSeconds) => {
 
     // STEP 2: Linearly Approximate Auto Appliers
     let applierBonus = [0,0,0,0,0]
+    let activeAppliers = 0
     if (state.alphaUpgrades.OAPP) {
         for (let index = 0; index < state.myFormulas.length; index++) {
+            let isActive = 0
             state = autoApplySingle(state,index)
             const xBefore = [...state.xValue]
             state = autoApplySingle(state,index)
             for (let i = 0; i<4; i++) {
                 applierBonus[i+1] += state.xValue[i] - xBefore[i]
+                isActive ||= state.xValue[i] - xBefore[i]
             }
+            if (isActive)
+                activeAppliers++
         }
     }
+    state.formulaApplyCount += Math.floor(activeAppliers * state.autoApplyRate * (deltaMilliSeconds - 300) / 1000)
 
     // STEP 3: Calculate Production
-    state = applyProduction(state, deltaMilliSeconds - 30, applierBonus)
+    state = applyProduction(state, deltaMilliSeconds - 300, applierBonus)
  
     //TODO Cap Value for complex formula or sth like that
 

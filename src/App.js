@@ -43,8 +43,15 @@ function App() {
       link.rel = 'icon';
       document.getElementsByTagName('head')[0].appendChild(link);
     }
+    let link2 = document.querySelector("link[rel~='apple-touch-icon']");
+    if (!link2) {
+      link2 = document.createElement('link');
+      link2.rel = 'apple-touch-icon';
+      document.getElementsByTagName('head')[0].appendChild(link2);
+    }
     const filenames = ["IconNeutral.png", "IconFormulas.png", "IconAlpha.png", "IconNeutral.png"]
     link.href = window.location.href + "/" + filenames[iconState]
+    link2.href = window.location.href + "/" + filenames[iconState]
   }, [iconState]);
 
   const selectTab = (tabKey)=>{
@@ -73,7 +80,7 @@ function App() {
     <span style={{display:"inline-block"}}>
       {state.mileStoneCount < 6 && <button style={{backgroundColor: "#FFFFFF", border:"2px solid", padding:"5px", margin:"5px", marginLeft:"10px", fontWeight:"bold"}} onClick={()=>selectTab("FormulaScreen")}>Formulas</button>}
       {state.mileStoneCount >= 6 && <button style={{backgroundColor: "#99FF99", border:"2px solid", padding:"5px", margin:"5px", marginLeft:"10px", fontWeight:"bold"}} onClick={()=>selectTab("FormulaScreen")}>Formulas</button>}
-      {state.mileStoneCount >= 1 && <button style={{backgroundColor: "#ff7777", border:"2px solid", padding:"5px", margin:"5px", fontWeight:"bold"}} onClick={()=>selectTab("AlphaScreen")}>Alpha</button>}
+      {state.mileStoneCount >= 6 && <button style={{backgroundColor: "#ff7777", border:"2px solid", padding:"5px", margin:"5px", fontWeight:"bold"}} onClick={()=>selectTab("AlphaScreen")}>Alpha</button>}
       {/* {state.mileStoneCount >= 1 && <button style={{backgroundColor: "#55ffbb", border:"2px solid", padding:"5px", margin:"5px", fontWeight:"bold"}} onClick={()=>selectTab("WorldScreen")}>World</button>}
       {state.mileStoneCount >= 1 && <button style={{backgroundColor: "#663366", border:"2px solid", padding:"5px", margin:"5px", fontWeight:"bold"}} onClick={()=>selectTab("VoidScreen")}>Void</button>}
       {state.mileStoneCount >= 1 && <button style={{backgroundColor: "#ffff88", border:"2px solid", padding:"5px", margin:"5px", fontWeight:"bold"}} onClick={()=>selectTab("DestinyScreen")}>Destiny</button>} */}

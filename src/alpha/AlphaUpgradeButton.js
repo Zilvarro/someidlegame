@@ -1,4 +1,4 @@
-export default function AlphaUpgradeButton({state, popup, upgrade, updateState, setTotalClicks}) {
+export default function AlphaUpgradeButton({state, popup, upgrade, updateState}) {
     
     if (upgrade.fixed) return upgrade.fixed
 
@@ -10,7 +10,6 @@ export default function AlphaUpgradeButton({state, popup, upgrade, updateState, 
         } else {
             popup.confirm(<>{upgrade.title}<br/><br/>{upgrade.description}<br/><br/>Buy for {upgrade.cost} &alpha;?</>,()=>{
                 updateState({name: "alphaUpgrade", upgrade: upgrade})
-                //setTotalClicks((x)=>x+1)
             })
         }
     }
@@ -36,7 +35,9 @@ export default function AlphaUpgradeButton({state, popup, upgrade, updateState, 
         width:"160px", 
         height:"100px", 
         fontSize:"16px",
-        backgroundColor: backgroundColor
+        backgroundColor: backgroundColor,
+        color: "black",
+        verticalAlign: "top",
     }
 
     return (

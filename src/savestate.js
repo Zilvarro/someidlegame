@@ -4,8 +4,7 @@ import formulaList from './formulas/FormulaDictionary'
 import {shopFormulas} from './formulas/FormulaScreen'
 import * as progresscalculation from './progresscalculation'
 
-export const version = "0.09"
-//TODO disable Alpha screen without corresponding milestone
+export const version = "0.11"
 export const newSave = {
     version: version,
     progressionLayer: 0,
@@ -20,12 +19,12 @@ export const newSave = {
     formulaUsed: {},
     myFormulas: [],
     autoApply: [false,false,false,false,false],
+    autoApplyRate: 1,
     equipLayouts: [[],[],[],[]],
     anyFormulaUsed: true,
     xResetCount: 0,
     formulaUnlockCount: 0,
     formulaApplyCount: 0,
-    maxAlpha: 0,
     alpha: 0,
     tickFormula: false,
     idleMultiplier: 1,
@@ -34,13 +33,19 @@ export const newSave = {
     autoUnlockIndex: 0,
     saveTimeStamp: 0,
     calcTimeStamp: 0,
+    millisSinceAutoApply: 0,
     mileStoneCount: 0,
     holdAction: null,
+    isHolding: false,
     justLaunched: true,
     lastPlayTime: 0,
     currentAlphaTime: 0,
     bestAlphaTime: Infinity,
     passiveAlphaTime: 0,
+    insideChallenge: false,
+    activeChallenges: {},
+    clearedChallenges: {},
+    researchStartTime: {},
     settings: {
         valueReduction: "CONFIRM",
         offlineProgress: "ON",
@@ -52,6 +57,7 @@ export const newSave = {
         showHints: "ON",
         hotKeys: "ON",
         colorizedFormulas: "NEW",
+        shopScroll: "ON",
     }
 }
 
@@ -92,7 +98,7 @@ export const loadGame = ()=>{
 }
 
 export const getStartingX = (state)=>{
-    return 10*Math.pow(state.maxAlpha,2);
+    return 10*Math.pow(state.alpha,2);
 }
 
 export const getInventorySize = (state)=>{
@@ -107,10 +113,6 @@ export const save = (state)=>{
 }
 
 const performAlphaReset = (state)=>{
-    state.alpha++
-    state.maxAlpha++
-    state.progressionLayer = Math.max(state.progressionLayer, 1)
-    state.bestAlphaTime = Math.min(state.currentAlphaTime, state.bestAlphaTime)
     state.currentAlphaTime = 0
     state.highestXTier = 0
     state.xResetCount = 0
@@ -120,6 +122,14 @@ const performAlphaReset = (state)=>{
         state.myFormulas = structuredClone(state.equipLayouts[state.highestXTier])
         state.formulaBought = state.myFormulas.reduce((a,v)=>({...a, [v]:true}),{})
     }
+    state.autoApply = [false,false,false,false,false]
+    return state
+}
+
+const giveAlphaRewards = (state)=>{
+    state.alpha++
+    state.progressionLayer = Math.max(state.progressionLayer, 1)
+    state.bestAlphaTime = Math.min(state.currentAlphaTime, state.bestAlphaTime)
     return state
 }
 
@@ -191,10 +201,15 @@ export const saveReducer = (state, action)=>{
             }
         }
 
-        for (let i = 0; i<5; i++) {
-            if (state.autoApply[i] && state.myFormulas.length > i) {
-                progresscalculation.applyFormulaToState(state,formulaList[state.myFormulas[i]],false, true)
+        //Auto Appliers
+        state.millisSinceAutoApply += deltaMilliSeconds
+        if (state.alphaUpgrades.AAPP && state.millisSinceAutoApply > 1000 / state.autoApplyRate){
+            for (let i = 0; i<5; i++) {
+                if (state.autoApply[i] && state.myFormulas.length > i) {
+                    progresscalculation.applyFormulaToState(state,formulaList[state.myFormulas[i]],false, true)
+                }
             }
+            state.millisSinceAutoApply = 0
         }
         
         //Check if next milestone is reached
@@ -237,7 +252,9 @@ export const saveReducer = (state, action)=>{
 
         //Auto Resetters
         if (state.alphaUpgrades.ARES && state.xValue[0] >= alphaTarget) {
+            giveAlphaRewards(state)
             performAlphaReset(state)
+            performShopReset(state)
         } else if (state.alphaUpgrades.SRES && state.xValue[0] >= differentialTargets[state.highestXTier]) {
             upgradeXTier(state)
             performShopReset(state)
@@ -263,6 +280,7 @@ export const saveReducer = (state, action)=>{
         break;
     case "changeHold":
         state.holdAction = action.newValue
+        state.isHolding = !!state.holdAction
         break;
     case "swapFormulas":
         const startIndex = state.myFormulas.indexOf(action.formulaName)
@@ -277,7 +295,7 @@ export const saveReducer = (state, action)=>{
         }
         break;
     case "applyFormula":
-        if (!state.tickFormula) {
+        if (!state.tickFormula && !state.isHolding) {
             progresscalculation.applyFormulaToState(state, action.formula, action.forceApply)
             state.tickFormula = true
         }
@@ -309,7 +327,9 @@ export const saveReducer = (state, action)=>{
         upgradeXTier(state)
         break;
     case "alphaReset":
+        giveAlphaRewards(state)
         performAlphaReset(state)
+        performShopReset(state)
         break;
     case "alphaUpgrade":
         if (state.alpha >= action.upgrade.cost) {
@@ -319,6 +339,8 @@ export const saveReducer = (state, action)=>{
         break;
     case "cheat":
         state.idleMultiplier = 1
+        state.mileStoneCount = 6
+        state.progressionLayer = 1
         state.alpha++
         break;
     case "memorize":
@@ -334,6 +356,21 @@ export const saveReducer = (state, action)=>{
             state.autoApply = [false,false,false,false,false]
         }
         state.autoApply[action.index] = !checked
+        break;
+    case "enterChallenge":
+        state.insideChallenge = true
+        state.activeChallenges = {[action.challenge.id]: true}
+        performAlphaReset(state)
+        performShopReset(state)
+        break;
+    case "exitChallenge":
+        state.insideChallenge = false
+        state.activeChallenges = {}
+        performAlphaReset(state)
+        performShopReset(state)
+        break;
+    case "startResearch":
+        state.researchStartTime[action.research] = Date.now()
         break;
     default:
         console.error("Action " + action.name + " not found.")
