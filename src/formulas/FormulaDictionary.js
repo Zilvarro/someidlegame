@@ -112,6 +112,7 @@ const formulaList = {
         targetLevel: 0,
         effectLevel: 1,
         applyFormula: (eff, x)=>(x[0] + x[1] * eff),
+        complex: true,
     },
     "x'+220": {
         formulaName: "x'+220",
@@ -187,6 +188,7 @@ const formulaList = {
         targetLevel: 2,
         applyFormula: (eff, x,state)=>(Math.floor(Math.pow(1.25,state.formulaUnlockCount) * eff)),
         explanation: "Boosted by number of unlocked formulas.",
+        complex: true,
     },
     "x'=1000*x''": {
         formulaName: "x'=1000*x''",
@@ -197,6 +199,7 @@ const formulaList = {
         targetLevel: 1,
         effectLevel: 2,
         applyFormula: (eff, x)=>(Math.floor(1000*x[2] * eff)),
+        complex: true,
     },
     "x''=sqrt(x)": {
         formulaName: "x''=sqrt(x)",
@@ -206,6 +209,7 @@ const formulaList = {
         applyNeed: 0,
         targetLevel: 2,
         applyFormula: (eff, x)=>(Math.floor(Math.pow(x[0],0.3) * eff)),
+        complex: true,
     },
     "x''+1": {
         formulaName: "x''+1",
@@ -233,6 +237,7 @@ const formulaList = {
         applyNeed: 0,
         targetLevel: 1,
         applyFormula: (eff, x)=>(x[1]+Math.pow(x[0],0.6) * eff),
+        complex: true,
     },
     "x''+10B": {
         formulaName: "x''+10B",
@@ -281,6 +286,7 @@ const formulaList = {
         targetLevel: 3,
         applyFormula: (eff, x,state)=>(Math.floor(Math.pow(state.formulaUnlockCount,2)/12 * eff)),
         explanation: "Boosted by number of unlocked formulas.",
+        complex: true,
         
     },
     "x'''=4": {
@@ -301,6 +307,7 @@ const formulaList = {
         targetLevel: 3,
         applyFormula: (eff, x,state)=>(Math.floor(Math.sqrt(2*state.xResetCount) * eff)),
         explanation: "Boosted by number of X-Resets (since S-Reset).",
+        complex: true,
     },
     "x'+x''+x'''": {
         formulaName: "x'+x''+x'''",
@@ -311,6 +318,7 @@ const formulaList = {
         targetLevel: 1,
         effectLevel: 3,
         applyFormula: (eff, x)=>x[1]+x[2] * eff+x[3] * eff,
+        complex: true,
     },
     "x''+x'''^2": {
         formulaName: "x''+x'''^2",
@@ -321,6 +329,7 @@ const formulaList = {
         targetLevel: 2,
         effectLevel: 3,
         applyFormula: (eff, x)=>x[2]+Math.pow(x[3],2) * eff,
+        complex: true,
     },
     "x'''+1": {
         formulaName: "x'''+1",
@@ -344,6 +353,7 @@ const formulaList = {
         targetLevel: 0,
         effectLevel: 3,
         applyFormula: (eff, x)=>(x[1] === 0 ? NaN : 1e16*x[3]*x[2]/x[1] * eff),
+        complex: true,
     },
     "x'=5Q*x'''": {
         formulaName: "x'=5Q*x'''",
@@ -358,6 +368,7 @@ const formulaList = {
         targetLevel: 1,
         effectLevel: 3,
         applyFormula: (eff, x)=>(5e15*x[3] * eff),
+        complex: true,
     },
     "x'''+log2(x)^2": {
         formulaName: "x'''+log2(x)^2",
@@ -367,7 +378,8 @@ const formulaList = {
         applyNeed: 0,
         targetLevel: 3,
         applyFormula: (eff, x)=>(x[0] === 0 ? NaN : x[3] + Math.pow(Math.log2(x[0]),2) * eff),
-        explanation: "log2 is the base 2 logarithm"
+        explanation: "log2 is the base 2 logarithm",
+        complex: true,
     },
     "x'''+log2(#F/#E)^13": {
         formulaName: "x'''+log2(#F/#E)^13",
@@ -378,6 +390,7 @@ const formulaList = {
         targetLevel: 3,
         applyFormula: (eff, x,state)=>(state.formulaApplyCount === 0 ? NaN : x[3] + Math.pow(Math.log2(state.formulaApplyCount / state.myFormulas.length),13) * eff),
         explanation: "Boosted by formula applications (since S-Reset). Diminished by number of equipped formulas.",
+        complex: true,
     },
     "x'+30S": {
         formulaName: "x'+30S",

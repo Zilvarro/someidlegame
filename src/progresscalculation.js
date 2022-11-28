@@ -2,15 +2,32 @@ import formulaList from './formulas/FormulaDictionary'
 import { notify } from './utilities'
 
 export const applyFormulaToState = (state, formula, forceApply, silent)=>{
+    let applyNeed = formula.applyNeed
+    let applyCost = formula.applyCost
+    if (state.activeChallenges.SMALLINV && !state.anyFormulaUsed) {
+        applyCost = 0
+        applyNeed = 0
+    } else if (state.alphaUpgrades.FREF) {
+        applyCost = 0
+        applyNeed = formula.applyCost
+    }
+
     //Can't afford or not yet unlocked
-    if (state.xValue[0] < formula.applyCost || state.xValue[0] < formula.applyNeed || !state.formulaUnlocked[formula.formulaName])
+    if (state.xValue[0] < applyCost || state.xValue[0] < applyNeed || !state.formulaUnlocked[formula.formulaName])
+        return false
+
+    //Apply Limit reached
+    if ((state.activeChallenges.LIMITED && state.formulaApplyCount >= 500) || (state.activeChallenges.SINGLEUSE && state.formulaUsed[formula.formulaName]))
         return false
 
     const actuallyApply = () => {
         if (!state.alphaUpgrades.FREF && state.xValue[formula.targetLevel] !== newValue) { //Cost only deducted if value changes
-            state.xValue[0] -= formula.applyCost
+            state.xValue[0] -= applyCost
         }
         state.xValue[formula.targetLevel] = formula.applyFormula(state.formulaEfficiency[formula.targetLevel], state.xValue, state)
+        if (state.activeChallenges.RESETOTHER) {
+            state.xValue.map((v,i)=>(i === formula.targetLevel ? v : 0))
+        }
         state.formulaUsed[formula.formulaName] = true
         state.anyFormulaUsed = true
         state.formulaApplyCount++
@@ -78,11 +95,12 @@ export const autoApplySingle = (state, index) => {
 export const applyProduction = (state, deltaMilliSeconds, applierBonus = [0,0,0,0,0]) => {
     const integrationFactor = [1,1,1/2,1/6,1/24] //one over factorial
     const productionBonus = state.productionBonus
+    const challengeMultiplier = state.activeChallenges.SLOWNESS ? 0.01 : 1
     for(let j=0; j<state.xValue.length; j++) { //tier to be calculated
         let multiplier = 1
         for(let k=j+1; k<state.xValue.length; k++) { //higher tiers that affect it
             state.xValue[j]+= Math.pow(deltaMilliSeconds / 1000, k-j)  * multiplier * (state.idleMultiplier * productionBonus[k] * state.xValue[k] + state.autoApplyRate * applierBonus[k]) * integrationFactor[k-j]
-            multiplier *= state.idleMultiplier * productionBonus[k]
+            multiplier *= challengeMultiplier * state.idleMultiplier * productionBonus[k]
         }
     }
     return state

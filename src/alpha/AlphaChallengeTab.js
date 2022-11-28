@@ -4,7 +4,7 @@ const alphaChallengeDictionary = {
     "SLOWPROD": {
         id:"SLOWPROD",
         title:"Slowness",
-        description:"Production is 1000x slower.",
+        description:"Production is 100x slower.",
     },
     "SIMPLEONLY": {
         id:"SIMPLEONLY",
@@ -34,7 +34,7 @@ const alphaChallengeDictionary = {
     "SMALLINV": {
         id:"SMALLINV",
         title:"Small Backpack",
-        description:"You only have 1 equipment slot, but you can ignore apply needs.",
+        description:"You only have 1 equipment slot, but the first formula apply after a reset is free.",
     },
     "COMPLEX": {
         id:"COMPLEX",
@@ -49,7 +49,7 @@ const alphaChallengeDictionary = {
     "THUNDER": {
         id:"THUNDER",
         title:"Thunder",
-        description:"Every 5 seconds your x-Values are cut in half.",
+        description:"Every time you use a formula your x-Values are cut in half.",
     },
     "SINGLEUSE": {
         id:"SINGLEUSE",
@@ -71,14 +71,15 @@ const alphaChallengeTable = ["SLOWPROD","SIMPLEONLY","DECREASE","LIMITED","RESET
 
 export default function AlphaChallengeTab({state, updateState, popup}) {
     const exitAlphaChallenge = ()=>{
-        popup.confirm(<>Exit current Challenge?<br/>This will perform an &alpha;-Reset.</>,()=>{
+        popup.confirm(<>Exit current Challenge?</>,()=>{
             updateState({name: "exitChallenge"})
         })
     }
 
     return (<div>
         <h2>Challenges</h2>
-        <p>Under construction! The challenges do not work yet and are just example ideas.</p>
+        <p>For now, offline progress is disabled while inside a challenge.</p>
+        {state.currentChallenge && <p>You are currently in the "{state.currentChallengeName}" Challenge.</p>}
         <p><button disabled={!state.insideChallenge} onClick={exitAlphaChallenge}>Exit Challenge</button></p>
         {alphaChallengeTable.map((challenge)=>
             <AlphaChallengeButton key={challenge} challenge={alphaChallengeDictionary[challenge]} state={state} updateState={updateState} popup={popup}/>

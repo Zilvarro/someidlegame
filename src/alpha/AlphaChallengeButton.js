@@ -1,7 +1,7 @@
 export default function AlphaChallengeButton({state, challenge, popup, updateState}) {
     
     const clickAlphaChallenge = ()=>{
-        popup.confirm(<>Start the "{challenge.title}" Challenge?<br/>This will perform an &alpha;-Reset.</>,()=>{
+        popup.confirm(<>Start the "{challenge.title}" Challenge?<br/>You will lose your current formula progress.</>,()=>{
             updateState({name: "enterChallenge", challenge: challenge})
         })
     }
@@ -33,6 +33,6 @@ export default function AlphaChallengeButton({state, challenge, popup, updateSta
     }
 
     return (
-        <button disabled={disabled} onClick={clickAlphaChallenge} style={buttonStyle}>{challenge.title}<br/><br/>{challenge.description}<br/><br/>0/4 Complete</button>
+        <button disabled={disabled} onClick={clickAlphaChallenge} style={buttonStyle}>{challenge.title}<br/><br/>{challenge.description}<br/><br/>{state.challengeProgress[challenge.id] || 0}/4 Complete</button>
     )
 }
