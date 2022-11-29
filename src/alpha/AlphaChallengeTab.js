@@ -1,4 +1,5 @@
 import AlphaChallengeButton from './AlphaChallengeButton.js'
+import {getChallengeBonus} from '../savestate.js'
 
 const alphaChallengeDictionary = {
     "SLOWPROD": {
@@ -76,8 +77,11 @@ export default function AlphaChallengeTab({state, updateState, popup}) {
         })
     }
 
+    const challengeBonus = getChallengeBonus(state)
+
     return (<div>
         <h2>Challenges</h2>
+        Your {challengeBonus.full} challenge completions and {challengeBonus.segment} segment completions boost your Formula Efficiency by {challengeBonus.bonus.toFixed(2)}.
         <p>For now, offline progress is disabled while inside a challenge.</p>
         {state.currentChallenge && <p>You are currently in the "{state.currentChallengeName}" Challenge.</p>}
         <p><button disabled={!state.insideChallenge} onClick={exitAlphaChallenge}>Exit Challenge</button></p>

@@ -5,13 +5,14 @@ import {shopFormulas} from './formulas/FormulaScreen'
 import {isLockedByChallenge} from './formulas/FormulaButton'
 import * as progresscalculation from './progresscalculation'
 
-export const version = "0.11"
+export const version = "0.12"
 export const newSave = {
     version: version,
     progressionLayer: 0,
     selectedTabKey: "FormulaScreen",
     selectedAlphaTabKey: "AlphaUpgradeTab",
     xValue: [0,0,0,0],
+    xHighScores: [0,0,0,0],
     productionBonus: [1,1,1,1],
     formulaEfficiency: [1,1,1,1],
     xRecord: 0,
@@ -52,6 +53,7 @@ export const newSave = {
     clearedChallenges: {},
     challengeProgress: {},
     researchStartTime: {},
+    researchLevel: {},
     settings: {
         valueReduction: "CONFIRM",
         offlineProgress: "ON",
@@ -104,7 +106,8 @@ export const loadGame = ()=>{
 }
 
 export const getStartingX = (state)=>{
-    return 10*Math.pow(state.alpha,2);
+    state.productionBonus[0] = Math.pow(1.01, state.researchLevel["x'"] || 0)
+    return Math.floor(100*Math.pow(1.01, state.researchLevel["x"] || 0)-100);
 }
 
 export const getInventorySize = (state)=>{
@@ -139,12 +142,14 @@ const giveAlphaRewards = (state)=>{
     state.alpha++
     state.progressionLayer = Math.max(state.progressionLayer, 1)
     state.bestAlphaTime = Math.min(state.currentAlphaTime, state.bestAlphaTime)
+    state.xHighScores[state.highestXTier] = Math.max(state.xHighScores[state.highestXTier], state.xValue[0])
     if (state.currentChallenge) {
         state.challengeProgress[state.currentChallenge] = 4
         state.clearedChallenges[state.currentChallenge] = true
         state.insideChallenge = false
         state.currentChallenge = null
         state.currentChallengeName = null
+        state = updateFormulaEfficiency(state)
     }
     return state
 }
@@ -172,13 +177,50 @@ const performShopReset = (state)=>{
 }
 
 const upgradeXTier = (state)=>{
+    state.xHighScores[state.highestXTier] = Math.max(state.xHighScores[state.highestXTier], state.xValue[0])
     state.highestXTier++
     if (state.alphaUpgrades.AREM) {
         state.myFormulas = structuredClone(state.equipLayouts[state.highestXTier])
         state.formulaBought = state.myFormulas.reduce((a,v)=>({...a, [v]:true}),{})
     }
-    if (state.currentChallenge)
-        state.challengeProgress[state.currentChallenge] = Math.max(state.challengeProgress[state.currentChallenge],state.highestXTier)
+    debugger
+    if (state.currentChallenge) {
+        state.challengeProgress[state.currentChallenge] = Math.max(state.challengeProgress[state.currentChallenge] || 0,state.highestXTier)
+        state = updateFormulaEfficiency(state)
+    }
+    return state
+}
+
+const updateProductionBonus = (state)=>{
+    state.productionBonus[0] = Math.pow(1.01, state.researchLevel["x'"] || 0)
+    state.productionBonus[1] = Math.pow(1.01, state.researchLevel["x''"] || 0)
+    state.productionBonus[2] = Math.pow(1.01, state.researchLevel["x'''"] || 0)
+    return state
+}
+
+export const getChallengeBonus = (state)=>{
+    let clearedFull = 0
+    for (let c in state.clearedChallenges) {
+        if (state.clearedChallenges[c])
+            clearedFull++
+    }
+
+    let clearedSegments = 0
+    for (let c in state.challengeProgress) {
+        if (state.challengeProgress[c])
+            clearedSegments += state.challengeProgress[c]
+    }
+
+    return {
+        bonus:(1 + 0.1 * clearedSegments) * Math.pow(2, clearedFull),
+        full: clearedFull,
+        segment: clearedSegments,
+    }
+}
+
+const updateFormulaEfficiency = (state)=>{
+    const challengeBonus = getChallengeBonus(state).bonus
+    state.formulaEfficiency = [challengeBonus,challengeBonus,challengeBonus,challengeBonus]
     return state
 }
 
@@ -378,6 +420,10 @@ export const saveReducer = (state, action)=>{
         state.mileStoneCount = 6
         state.progressionLayer = 1
         state.alpha++
+        state.xHighScores[0] = differentialTargets[0]
+        state.xHighScores[1] = differentialTargets[1]
+        state.xHighScores[2] = differentialTargets[2]
+        state.xHighScores[3] = alphaTarget
         break;
     case "memorize":
         state.equipLayouts[state.highestXTier] = structuredClone(state.myFormulas)
@@ -412,7 +458,9 @@ export const saveReducer = (state, action)=>{
         performShopReset(state)
         break;
     case "startResearch":
-        state.researchStartTime[action.research] = Date.now()
+        state.researchStartTime[action.research.id] = Date.now()
+        state.researchLevel[action.research.id] = (state.researchLevel[action.research.id] || 0) + 1 
+        state = updateProductionBonus(state)
         break;
     default:
         console.error("Action " + action.name + " not found.")
