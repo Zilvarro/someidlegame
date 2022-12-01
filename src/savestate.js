@@ -205,10 +205,7 @@ const performAlphaReset = (state)=>{
 }
 
 const giveAlphaRewards = (state)=>{
-    state.alpha += getAlphaRewardTier(state.xValue[0])
     state.progressionLayer = Math.max(state.progressionLayer, 1)
-    state.bestAlphaTime = Math.min(state.currentAlphaTime, state.bestAlphaTime)
-    state.xHighScores[state.highestXTier] = Math.max(state.xHighScores[state.highestXTier], state.xValue[0])
     if (state.currentChallenge) {
         state.challengeProgress[state.currentChallenge] = 4
         state.clearedChallenges[state.currentChallenge] = true
@@ -217,6 +214,10 @@ const giveAlphaRewards = (state)=>{
         state.currentChallenge = null
         state.currentChallengeName = null
         state = updateFormulaEfficiency(state)
+    } else {
+        state.alpha += getAlphaRewardTier(state.xValue[0])
+        state.bestAlphaTime = Math.max(100,Math.min(state.currentAlphaTime, state.bestAlphaTime))
+        state.xHighScores[state.highestXTier] = Math.max(state.xHighScores[state.highestXTier], state.xValue[0])
     }
     return state
 }
@@ -507,6 +508,7 @@ export const saveReducer = (state, action)=>{
         } else {
             state.alpha = 1
             state.bestAlphaTime = Infinity
+            state.passiveAlphaTime = 0
         }
         break;
     case "memorize":

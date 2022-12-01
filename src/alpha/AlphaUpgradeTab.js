@@ -1,4 +1,3 @@
-import {getStartingX} from '../savestate'
 import { spaces } from '../utilities'
 // import {formatNumber} from '../utilities'
 import AlphaUpgradeButton from './AlphaUpgradeButton'
@@ -107,25 +106,17 @@ return (
     <div>{<>
         <h2>Upgrades</h2>
         {alphaUpgradeTable.map((upgrade)=><AlphaUpgradeButton key={upgrade} upgrade={alphaUpgradeDictionary[upgrade]} state={state} popup={popup} updateState={updateState}/>)}
-        {/* <p>&alpha; = {state.alpha}</p> */}
-        {/* <p>&alpha;<sub>max</sub> = {state.maxAlpha}</p> */}
-        <p>You start with x={getStartingX(state)} after resets</p>
-        <p>Time in current &alpha; run: 1h23m45s</p>
-        <p>Remember Equip: ON</p>
+        <p>Time in current &alpha; run: {(state.currentAlphaTime / 1000).toFixed()}s</p>
+        {state.alphaUpgrades.PALP && <p>Next Passive Alpha: {Math.max(1,((10 * state.bestAlphaTime - state.passiveAlphaTime) / 1000)).toFixed()}s</p>}
         {state.alphaUpgrades.AAPP && <p>Auto Applier Rate: {state.autoApplyRate}/s{spaces()}{applierLevel<3 && <button disabled={state.alpha < applierCosts[applierLevel + 1]} onClick={upgradeApplierRate}>Upgrade for {applierCosts[applierLevel + 1]} &alpha;</button>}</p>}
-        <p>Auto Unlocker: ON</p>
-        {spaces()}<MultiOptionButton settingName="autoResetterS" statusList={["ON","OFF"]} state={state} updateState={updateState} setTotalClicks={setTotalClicks}
-          description="Shop Resetter" tooltip="Controls shop resetter" tooltipList={["on", "off"]}/>
-        {spaces()}<MultiOptionButton settingName="autoResetterA" statusList={["ON","OFF"]} state={state} updateState={updateState} setTotalClicks={setTotalClicks}
-          description="Alpha Resetter" tooltip="Controls alpha resetter" tooltipList={["ON", "OFF"]}/>
-        {spaces()}<MultiOptionButton settingName="alphaThreshold" statusList={["1","2","3","5","7","10","25","100"]} state={state} updateState={updateState} setTotalClicks={setTotalClicks}
-          description="Alpha Target" tooltip="Number of Alpha before Alpha Resetter activates" tooltipList={["1","2","3","5","7","10","25","100"]}/>
-        {spaces()}<MultiOptionButton settingName="autoRemembererActive" statusList={["ON","OFF"]} state={state} updateState={updateState} setTotalClicks={setTotalClicks}
-          description="Auto Rememberer" tooltip="Whether equip loadout is automatically loaded after shop resets" tooltipList={["ON","OFF"]}/>
-
-        <p>&alpha;-Resetter: ON, Minimum 10 &alpha;</p>
-        {/* <p><button disabled={state.alpha < 1 || state.boughtAlpha[0]} onClick={()=>{buyAlphaUpgrade(0)}}>Get an extra formula slot</button>{spaces()}{state.boughtAlpha[0] ? <>Already bought</>: <>Cost: &alpha; = 1</>}</p> */}
-        {/* <p><button disabled={state.alpha < 2 || state.boughtAlpha[1]} onClick={()=>{buyAlphaUpgrade(1)}}>Double all idle production</button>{spaces()}{state.boughtAlpha[1] ? <>Already bought</>: <>Cost: &alpha; = 2</>}</p> */}
+        {state.alphaUpgrades.SRES && <>{spaces()}<MultiOptionButton settingName="autoResetterS" statusList={["ON","OFF"]} state={state} updateState={updateState} setTotalClicks={setTotalClicks}
+          description="Shop Resetter" tooltip="Controls shop resetter" tooltipList={["on", "off"]}/></>}
+        {state.alphaUpgrades.ARES && <>{spaces()}<MultiOptionButton settingName="autoResetterA" statusList={["ON","OFF"]} state={state} updateState={updateState} setTotalClicks={setTotalClicks}
+          description="Alpha Resetter" tooltip="Controls alpha resetter" tooltipList={["ON", "OFF"]}/></>}
+        {state.alphaUpgrades.ARES && <>{spaces()}<MultiOptionButton settingName="alphaThreshold" statusList={["1","2","3","5","7","10","25","100"]} state={state} updateState={updateState} setTotalClicks={setTotalClicks}
+          description="Alpha Target" tooltip="Number of Alpha before Alpha Resetter activates" tooltipList={["1","2","3","5","7","10","25","100"]}/></>}
+        {state.alphaUpgrades.AREM && <>{spaces()}<MultiOptionButton settingName="autoRemembererActive" statusList={["ON","OFF"]} state={state} updateState={updateState} setTotalClicks={setTotalClicks}
+          description="Auto Rememberer" tooltip="Whether equip loadout is automatically loaded after shop resets" tooltipList={["ON","OFF"]}/></>}
         </>}
     </div>)
 }

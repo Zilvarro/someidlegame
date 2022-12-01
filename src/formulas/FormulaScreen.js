@@ -115,7 +115,7 @@ export default function FormulaScreen({state, updateState, setTotalClicks, popup
             {state.activeChallenges.LIMITED && <p>You can apply {100 - state.formulaApplyCount} more formulas.</p>}
             {state.mileStoneCount >= 2 && state.highestXTier < 3 && state.xValue[0] < differentialTarget && <p>Reach x={formatNumber(differentialTarget, state.settings.numberFormat)} for the next S-Reset</p>}
             {state.mileStoneCount >= 6 && state.highestXTier === 3 && state.xValue[0] < alphaTarget && <p>Reach x={formatNumber(alphaTarget)} to perform an &alpha;-Reset</p>}
-            {state.mileStoneCount >= 6 && state.highestXTier === 3 && state.xValue[0] >= alphaTarget && <p>Alpha Reset for {alphaRewardTier.alpha} &alpha;.{alphaRewardTier.next && <>&nbsp;(Next: {alphaRewardTier.nextAlpha} &alpha; at x={formatNumber(alphaRewardTier.next)})</>}</p>}
+            {state.mileStoneCount >= 6 && state.highestXTier === 3 && !state.insideChallenge && state.xValue[0] >= alphaTarget && <p>Alpha Reset for {alphaRewardTier.alpha} &alpha;.{alphaRewardTier.next && <>&nbsp;(Next: {alphaRewardTier.nextAlpha} &alpha; at x={formatNumber(alphaRewardTier.next)})</>}</p>}
             <p></p>
             {state.mileStoneCount < 6 && (state.xValue[0] >= alphaTarget && state.mileStoneCount >= 5 ?
                 <button onClick={performAlphaReset} style={{backgroundColor:"#99FF99", fontWeight:"bold", border:"2px solid", height:"20px", width:"80%"}}>
