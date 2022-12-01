@@ -8,18 +8,19 @@ export default function AlphaResearchBar({state, research, updateState}) {
     const remainingTime = Math.max(1, (goal - progress) / progressMultiplier)
     const percentage = Math.min(deltaMilliSeconds / research.minimumDuration, progress / goal)
     const isDone = (!state.researchLevel[research.id] || percentage >= 1)
+    const bulkAmount = isDone ? Math.max(1,Math.floor(Math.log10(progressMultiplier / goal) + 1)) : 0
     const progressBarWidth = isDone ? "100%" : Math.min(100 * percentage,99).toFixed(2) + "%"
     
     const clickResearchBar = ()=>{
       if (isDone)
-        updateState({name: "startResearch", research: research})
+        updateState({name: "startResearch", research: research, bulkAmount: bulkAmount})
     }
 
     return (
       <>
         <div onClick={clickResearchBar} style={{position: "relative", color:"#000000", backgroundColor:"#ffffff", border:"2px solid", height:"20px",width:"80%", maxWidth:"320px"}}>
           <div style={{backgroundColor:"#ff9999", border:"0px", height:"20px", width:progressBarWidth}}>
-            <div style={{position:"absolute", left:"50%", transform:"translateX(-50%)"}}><b>{isDone ? "RESEARCH" : Math.ceil(remainingTime)+"s"}</b></div>
+            <div style={{userSelect:"none",position:"absolute", left:"50%", transform:"translateX(-50%)"}}><b>{isDone ? <>RESEARCH {research.id}{bulkAmount > 1 && <>&nbsp;(+{bulkAmount})</>}</> : Math.ceil(remainingTime)+"s"}</b></div>
           </div>
         </div>
         <div>Level: {state.researchLevel[research.id]}</div>

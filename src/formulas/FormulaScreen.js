@@ -1,7 +1,7 @@
 import FormulaTable from './FormulaTable'
 import ValueTable from './ValueTable'
 import {spaces,formatNumber} from '../utilities'
-import {getInventorySize, differentialTargets, alphaTarget} from '../savestate'
+import {getInventorySize, differentialTargets, alphaTarget, getAlphaRewardTier} from '../savestate'
 
 export const shopFormulas=[
   "x'=1",
@@ -83,11 +83,17 @@ export default function FormulaScreen({state, updateState, setTotalClicks, popup
       updateState({name: "remember"})
     }
 
+    const clearLoadout = ()=>{
+      updateState({name: "clearLoadout"})
+    }
+
     const differentialTarget = differentialTargets[state.highestXTier]
   
     const inventoryFormulas = Object.assign(new Array(getInventorySize(state)).fill(), state.myFormulas)
 
     const progressBarWidth = Math.min(100 * Math.log10(Math.max(state.xValue[0],1)) / Math.log10(alphaTarget),99).toFixed(0) + "%"
+
+    const alphaRewardTier = getAlphaRewardTier(state.xValue[0])
 
     return (<div style={{color: state.mileStoneCount >=3 ? "#99FF99" : "FFFFFF"}}>
         <div className="row" style={{marginTop:"0px"}}><div className="column">
@@ -106,9 +112,10 @@ export default function FormulaScreen({state, updateState, setTotalClicks, popup
             {state.mileStoneCount === 1 && state.formulaUnlockCount < 4 && <p>Unlock {4 - state.formulaUnlockCount} more formula{state.formulaUnlockCount !== 3 && "s"} to enable X-Resets</p>}
             {state.currentChallenge && <p>You are currently in the "{state.currentChallengeName}" Challenge.</p>}
             {state.activeChallenges.COUNTDOWN && <p>{Math.ceil(60 - state.millisSinceXReset / 1000)} seconds until X-Reset.</p>}
-            {state.activeChallenges.LIMITED && <p>You can apply {500 - state.formulaApplyCount} more formulas.</p>}
+            {state.activeChallenges.LIMITED && <p>You can apply {100 - state.formulaApplyCount} more formulas.</p>}
             {state.mileStoneCount >= 2 && state.highestXTier < 3 && state.xValue[0] < differentialTarget && <p>Reach x={formatNumber(differentialTarget, state.settings.numberFormat)} for the next S-Reset</p>}
             {state.mileStoneCount >= 6 && state.highestXTier === 3 && state.xValue[0] < alphaTarget && <p>Reach x={formatNumber(alphaTarget)} to perform an &alpha;-Reset</p>}
+            {state.mileStoneCount >= 6 && state.highestXTier === 3 && state.xValue[0] >= alphaTarget && <p>Alpha Reset for {alphaRewardTier.alpha} &alpha;.{alphaRewardTier.next && <>&nbsp;(Next: {alphaRewardTier.nextAlpha} &alpha; at x={formatNumber(alphaRewardTier.next)})</>}</p>}
             <p></p>
             {state.mileStoneCount < 6 && (state.xValue[0] >= alphaTarget && state.mileStoneCount >= 5 ?
                 <button onClick={performAlphaReset} style={{backgroundColor:"#99FF99", fontWeight:"bold", border:"2px solid", height:"20px", width:"80%"}}>
@@ -128,6 +135,7 @@ export default function FormulaScreen({state, updateState, setTotalClicks, popup
               <p>
                 <button onClick={memorize} disabled={state.activeChallenges.FULLYIDLE} title={"Saves equip layout so you can use it again later"}>Memorize</button>
                 {spaces()}<button onClick={remember} disabled={state.activeChallenges.FULLYIDLE} title={"Loads saved equip layout for current S-Reset"}>Remember</button>
+                {spaces()}<button onClick={clearLoadout} disabled={state.activeChallenges.FULLYIDLE} title={"Unequips all unused formulas"}>Unequip</button>
               </p>
             </>}
         </div><div className="column">

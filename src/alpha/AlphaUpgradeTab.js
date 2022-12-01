@@ -1,6 +1,8 @@
 import {getStartingX} from '../savestate'
+import { spaces } from '../utilities'
 // import {formatNumber} from '../utilities'
 import AlphaUpgradeButton from './AlphaUpgradeButton'
+import MultiOptionButton from '../MultiOptionButton'
 
 export default function AlphaScreen({state, updateState, popup, setTotalClicks}) {
       
@@ -75,14 +77,14 @@ const alphaUpgradeDictionary = {
     "SRES": {
         id:"SRES",
         requires: "PALP",
-        title:"S-Resetter",
-        description:"Automatically performs S-Resets.",
+        title:"Shop Resetter",
+        description:"Automatically performs Shop-Resets (S-Resets).",
         cost:3,
     },
     "ARES": {
         id:"ARES",
         requires: "SRES",
-        title:"\u03B1-Resetter",
+        title:"Alpha Resetter",
         description:"Automatically performs Alpha-Resets.",
         cost:4,
     },
@@ -94,6 +96,12 @@ const alphaUpgradeDictionary = {
     },
 }
 const alphaUpgradeTable = ["AAPP","FREF","OAPP","SAPP","BR1","UREF","AUNL","MEEQ","AREM","BR2","SLOT","PALP","SRES","ARES"]
+const applierRates = [1,2,5,10]
+const applierCosts = [1,1,2,10]
+const applierLevel = state.autoApplyLevel
+const upgradeApplierRate = ()=>{
+    updateState({name:"upgradeApplierRate", level:applierLevel + 1, rate:applierRates[applierLevel + 1], cost:applierCosts[applierLevel + 1] })
+}
 
 return (
     <div>{<>
@@ -104,9 +112,17 @@ return (
         <p>You start with x={getStartingX(state)} after resets</p>
         <p>Time in current &alpha; run: 1h23m45s</p>
         <p>Remember Equip: ON</p>
-        <p>Auto Applier: ON</p>
+        {state.alphaUpgrades.AAPP && <p>Auto Applier Rate: {state.autoApplyRate}/s{spaces()}{applierLevel<3 && <button disabled={state.alpha < applierCosts[applierLevel + 1]} onClick={upgradeApplierRate}>Upgrade for {applierCosts[applierLevel + 1]} &alpha;</button>}</p>}
         <p>Auto Unlocker: ON</p>
-        <p>S-Resetter: ON</p>
+        {spaces()}<MultiOptionButton settingName="autoResetterS" statusList={["ON","OFF"]} state={state} updateState={updateState} setTotalClicks={setTotalClicks}
+          description="Shop Resetter" tooltip="Controls shop resetter" tooltipList={["on", "off"]}/>
+        {spaces()}<MultiOptionButton settingName="autoResetterA" statusList={["ON","OFF"]} state={state} updateState={updateState} setTotalClicks={setTotalClicks}
+          description="Alpha Resetter" tooltip="Controls alpha resetter" tooltipList={["ON", "OFF"]}/>
+        {spaces()}<MultiOptionButton settingName="alphaThreshold" statusList={["1","2","3","5","7","10","25","100"]} state={state} updateState={updateState} setTotalClicks={setTotalClicks}
+          description="Alpha Target" tooltip="Number of Alpha before Alpha Resetter activates" tooltipList={["1","2","3","5","7","10","25","100"]}/>
+        {spaces()}<MultiOptionButton settingName="autoRemembererActive" statusList={["ON","OFF"]} state={state} updateState={updateState} setTotalClicks={setTotalClicks}
+          description="Auto Rememberer" tooltip="Whether equip loadout is automatically loaded after shop resets" tooltipList={["ON","OFF"]}/>
+
         <p>&alpha;-Resetter: ON, Minimum 10 &alpha;</p>
         {/* <p><button disabled={state.alpha < 1 || state.boughtAlpha[0]} onClick={()=>{buyAlphaUpgrade(0)}}>Get an extra formula slot</button>{spaces()}{state.boughtAlpha[0] ? <>Already bought</>: <>Cost: &alpha; = 1</>}</p> */}
         {/* <p><button disabled={state.alpha < 2 || state.boughtAlpha[1]} onClick={()=>{buyAlphaUpgrade(1)}}>Double all idle production</button>{spaces()}{state.boughtAlpha[1] ? <>Already bought</>: <>Cost: &alpha; = 2</>}</p> */}

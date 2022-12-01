@@ -30,7 +30,7 @@ export default function OptionScreen({state, popup, updateState, setTotalClicks}
 
   const importGame = ()=>{
     const encodedState = window.prompt("Paste your save here:");
-    if (encodedState && (!state.mileStoneCount || window.comfirm("This will overwrite your current save! Are you sure?"))){
+    if (encodedState && (!state.mileStoneCount || window.confirm("This will overwrite your current save! Are you sure?"))){
       const decodedState = JSON.parse(Buffer.from(encodedState,"base64").toString())
       updateState({name: "load", state: decodedState})
       setTotalClicks((x)=>x+1)
@@ -88,7 +88,8 @@ export default function OptionScreen({state, popup, updateState, setTotalClicks}
       </p><p>
         {spaces()}<MultiOptionButton settingName="colorizedFormulas" statusList={["NEW","EFFECT","TARGET","ALL","OFF"]} state={state} updateState={updateState} setTotalClicks={setTotalClicks}
           description="Formula Colors" tooltip="Controls how formulas are highlighted with colors" tooltipList={["Formulas discovered with last S-Reset", "Colored by highest differential in the formula", "Colored by differential that is affected", "All colored the same", "Not colored"]}/>
-        {/* {spaces()}<MultiOptionButton settingName="showHints" statusList={["ON", "OFF"]} state={state} updateState={updateState} setTotalClicks={setTotalClicks}
+      </p><p>
+           {/* {spaces()}<MultiOptionButton settingName="showHints" statusList={["ON", "OFF"]} state={state} updateState={updateState} setTotalClicks={setTotalClicks}
           description="Show Hints" tooltip="Controls whether hints are shown" tooltipList={["Hints are shown", "Hints are not shown"]}/>
         {spaces()}<MultiOptionButton settingName="hotKeys" statusList={["ON", "OFF"]} state={state} updateState={updateState} setTotalClicks={setTotalClicks}
           description="Hotkeys" tooltip="Controls whether hotkeys are enabled" tooltipList={["Hotkeys are enabled", "Hints are disabled"]}/> */}

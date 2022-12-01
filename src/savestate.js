@@ -5,7 +5,7 @@ import {shopFormulas} from './formulas/FormulaScreen'
 import {isLockedByChallenge} from './formulas/FormulaButton'
 import * as progresscalculation from './progresscalculation'
 
-export const version = "0.12"
+export const version = "0.13"
 export const newSave = {
     version: version,
     progressionLayer: 0,
@@ -22,6 +22,7 @@ export const newSave = {
     formulaUsed: {},
     myFormulas: [],
     autoApply: [false,false,false,false,false],
+    autoApplyLevel: 0,
     autoApplyRate: 1,
     equipLayouts: [[],[],[],[]],
     anyFormulaUsed: true,
@@ -66,11 +67,25 @@ export const newSave = {
         hotKeys: "ON",
         colorizedFormulas: "NEW",
         shopScroll: "ON",
+        autoResetterS: "ON",
+        autoResetterA: "ON",
+        alphaThreshold: "1",
+        autoRemembererActive: "ON",
     }
 }
 
 export const differentialTargets = [30e3,30e9,30e21,Infinity]
 export const alphaTarget = 30e33
+const alphaThresholds = {
+    "1": alphaTarget,
+    "2": 1e40,
+    "3": 1e50,
+    "5": 1e60,
+    "7": 1e70,
+    "10": 1e80,
+    "25": 1e90,
+    "100": 1e100,
+}
 
 export const getSaveGame = ()=>{
     const savedgame = window.localStorage.getItem('idleformulas')
@@ -120,8 +135,59 @@ export const getInventorySize = (state)=>{
 export const save = (state)=>{
     state.version = version
     state.saveTimeStamp = Date.now()
-    const currentgame = JSON.stringify({...state, holdAction:null})
+    let currentgame = JSON.stringify({...state, holdAction:null})
     window.localStorage.setItem('idleformulas', currentgame)
+}
+
+export const getAlphaRewardTier = (value)=>{
+    if (value >= 1e100)
+        return {
+            alpha: 100,
+            next: undefined,
+            nextAlpha: undefined,
+        }
+    else if (value >= 1e90)
+        return {
+            alpha: 25,
+            next: 1e100,
+            nextAlpha: 100,
+        }
+    else if (value >= 1e80)
+        return {
+            alpha: 10,
+            next: 1e90,
+            nextAlpha: 25,
+        }
+    else if (value >= 1e70)
+        return {
+            alpha: 7,
+            next: 1e80,
+            nextAlpha: 10,
+        }
+    else if (value >= 1e60)
+        return {
+            alpha: 5,
+            next: 1e70,
+            nextAlpha: 7,
+        }
+    else if (value >= 1e50)
+        return {
+            alpha: 3,
+            next: 1e60,
+            nextAlpha: 5,
+        }
+    else if (value >= 1e40)
+        return {
+            alpha: 2,
+            next: 1e50,
+            nextAlpha: 3,
+        }
+    else //if (value >= alphaTarget)
+        return {
+            alpha: 1,
+            next: 1e40,
+            nextAlpha: 2,
+        }
 }
 
 const performAlphaReset = (state)=>{
@@ -139,13 +205,14 @@ const performAlphaReset = (state)=>{
 }
 
 const giveAlphaRewards = (state)=>{
-    state.alpha++
+    state.alpha += getAlphaRewardTier(state.xValue[0])
     state.progressionLayer = Math.max(state.progressionLayer, 1)
     state.bestAlphaTime = Math.min(state.currentAlphaTime, state.bestAlphaTime)
     state.xHighScores[state.highestXTier] = Math.max(state.xHighScores[state.highestXTier], state.xValue[0])
     if (state.currentChallenge) {
         state.challengeProgress[state.currentChallenge] = 4
         state.clearedChallenges[state.currentChallenge] = true
+        state.activeChallenges = {}
         state.insideChallenge = false
         state.currentChallenge = null
         state.currentChallengeName = null
@@ -158,6 +225,7 @@ const performXReset = (state)=>{
     state.xValue = [getStartingX(state),0,0,0]
     state.millisSinceXReset = 0
     state.formulaUsed = {}
+    state.autoApply = [false,false,false,false,false]
     state.anyFormulaUsed = false
     state.xResetCount++
 }
@@ -174,6 +242,11 @@ const performShopReset = (state)=>{
     state.formulaApplyCount = 0
     state.autoUnlockIndex = 0
     return state
+}
+
+const rememberLoadout = (state)=>{
+    state.myFormulas = structuredClone(state.equipLayouts[state.highestXTier])
+    state.formulaBought = state.myFormulas.reduce((a,v)=>({...a, [v]:true}),{})
 }
 
 const upgradeXTier = (state)=>{
@@ -237,11 +310,11 @@ export const saveReducer = (state, action)=>{
         
         if (deltaMilliSeconds < 120000) { //Quick Computation
             state.currentAlphaTime += deltaMilliSeconds
-            const challengeMultiplier = state.activeChallenges.SLOWNESS ? 0.01 : 1
+            const challengeMultiplier = state.activeChallenges.SLOWPROD ? 0.01 : 1
             for(let i=1; i<state.xValue.length; i++) {
                 if (state.activeChallenges.DECREASE && state.anyFormulaUsed && state.highestXTier >= i-1 && state.xValue[i-1] >= -1)
                     state.xValue[i-1]-= deltaMilliSeconds / 1000
-                state.xValue[i-1]+= deltaMilliSeconds * challengeMultiplier * state.idleMultiplier * state.xValue[i] / 1000
+                state.xValue[i-1]+= deltaMilliSeconds * state.productionBonus[i-1] *challengeMultiplier * state.idleMultiplier * state.xValue[i] / 1000
             }
         } else if (!state.currentChallenge && (state.settings.offlineProgress === "ON" || (state.settings.offlineProgress === "ACTIVE" && !state.justLaunched))) { //Offline Progress
             state.currentAlphaTime += deltaMilliSeconds
@@ -256,8 +329,8 @@ export const saveReducer = (state, action)=>{
                 }
             }
         } else if (state.settings.offlineProgressPopup === "ON" || (state.settings.offlineProgressPopup === "LAUNCH" && state.justLaunched)){
-            deltaMilliSeconds = 0 //prevents further progress
             popup.alert("You were away for " + Math.floor(deltaMilliSeconds / 60000) + " minutes.")
+            deltaMilliSeconds = 0 //prevents further progress
         }
 
         //Apply Mouse Hold / Touch Hold events
@@ -329,13 +402,17 @@ export const saveReducer = (state, action)=>{
         }
 
         //Auto Resetters
-        if (state.alphaUpgrades.ARES && state.xValue[0] >= alphaTarget) {
+        const alphaThreshold = alphaThresholds[state.settings.alphaThreshold] || alphaTarget
+
+        if (state.settings.autoResetterA !== "OFF" && state.alphaUpgrades.ARES && state.xValue[0] >= alphaThreshold) {
             giveAlphaRewards(state)
             performAlphaReset(state)
             performShopReset(state)
-        } else if (state.alphaUpgrades.SRES && state.xValue[0] >= differentialTargets[state.highestXTier]) {
+            rememberLoadout(state)
+        } else if (state.settings.autoResetterS !== "OFF" && state.alphaUpgrades.SRES && state.xValue[0] >= differentialTargets[state.highestXTier]) {
             upgradeXTier(state)
             performShopReset(state)
+            rememberLoadout(state)
         }
 
         //Autosave
@@ -400,6 +477,7 @@ export const saveReducer = (state, action)=>{
         break;
     case "resetShop":
         performShopReset(state)
+        rememberLoadout(state)
         break;
     case "upgradeXTier":
         upgradeXTier(state)
@@ -408,6 +486,7 @@ export const saveReducer = (state, action)=>{
         giveAlphaRewards(state)
         performAlphaReset(state)
         performShopReset(state)
+        rememberLoadout(state)
         break;
     case "alphaUpgrade":
         if (state.alpha >= action.upgrade.cost) {
@@ -416,20 +495,30 @@ export const saveReducer = (state, action)=>{
         }
         break;
     case "cheat":
-        state.idleMultiplier = 1
-        state.mileStoneCount = 6
-        state.progressionLayer = 1
-        state.alpha++
-        state.xHighScores[0] = differentialTargets[0]
-        state.xHighScores[1] = differentialTargets[1]
-        state.xHighScores[2] = differentialTargets[2]
-        state.xHighScores[3] = alphaTarget
+        if (state.mileStoneCount < 6) {
+            state.idleMultiplier = 1
+            state.mileStoneCount = 6
+            state.progressionLayer = 1
+            state.alpha++
+            state.xHighScores[0] = differentialTargets[0]
+            state.xHighScores[1] = differentialTargets[1]
+            state.xHighScores[2] = differentialTargets[2]
+            state.xHighScores[3] = alphaTarget
+        } else {
+            state.alpha = 1
+            state.bestAlphaTime = Infinity
+        }
         break;
     case "memorize":
         state.equipLayouts[state.highestXTier] = structuredClone(state.myFormulas)
+        notify.success({title: "Equip Layout Saved"})
         break;
     case "remember":
-        state.myFormulas = structuredClone(state.equipLayouts[state.highestXTier])
+        rememberLoadout(state)
+        notify.success({title: "Equip Layout Loaded"})
+        break;
+    case "clearLoadout":
+        state.myFormulas = state.myFormulas.filter(formulaName => state.formulaUsed[formulaName])
         state.formulaBought = state.myFormulas.reduce((a,v)=>({...a, [v]:true}),{})
         break;
     case "toggleAutoApply":
@@ -448,6 +537,7 @@ export const saveReducer = (state, action)=>{
         performShopReset(state)
         if (!state.clearedChallenges[action.challenge.id])
             state.highestXTier = state.challengeProgress[action.challenge.id] || 0
+        rememberLoadout(state)
         break;
     case "exitChallenge":
         state.insideChallenge = false
@@ -459,8 +549,13 @@ export const saveReducer = (state, action)=>{
         break;
     case "startResearch":
         state.researchStartTime[action.research.id] = Date.now()
-        state.researchLevel[action.research.id] = (state.researchLevel[action.research.id] || 0) + 1 
+        state.researchLevel[action.research.id] = (state.researchLevel[action.research.id] || 0) + action.bulkAmount 
         state = updateProductionBonus(state)
+        break;
+    case "upgradeApplierRate":
+        state.alpha -= action.cost
+        state.autoApplyLevel = action.level
+        state.autoApplyRate = action.rate
         break;
     default:
         console.error("Action " + action.name + " not found.")
