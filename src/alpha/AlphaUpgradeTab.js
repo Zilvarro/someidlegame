@@ -1,4 +1,4 @@
-import { spaces } from '../utilities'
+import { spaces, secondsToHms } from '../utilities'
 // import {formatNumber} from '../utilities'
 import AlphaUpgradeButton from './AlphaUpgradeButton'
 import MultiOptionButton from '../MultiOptionButton'
@@ -106,17 +106,24 @@ return (
     <div>{<>
         <h2>Upgrades</h2>
         {alphaUpgradeTable.map((upgrade)=><AlphaUpgradeButton key={upgrade} upgrade={alphaUpgradeDictionary[upgrade]} state={state} popup={popup} updateState={updateState}/>)}
-        <p>Time in current &alpha; run: {(state.currentAlphaTime / 1000).toFixed()}s</p>
-        {state.alphaUpgrades.PALP && <p>Next Passive Alpha: {Math.max(1,((10 * state.bestAlphaTime - state.passiveAlphaTime) / 1000)).toFixed()}s</p>}
+        <br/><br/>
+        <h2>Infos</h2>
+        <p>Time in current Alpha run: {secondsToHms(state.currentAlphaTime / 1000)}</p>
+        <p>Fastest Alpha run: {secondsToHms(Math.ceil(state.bestAlphaTime))}</p>
+        {state.alphaUpgrades.PALP && <p>Next Passive Alpha: {secondsToHms(Math.max(0,((10 * state.bestAlphaTime - state.passiveAlphaTime) / 1000)))}</p>}
+        {state.clearedChallenges.FULLYIDLE && <>
+            <p>Best Master of Idle Completion: {state.bestIdleTimeAlpha}&alpha; in {secondsToHms(Math.ceil(state.bestIdleTime))}</p>
+            <p>Next Master Alpha: {secondsToHms(Math.max(0,((state.bestIdleTime / state.bestIdleTimeAlpha - state.passiveMasterTime) / 1000)))}</p>
+        </>}
         {state.alphaUpgrades.AAPP && <p>Auto Applier Rate: {state.autoApplyRate}/s{spaces()}{applierLevel<3 && <button disabled={state.alpha < applierCosts[applierLevel + 1]} onClick={upgradeApplierRate}>Upgrade for {applierCosts[applierLevel + 1]} &alpha;</button>}</p>}
-        {state.alphaUpgrades.SRES && <>{spaces()}<MultiOptionButton settingName="autoResetterS" statusList={["ON","OFF"]} state={state} updateState={updateState} setTotalClicks={setTotalClicks}
-          description="Shop Resetter" tooltip="Controls shop resetter" tooltipList={["on", "off"]}/></>}
+        {state.alphaUpgrades.AREM && <p>{spaces()}<MultiOptionButton settingName="autoRemembererActive" statusList={["ON","OFF"]} state={state} updateState={updateState} setTotalClicks={setTotalClicks}
+          description="Auto Rememberer"/></p>}
+        {state.alphaUpgrades.SRES && <p>{spaces()}<MultiOptionButton settingName="autoResetterS" statusList={["ON","OFF"]} state={state} updateState={updateState} setTotalClicks={setTotalClicks}
+          description="Shop Resetter"/></p>}
         {state.alphaUpgrades.ARES && <>{spaces()}<MultiOptionButton settingName="autoResetterA" statusList={["ON","OFF"]} state={state} updateState={updateState} setTotalClicks={setTotalClicks}
-          description="Alpha Resetter" tooltip="Controls alpha resetter" tooltipList={["ON", "OFF"]}/></>}
-        {state.alphaUpgrades.ARES && <>{spaces()}<MultiOptionButton settingName="alphaThreshold" statusList={["1","2","3","5","7","10","25","100"]} state={state} updateState={updateState} setTotalClicks={setTotalClicks}
-          description="Alpha Target" tooltip="Number of Alpha before Alpha Resetter activates" tooltipList={["1","2","3","5","7","10","25","100"]}/></>}
-        {state.alphaUpgrades.AREM && <>{spaces()}<MultiOptionButton settingName="autoRemembererActive" statusList={["ON","OFF"]} state={state} updateState={updateState} setTotalClicks={setTotalClicks}
-          description="Auto Rememberer" tooltip="Whether equip loadout is automatically loaded after shop resets" tooltipList={["ON","OFF"]}/></>}
+          description="Alpha Resetter"/></>}
+        {state.alphaUpgrades.ARES && <>{spaces()}<MultiOptionButton settingName="alphaThreshold" statusList={["MINIMUM","1e40","1e50","1e60","1e70","1e80","1e90","1e100"]} state={state} updateState={updateState} setTotalClicks={setTotalClicks}
+          description="Alpha Target"/></>}
         </>}
     </div>)
 }

@@ -1,7 +1,10 @@
 import AlphaChallengeButton from './AlphaChallengeButton.js'
-import {getChallengeBonus} from '../savestate.js'
+import {getChallengeBonus, alphaTarget} from '../savestate.js'
+import { spaces } from '../utilities.js'
 
-const alphaChallengeDictionary = {
+const alphaChallengeTable = ["SLOWPROD","SIMPLEONLY","DECREASE","LIMITED","RESETOTHER","NEWONLY","SMALLINV","COMPLEX","COUNTDOWN","SINGLEUSE","ONESHOT","FULLYIDLE", "FORMULAGOD"]
+
+export const alphaChallengeDictionary = {
     "SLOWPROD": {
         id:"SLOWPROD",
         title:"Slowness",
@@ -14,18 +17,18 @@ const alphaChallengeDictionary = {
     },
     "DECREASE": {
         id:"DECREASE",
-        title:"Decreasing",
-        description:"All non-negative x-Values are decreased by 1 each second.",
+        title:"Decay",
+        description:"All X-Values decay at a rate of 10% per second, rounded up.",
     },
     "LIMITED": {
         id:"LIMITED",
         title:"Limited",
-        description:"You can do at most 500 formula applications per S-Reset.",
+        description:"You can do at most 100 formula applications per S-Reset.",
     },
     "RESETOTHER": {
         id:"RESETOTHER",
         title:"Selfish",
-        description:"Applying a formula resets all other x-Values.",
+        description:"Applying a formula resets all other X-Values.",
     },
     "NEWONLY": {
         id:"NEWONLY",
@@ -45,12 +48,7 @@ const alphaChallengeDictionary = {
     "COUNTDOWN": {
         id:"COUNTDOWN",
         title:"Countdown",
-        description:"Every 60 seconds, an X-Reset is performed automatically.",
-    },
-    "THUNDER": {
-        id:"THUNDER",
-        title:"Thunder",
-        description:"Every time you use a formula your x-Values are cut in half.",
+        description:"Every 30 seconds, all X-Values are set to zero.",
     },
     "SINGLEUSE": {
         id:"SINGLEUSE",
@@ -67,14 +65,29 @@ const alphaChallengeDictionary = {
         title:"Master of Idle",
         description:"You cannot interact with anything on the Formulas tab.",
     },
+    "FORMULAGOD": {
+        id:"FORMULAGOD",
+        title:"Formula God",
+        description:"All previous challenges at once.",
+        subChallenges:alphaChallengeTable,
+    },
 }
-const alphaChallengeTable = ["SLOWPROD","SIMPLEONLY","DECREASE","LIMITED","RESETOTHER","NEWONLY","SMALLINV","COMPLEX","COUNTDOWN","SINGLEUSE","ONESHOT","FULLYIDLE"]
-
 export default function AlphaChallengeTab({state, updateState, popup}) {
     const exitAlphaChallenge = ()=>{
         popup.confirm(<>Exit current Challenge?</>,()=>{
             updateState({name: "exitChallenge"})
         })
+    }
+    const completeAlphaChallenge = ()=>{
+        updateState({name: "alphaReset"})
+    }
+    const openChallengeInfo = ()=>{
+        popup.alert(<>All challenges have a 30 minute time limit.
+            <br/>Formula Offline Progress is disabled during Challenges.
+            <br/>Each completed segment grants +10% Formula Efficiency.
+            <br/>Every fully completed challenge doubles your Formula Efficiency.
+            <br/>"Master of Idle" and "Formula God" give additional secret perks.
+        </>)
     }
 
     const challengeBonus = getChallengeBonus(state)
@@ -82,12 +95,14 @@ export default function AlphaChallengeTab({state, updateState, popup}) {
     return (<div>
         <h2>Challenges</h2>
         Your {challengeBonus.full} challenge completions and {challengeBonus.segment} segment completions boost your Formula Efficiency by {challengeBonus.bonus.toFixed(2)}.
-        <p>For now, offline progress is disabled while inside a challenge.</p>
         {state.currentChallenge && <p>You are currently in the "{state.currentChallengeName}" Challenge.</p>}
-        <p><button disabled={!state.insideChallenge} onClick={exitAlphaChallenge}>Exit Challenge</button></p>
+        <p>
+            {(state.xValue[0] < alphaTarget || !state.insideChallenge) &&<button disabled={!state.insideChallenge} onClick={exitAlphaChallenge}>Exit Challenge</button>}
+            {state.xValue[0] >= alphaTarget && state.insideChallenge && <button onClick={completeAlphaChallenge}>Complete Challenge</button>}
+            {spaces()}<button onClick={openChallengeInfo}>About Challenges</button>
+        </p>
         {alphaChallengeTable.map((challenge)=>
             <AlphaChallengeButton key={challenge} challenge={alphaChallengeDictionary[challenge]} state={state} updateState={updateState} popup={popup}/>
         )}
-        
     </div>)
 }

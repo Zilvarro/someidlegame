@@ -9,7 +9,7 @@ export const applyFormulaToState = (state, formula, forceApply, silent)=>{
         applyNeed = 0
     } else if (state.alphaUpgrades.FREF) {
         applyCost = 0
-        applyNeed = formula.applyCost
+        applyNeed = formula.applyNeed + formula.applyCost
     }
 
     //Can't afford or not yet unlocked
@@ -35,7 +35,7 @@ export const applyFormulaToState = (state, formula, forceApply, silent)=>{
 
     //Would lower the value
     const newValue = formula.applyFormula(state.formulaEfficiency[formula.targetLevel], state.xValue, state)
-    if (0.9999 * state.xValue[formula.targetLevel] > newValue) {
+    if (isNaN(newValue) || 0.9999 * state.xValue[formula.targetLevel] > newValue) {
         if (silent)
             return false;
 

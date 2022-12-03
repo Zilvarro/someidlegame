@@ -8,7 +8,14 @@ export default function MultiOptionButton({state, updateState, settingName, desc
     const changeSetting = ()=>{
         updateState({name:"changeSetting", settingName: settingName, nextStatus})
     }
+
+    let fullToolTip = ""
+    if (tooltipList)
+        fullToolTip = tooltip + ((currentStatus && tooltipList[currentIndex]) ? "\n" + currentStatus + ": " + tooltipList[currentIndex] : "")
+    else if (tooltip)
+        fullToolTip = tooltip
+
     return (
-        <button title={tooltip + ((currentStatus && tooltipList[currentIndex]) ? "\n" + currentStatus + ": " + tooltipList[currentIndex] : "")} onClick={changeSetting}>{description}: {currentStatus}</button>
+        <button title={fullToolTip} onClick={changeSetting}>{description}: {currentStatus}</button>
     )
 }

@@ -4,16 +4,15 @@ import {save} from './savestate'
 
 //Tries to save the game right before the tab is closed
 class AutoSave extends React.Component{
-  constructor({saveState}){
-    super();
-    this.saveState = saveState
+  constructor(props){
+    super(props);
     this.onUnload = this.onUnload.bind(this)
     this.save = save
   }
 
   onUnload(e){
-    if (this.saveState.settings.autoSave === "ON" && this.saveState.mileStoneCount > 0) {
-      this.save(this.saveState)
+    if (this.props.saveState.settings.autoSave === "ON" && this.props.saveState.mileStoneCount > 0) {
+      this.save(this.props.saveState)
     }
   }
 
