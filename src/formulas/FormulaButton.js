@@ -8,17 +8,18 @@ export const isLockedByChallenge = (state, formula)=>((state.activeChallenges.SI
 
 export const getUnlockMultiplier = (formula, state)=>{
     let unlockMultiplier = 1
+    let effectLevel = formula.effectLevel || formula.targetLevel
 
     if (formula.isBasic) {
         unlockMultiplier = 1
     } else {
-        if (formula.effectLevel < 1 && state.highestXTier >= 1) {
+        if (effectLevel < 1 && state.highestXTier >= 1) {
             formula.unlockMultiplier *= 4
         }
-        if (formula.effectLevel < 2 && state.highestXTier >= 2) {
+        if (effectLevel < 2 && state.highestXTier >= 2) {
             formula.unlockMultiplier *= 12
         }
-        if (formula.effectLevel < 3 && state.highestXTier >= 3) {
+        if (effectLevel < 3 && state.highestXTier >= 3) {
             formula.unlockMultiplier *= 8000
         }
     }

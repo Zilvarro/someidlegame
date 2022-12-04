@@ -96,5 +96,8 @@ export const secondsToHms = (seconds)=>{
     var hDisplay = d > 0 || h > 0 ? h + "h": "";
     var mDisplay = d > 0 || h > 0 || m > 0 ? m + "m" : "";
     var sDisplay = s + "s";
-    return dDisplay + hDisplay + mDisplay + sDisplay;
+    var hZero = dDisplay && h < 10 ? "0" : "";
+    var mZero = hDisplay && m < 10 ? "0" : "";
+    var sZero = mDisplay && s < 10 ? "0" : "";
+    return dDisplay + hZero + hDisplay + mZero + mDisplay + sZero + sDisplay;
 }

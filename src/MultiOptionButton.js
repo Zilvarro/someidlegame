@@ -1,4 +1,4 @@
-export default function MultiOptionButton({state, updateState, settingName, description, statusList, visible=true, tooltip, tooltipList}) {
+export default function MultiOptionButton({state, updateState, settingName, disabled, description, statusList, visible=true, tooltip, tooltipList}) {
     if (!visible) return undefined
 
     const currentStatus = state.settings[settingName]
@@ -16,6 +16,6 @@ export default function MultiOptionButton({state, updateState, settingName, desc
         fullToolTip = tooltip
 
     return (
-        <button title={fullToolTip} onClick={changeSetting}>{description}: {currentStatus}</button>
+        <button title={fullToolTip} disabled={disabled} onClick={changeSetting}>{description}: {currentStatus}</button>
     )
 }

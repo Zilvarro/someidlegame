@@ -6,7 +6,7 @@ import {isLockedByChallenge} from './formulas/FormulaButton'
 import {alphaChallengeDictionary} from './alpha/AlphaChallengeTab'
 import * as progresscalculation from './progresscalculation'
 
-export const version = "0.14"
+export const version = "0.15"
 export const newSave = {
     version: version,
     progressionLayer: 0,
@@ -127,8 +127,7 @@ export const loadGame = ()=>{
 }
 
 export const getStartingX = (state)=>{
-    state.productionBonus[0] = Math.pow(1.01, state.researchLevel["x'"] || 0)
-    return Math.floor(100*Math.pow(1.01, state.researchLevel["x"] || 0)-100);
+    return state.researchLevel["x"] >= 2500 ? 30e12 : Math.floor(100*Math.pow(1.01, state.researchLevel["x"] || 0)-100);
 }
 
 export const getInventorySize = (state)=>{
@@ -148,13 +147,13 @@ export const save = (state)=>{
 export const getAlphaRewardTier = (value)=>{
     if (value >= 1e100)
         return {
-            alpha: 100,
+            alpha: 1000,
             next: undefined,
             nextAlpha: undefined,
         }
     else if (value >= 1e90)
         return {
-            alpha: 25,
+            alpha: 100,
             next: 1e100,
             nextAlpha: 100,
         }
@@ -289,9 +288,10 @@ const upgradeXTier = (state)=>{
 }
 
 const updateProductionBonus = (state)=>{
-    state.productionBonus[0] = Math.pow(1.01, state.researchLevel["x'"] || 0)
-    state.productionBonus[1] = Math.pow(1.01, state.researchLevel["x''"] || 0)
-    state.productionBonus[2] = Math.pow(1.01, state.researchLevel["x'''"] || 0)
+    const researchBonus = 1 //getMaxxedResearchBonus(state).bonus (This turned out to be too OP)
+    state.productionBonus[0] = researchBonus*(state.researchLevel["x'"] >= 2500 ? 300e9 : Math.pow(1.01, state.researchLevel["x'"] || 0 ))
+    state.productionBonus[1] = researchBonus*(state.researchLevel["x''"] >= 2500 ? 300e9 : Math.pow(1.01, state.researchLevel["x''"] || 0))
+    state.productionBonus[2] = researchBonus*(state.researchLevel["x'''"] >= 2500 ? 300e9 : Math.pow(1.01, state.researchLevel["x'''"] || 0))
     return state
 }
 
@@ -308,16 +308,38 @@ export const getChallengeBonus = (state)=>{
             clearedSegments += state.challengeProgress[c]
     }
 
+    if (clearedFull >= 13) {
+        return {
+            bonus: 100000,
+            full: 13,
+            segment: 52,
+        }
+    } else {
+        return {
+            bonus:(1 + 0.1 * clearedSegments) * Math.pow(2, clearedFull),
+            full: clearedFull,
+            segment: clearedSegments,
+        }
+    }
+}
+
+export const getMaxxedResearchBonus = (state)=>{
+    let maxxed = 0
+    for (let c in state.researchLevel) {
+        if (state.researchLevel[c] >= 2500)
+            maxxed++
+    }
+
     return {
-        bonus:(1 + 0.1 * clearedSegments) * Math.pow(2, clearedFull),
-        full: clearedFull,
-        segment: clearedSegments,
+        bonus: Math.pow(2, maxxed),
+        count: maxxed,
     }
 }
 
 const updateFormulaEfficiency = (state)=>{
     const challengeBonus = getChallengeBonus(state).bonus
-    state.formulaEfficiency = [challengeBonus,challengeBonus,challengeBonus,challengeBonus]
+    const researchBonus = getMaxxedResearchBonus(state).bonus
+    state.formulaEfficiency = [challengeBonus * researchBonus,challengeBonus * researchBonus,challengeBonus * researchBonus,challengeBonus * researchBonus]
     return state
 }
 
@@ -464,7 +486,7 @@ export const saveReducer = (state, action)=>{
         //Auto Resetters
         const alphaThreshold = alphaThresholds[state.settings.alphaThreshold] || alphaTarget
 
-        if (state.settings.autoResetterA !== "OFF" && state.alphaUpgrades.ARES && !state.insideChallenge && state.xValue[0] >= alphaThreshold) {
+        if (state.settings.autoResetterA !== "OFF" && state.alphaUpgrades.ARES && state.xValue[0] >= alphaThreshold) {
             giveAlphaRewards(state)
             performAlphaReset(state)
             performShopReset(state)
@@ -574,7 +596,10 @@ export const saveReducer = (state, action)=>{
             state.xHighScores[3] = alphaTarget
         } else {
             state.alpha = 1
+            state.alpha = 1000
             state.bestAlphaTime = Infinity
+            state.bestIdleTime = Infinity
+            state.bestIdleTimeAlpha = 1
             state.passiveAlphaTime = 0
             state.passiveMasterTime = 0
         }
@@ -629,8 +654,9 @@ export const saveReducer = (state, action)=>{
         break;
     case "startResearch":
         state.researchStartTime[action.research.id] = Date.now()
-        state.researchLevel[action.research.id] = (state.researchLevel[action.research.id] || 0) + action.bulkAmount 
+        state.researchLevel[action.research.id] = Math.min(2500, (state.researchLevel[action.research.id] || 0) + action.bulkAmount)
         state = updateProductionBonus(state)
+        state = updateFormulaEfficiency(state)
         break;
     case "upgradeApplierRate":
         state.alpha -= action.cost

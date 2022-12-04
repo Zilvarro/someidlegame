@@ -433,6 +433,20 @@ const formulaList = {
         explanation: "sqrt is the square root.",
         complex: true,
     },
+    "x''+1V": {
+        formulaName: "x''+1V",
+        description: <>x'' &rarr; x'' + 1V</>,
+        descriptions: {
+            "LETTER": <>x'' &rarr; x'' + 1V</>,
+            "SCIENTIFIC": <>x''' &rarr; x''' + 1e24</>,
+            "AMBIGUOUS": <>x''' &rarr; x''' + 1?</>,
+        },
+        unlockCost: 200e33,
+        applyCost: 10e33,
+        applyNeed: 0,
+        targetLevel: 2,
+        applyFormula: (eff, x,state)=>(x[2]+1e24 * eff),
+    },
     "x'''+5S": {
         formulaName: "x'''+5S",
         description: <>x''' &rarr; x''' + 5S</>,

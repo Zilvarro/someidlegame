@@ -87,7 +87,7 @@ function App() {
     </span>
     <span style={{display:"inline-block", marginLeft:"10px"}}>
       <button style={{margin:"5px"}} onClick={()=>selectTab("AchievementScreen")}>Milestones</button>
-      <button style={{margin:"5px"}} onClick={()=>selectTab("LetterScreen")}>Letters</button>
+      {/* <button style={{margin:"5px"}} onClick={()=>selectTab("LetterScreen")}>Letters</button> */}
       <button style={{margin:"5px"}} onClick={()=>selectTab("OptionScreen")}>Options</button>
     </span>
     {/* {spaces()}<button onClick={cheat}>Cheat</button>

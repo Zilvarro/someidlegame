@@ -3,6 +3,12 @@ import { spaces, secondsToHms } from '../utilities'
 import AlphaUpgradeButton from './AlphaUpgradeButton'
 import MultiOptionButton from '../MultiOptionButton'
 
+const alphaUpgradeTable = ["AAPP","FREF","OAPP","SAPP","BR1","UREF","AUNL","MEEQ","AREM","BR2","SLOT","PALP","SRES","ARES"]
+
+export const countAlphaUpgrades=(state)=>{
+    return alphaUpgradeTable.filter((x)=>state.alphaUpgrades[x]).length
+}
+
 export default function AlphaScreen({state, updateState, popup, setTotalClicks}) {
       
 const alphaUpgradeDictionary = {
@@ -84,7 +90,7 @@ const alphaUpgradeDictionary = {
         id:"ARES",
         requires: "SRES",
         title:"Alpha Resetter",
-        description:"Automatically performs Alpha-Resets.",
+        description:"Automatically performs Alpha-Resets. Can also complete Challenges.",
         cost:4,
     },
     "BR1": {
@@ -94,7 +100,7 @@ const alphaUpgradeDictionary = {
         fixed: <br/>
     },
 }
-const alphaUpgradeTable = ["AAPP","FREF","OAPP","SAPP","BR1","UREF","AUNL","MEEQ","AREM","BR2","SLOT","PALP","SRES","ARES"]
+
 const applierRates = [1,2,5,10]
 const applierCosts = [1,1,2,10]
 const applierLevel = state.autoApplyLevel
@@ -109,21 +115,13 @@ return (
         <br/><br/>
         <h2>Infos</h2>
         <p>Time in current Alpha run: {secondsToHms(state.currentAlphaTime / 1000)}</p>
-        <p>Fastest Alpha run: {secondsToHms(Math.ceil(state.bestAlphaTime))}</p>
+        <p>Fastest Alpha run: {secondsToHms(Math.ceil(state.bestAlphaTime / 1000))}</p>
         {state.alphaUpgrades.PALP && <p>Next Passive Alpha: {secondsToHms(Math.max(0,((10 * state.bestAlphaTime - state.passiveAlphaTime) / 1000)))}</p>}
         {state.clearedChallenges.FULLYIDLE && <>
-            <p>Best Master of Idle Completion: {state.bestIdleTimeAlpha}&alpha; in {secondsToHms(Math.ceil(state.bestIdleTime))}</p>
-            <p>Next Master Alpha: {secondsToHms(Math.max(0,((state.bestIdleTime / state.bestIdleTimeAlpha - state.passiveMasterTime) / 1000)))}</p>
+            <p>Best Master of Idle Completion: {state.bestIdleTimeAlpha}&alpha; in {secondsToHms(Math.ceil(state.bestIdleTime  / 1000))}</p>
+            {(state.bestIdleTimeAlpha / state.bestIdleTime / 1000 > 1) ? <p>{(state.bestIdleTimeAlpha / state.bestIdleTime / 1000).toFixed()}/s</p> :<p>Next Master Alpha: {secondsToHms(Math.max(0,((state.bestIdleTime / state.bestIdleTimeAlpha - state.passiveMasterTime) / 1000)))}</p>}
         </>}
         {state.alphaUpgrades.AAPP && <p>Auto Applier Rate: {state.autoApplyRate}/s{spaces()}{applierLevel<3 && <button disabled={state.alpha < applierCosts[applierLevel + 1]} onClick={upgradeApplierRate}>Upgrade for {applierCosts[applierLevel + 1]} &alpha;</button>}</p>}
-        {state.alphaUpgrades.AREM && <p>{spaces()}<MultiOptionButton settingName="autoRemembererActive" statusList={["ON","OFF"]} state={state} updateState={updateState} setTotalClicks={setTotalClicks}
-          description="Auto Rememberer"/></p>}
-        {state.alphaUpgrades.SRES && <p>{spaces()}<MultiOptionButton settingName="autoResetterS" statusList={["ON","OFF"]} state={state} updateState={updateState} setTotalClicks={setTotalClicks}
-          description="Shop Resetter"/></p>}
-        {state.alphaUpgrades.ARES && <>{spaces()}<MultiOptionButton settingName="autoResetterA" statusList={["ON","OFF"]} state={state} updateState={updateState} setTotalClicks={setTotalClicks}
-          description="Alpha Resetter"/></>}
-        {state.alphaUpgrades.ARES && <>{spaces()}<MultiOptionButton settingName="alphaThreshold" statusList={["MINIMUM","1e40","1e50","1e60","1e70","1e80","1e90","1e100"]} state={state} updateState={updateState} setTotalClicks={setTotalClicks}
-          description="Alpha Target"/></>}
         </>}
     </div>)
 }

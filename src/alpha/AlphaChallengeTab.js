@@ -2,7 +2,7 @@ import AlphaChallengeButton from './AlphaChallengeButton.js'
 import {getChallengeBonus, alphaTarget} from '../savestate.js'
 import { spaces } from '../utilities.js'
 
-const alphaChallengeTable = ["SLOWPROD","SIMPLEONLY","DECREASE","LIMITED","RESETOTHER","NEWONLY","SMALLINV","COMPLEX","COUNTDOWN","SINGLEUSE","ONESHOT","FULLYIDLE", "FORMULAGOD"]
+export const alphaChallengeTable = ["SLOWPROD","SIMPLEONLY","DECREASE","LIMITED","RESETOTHER","NEWONLY","SMALLINV","COMPLEX","COUNTDOWN","SINGLEUSE","ONESHOT","FULLYIDLE", "FORMULAGOD"]
 
 export const alphaChallengeDictionary = {
     "SLOWPROD": {
@@ -64,12 +64,14 @@ export const alphaChallengeDictionary = {
         id:"FULLYIDLE",
         title:"Master of Idle",
         description:"You cannot interact with anything on the Formulas tab.",
+        requirement: 5,
     },
     "FORMULAGOD": {
         id:"FORMULAGOD",
         title:"Formula God",
         description:"All previous challenges at once.",
         subChallenges:alphaChallengeTable,
+        requirement: 10,
     },
 }
 export default function AlphaChallengeTab({state, updateState, popup}) {
@@ -97,8 +99,8 @@ export default function AlphaChallengeTab({state, updateState, popup}) {
         Your {challengeBonus.full} challenge completions and {challengeBonus.segment} segment completions boost your Formula Efficiency by {challengeBonus.bonus.toFixed(2)}.
         {state.currentChallenge && <p>You are currently in the "{state.currentChallengeName}" Challenge.</p>}
         <p>
-            {(state.xValue[0] < alphaTarget || !state.insideChallenge) &&<button disabled={!state.insideChallenge} onClick={exitAlphaChallenge}>Exit Challenge</button>}
-            {state.xValue[0] >= alphaTarget && state.insideChallenge && <button onClick={completeAlphaChallenge}>Complete Challenge</button>}
+            {(state.xValue[0] < alphaTarget || !state.insideChallenge || state.activeChallenges.FULLYIDLE) &&<button disabled={!state.insideChallenge} onClick={exitAlphaChallenge}>Exit Challenge</button>}
+            {state.xValue[0] >= alphaTarget && state.insideChallenge && !state.activeChallenges.FULLYIDLE && <button onClick={completeAlphaChallenge}>Complete Challenge</button>}
             {spaces()}<button onClick={openChallengeInfo}>About Challenges</button>
         </p>
         {alphaChallengeTable.map((challenge)=>

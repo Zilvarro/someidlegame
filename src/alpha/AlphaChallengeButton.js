@@ -1,3 +1,5 @@
+import { getChallengeBonus } from "../savestate"
+
 export default function AlphaChallengeButton({state, challenge, popup, updateState}) {
     
     const clickAlphaChallenge = ()=>{
@@ -32,6 +34,14 @@ export default function AlphaChallengeButton({state, challenge, popup, updateSta
         verticalAlign: "top",
     }
 
+    //Locked
+    if (challenge.requirement && challenge.requirement > getChallengeBonus(state).full) {
+        return (
+            <button disabled={true} style={buttonStyle}>{challenge.title}<br/><br/>Complete {challenge.requirement} Challenges to Unlock<br/><br/>Locked</button>
+        )
+    }
+
+    //Normal
     return (
         <button disabled={disabled} onClick={clickAlphaChallenge} style={buttonStyle}>{challenge.title}<br/><br/>{challenge.description}<br/><br/>{state.challengeProgress[challenge.id] || 0}/4 Complete</button>
     )

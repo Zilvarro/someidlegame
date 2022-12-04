@@ -1,9 +1,12 @@
+import {alphaTarget, getChallengeBonus} from './savestate'
+import {countAlphaUpgrades} from './alpha/AlphaUpgradeTab'
+
 export const milestoneList = [
   {
-    id:"x=10",
+    id:"One Hundred",
     name:"First Steps",
-    description:<>Reach x=10</>,
-    check: (state)=>(state.xValue[0] >= 10),
+    description:<>Reach x=100</>,
+    check: (state)=>(state.xValue[0] >= 100),
     tier: 0,
   },{
     id:"XReset",
@@ -30,53 +33,82 @@ export const milestoneList = [
     check: (state)=>(state.highestXTier >= 3),
     tier: 0,
   },{
+    id:"ProgressBar",
+    name:"Making Progress",
+    description:<>Fill up the Progress Bar</>,
+    check: (state)=>(state.xValue[0] >= alphaTarget),
+    tier: 0,
+  },{
     id:"Alpha",
-    name:"So It Begins",
-    description:<>Perform an &alpha;-Reset</>,
-    teaseName:"?? ?? ??????",
-    teaseDescription:<>??????? ?? ???????</>,
-    check: (state)=>(state.maxAlpha >= 1),
+    name:"A new Era",
+    description:<>&alpha;-Reset and buy an Alpha Upgrade</>,
+    teaseName:"? ??? ???",
+    teaseDescription:<>?????? ??? ??? ?? ????? ???????</>,
+    check: (state)=>(state.alphaUpgrades.SLOT || state.alphaUpgrades.AAPP || state.alphaUpgrades.UREF),
     tier: 1,
     teased: 0
   },{
-    id:"Research",
-    name:"Research",
-    description:<>Do some Research</>,
-    check: (state)=>(false),
+    id:"BasicResearch",
+    name:"Researcher",
+    description:<>Reach Level 100 for all Research Bars</>,
+    check: (state)=>(state.researchLevel["x"] >= 100 && state.researchLevel["x'"] >= 100 && state.researchLevel["x''"] >= 100 && state.researchLevel["x'''"] >= 100),
     tier: 1,
   },{
-    id:"Challenge",
-    name:"Challenge",
+    id:"SingleChallenge",
+    name:"Challenger Appeared",
     description:<>Clear a Challenge</>,
-    check: (state)=>(false),
+    check: (state)=>(getChallengeBonus(state).full >= 1),
     tier: 1,
   },{
     id:"AllUpgrades",
-    name:"All Alpha Upgrades",
+    name:"Upgrade Complete",
     description:<>Buy all Alpha Upgrades</>,
+    check: (state)=>countAlphaUpgrades(state)>=12,
+    tier: 1,
+  },{
+    id:"MaxResearch",
+    name:"Brilliant Scientist",
+    description:<>Get a Research Bar to Level 2500</>,
+    check: (state)=>(state.researchLevel["x"] >= 2500 || state.researchLevel["x'"] >= 2500 || state.researchLevel["x''"] >= 2500 || state.researchLevel["x'''"] >= 2500),
+    tier: 1,
+  },{
+    id:"StartingStones",
+    name:"No Stone Unturned",
+    description:<>Get all Starting Stones</>,
     check: (state)=>(false),
     tier: 1,
   },{
-    id:"AllChallenges",
-    name:"All Challenges",
-    description:<>Clear all Challenges</>,
+    id:"AlphaTrueEnd",
+    name:"Deepest Desire",
+    description:<>Make your wish come true</>,
     check: (state)=>(false),
     tier: 1,
-  },{
-    id:"Much Alpha",
-    name:"Much Alpha",
-    description:<>Reach &alpha; = TBD</>,
-    check: (state)=>(false),
+  // },{
+  //   id:"World Reset",
+  //   name:"Essence of the World",
+  //   description:<>Perform a World Reset</>,
+  //   check: (state)=>(false),
+  //   teaseName:"?? ?? ??????",
+  //   teaseDescription:<>??????? ?? ???????</>,
+  //   tier: 2,
+  //   teased: 1,
+  },
+]
+
+export const layerList = [
+  {
+    id:"FORMULAS",
+    name:"FORMULAS",
+    description: "First of many x to come...",
+    check: (state)=>(state.xValue[0] >= 1),
+    tier: 0,
+  },
+  {
+    id:"ALPHA",
+    name:"ALPHA",
+    description: "New Layer Unlocked",
+    check: (state)=>(state.alpha >= 1),
     tier: 1,
-  },{
-    id:"World Reset",
-    name:"Essence of the World",
-    description:<>Perform a World Reset</>,
-    check: (state)=>(false),
-    teaseName:"?? ?? ??????",
-    teaseDescription:<>??????? ?? ???????</>,
-    tier: 2,
-    teased: 1,
   },
 ]
 

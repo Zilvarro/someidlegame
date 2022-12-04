@@ -2,6 +2,7 @@ import FormulaTable from './FormulaTable'
 import {getUnlockMultiplier} from './FormulaButton'
 import ValueTable from './ValueTable'
 import formulaList from './FormulaDictionary'
+import MultiOptionButton from '../MultiOptionButton'
 import {spaces,formatNumber} from '../utilities'
 import {getInventorySize, differentialTargets, alphaTarget, getAlphaRewardTier} from '../savestate'
 
@@ -49,6 +50,7 @@ export const shopFormulas=[
   "x'+30S",
   "x''+40P",
   "x'''*sqrt(300S-x''')/500B",
+  "x''+1V",
   "x'''+5S",
 ]
 
@@ -140,12 +142,12 @@ export default function FormulaScreen({state, updateState, setTotalClicks, popup
             {state.mileStoneCount >= 2 && state.highestXTier < 3 && state.xValue[0] < differentialTarget && <p>Reach x={formatNumber(differentialTarget, state.settings.numberFormat)} for the next S-Reset</p>}
             {state.mileStoneCount >= 6 && state.highestXTier === 3 && state.xValue[0] < alphaTarget && !state.insideChallenge && <p>Reach x={formatNumber(alphaTarget)} to perform an &alpha;-Reset</p>}
             {state.mileStoneCount >= 6 && state.highestXTier === 3 && state.xValue[0] < alphaTarget && state.insideChallenge && <p>Reach x={formatNumber(alphaTarget)} to complete the challenge</p>}
-            {state.mileStoneCount >= 6 && state.highestXTier === 3 && !state.insideChallenge && state.xValue[0] >= alphaTarget && <p>Alpha Reset for {alphaRewardTier.alpha} &alpha;.{alphaRewardTier.next && <>&nbsp;(Next: {alphaRewardTier.nextAlpha} &alpha; at x={formatNumber(alphaRewardTier.next)})</>}</p>}
+            {state.mileStoneCount >= 6 && !state.insideChallenge && state.xValue[0] >= alphaTarget && <p>Alpha Reset for {alphaRewardTier.alpha} &alpha;.{alphaRewardTier.next && <>&nbsp;(Next: {alphaRewardTier.nextAlpha} &alpha; at x={formatNumber(alphaRewardTier.next)})</>}</p>}
             {state.mileStoneCount >= 3 && state.autoUnlockIndex < shopFormulas.length && <p>Next Formula at x={formatNumber(formulaList[shopFormulas[state.autoUnlockIndex]].unlockCost * getUnlockMultiplier(formulaList[shopFormulas[state.autoUnlockIndex]],state), state.settings.numberFormat)}</p>}
             <p></p>
             {state.mileStoneCount < 6 && (state.xValue[0] >= alphaTarget && state.mileStoneCount >= 5 ?
                 <button onClick={performAlphaReset} style={{backgroundColor:"#99FF99", fontWeight:"bold", border:"2px solid", height:"20px", width:"80%"}}>
-                  UNLOCK A NEW LAYER
+                  SEEK THE BEGINNING
                 </button>
             : 
               <div style={{color:"#000000", backgroundColor:"#ffffff", border:"2px solid", height:"20px",width:"80%"}}>
@@ -157,6 +159,7 @@ export default function FormulaScreen({state, updateState, setTotalClicks, popup
           {state.mileStoneCount >= 1 && state.mileStoneCount <=2 && 
             <p>Hint: You can apply formulas repeatedly by holding the button or using Enter</p>
           }
+          <br/>
           <p>
             {state.alphaUpgrades.MEEQ && <>
               <button onClick={memorize} disabled={state.activeChallenges.FULLYIDLE} title={"Saves equip layout so you can use it again later"}>Memorize</button>
@@ -166,6 +169,16 @@ export default function FormulaScreen({state, updateState, setTotalClicks, popup
             {state.alphaUpgrades.SAPP && <>
               {spaces()}<button onClick={toggleAutoApply} disabled={state.activeChallenges.FULLYIDLE} title={"Activate/Deactivate all Auto Appliers"}>Auto</button>
             </>}
+            <br/><br/>
+            {state.alphaUpgrades.SRES && <><MultiOptionButton disabled={state.activeChallenges.FULLYIDLE} settingName="autoResetterS" statusList={["ON","OFF"]} state={state} updateState={updateState} setTotalClicks={setTotalClicks}
+              description="Shop Resetter"/></>}
+            {state.alphaUpgrades.AREM && <>{spaces()}<MultiOptionButton disabled={state.activeChallenges.FULLYIDLE} settingName="autoRemembererActive" statusList={["ON","OFF"]} state={state} updateState={updateState} setTotalClicks={setTotalClicks}
+              description="Rememberer"/></>}
+            <br/><br/>
+            {state.alphaUpgrades.ARES && <><MultiOptionButton disabled={state.activeChallenges.FULLYIDLE} settingName="autoResetterA" statusList={["ON","OFF"]} state={state} updateState={updateState} setTotalClicks={setTotalClicks}
+              description="Alpha Resetter"/></>}
+            {state.alphaUpgrades.ARES && <>{spaces()}<MultiOptionButton disabled={state.activeChallenges.FULLYIDLE} settingName="alphaThreshold" statusList={["MINIMUM","1e40","1e50","1e60","1e70","1e80","1e90","1e100"]} state={state} updateState={updateState} setTotalClicks={setTotalClicks}
+              description="Alpha Target"/></>}
           </p>
         </div><div className="column">
         <h2 style={{marginTop:"0px"}}>Shop {state.myFormulas.length >= getInventorySize(state) && <>{spaces()}[FULL INVENTORY]</>}</h2>
