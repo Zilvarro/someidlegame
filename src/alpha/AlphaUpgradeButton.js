@@ -19,7 +19,7 @@ export default function AlphaUpgradeButton({state, popup, upgrade, updateState})
     if (state.alphaUpgrades[upgrade.id]) {
         backgroundColor = "#ff9999"
     } else if (disabled) {
-        backgroundColor = "#222222"
+        backgroundColor = "#444444"
     } else if (state.alpha < upgrade.cost) {
         backgroundColor = "#888888"
     } else {

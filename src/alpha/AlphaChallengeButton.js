@@ -11,7 +11,7 @@ export default function AlphaChallengeButton({state, challenge, popup, updateSta
     const disabled = state.insideChallenge
     let backgroundColor
     if (state.activeChallenges[challenge.id]) { //ACTIVE => RED
-        backgroundColor = "#ff6666"
+        backgroundColor = "#ff5555"
     } else if (state.clearedChallenges[challenge.id]) { //FULLY CLEARED => PINK
         backgroundColor = "#ff9999"
     } else if (state.insideChallenge) {

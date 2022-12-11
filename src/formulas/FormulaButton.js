@@ -94,23 +94,13 @@ export default function FormulaButton({state, popup, updateState, setTotalClicks
         formula.effectLevel = formula.targetLevel
     }
 
-    const buttonColors=["#ffffff","#d6d6ff","#ffffcc","#ffcccc"]
-    let buttonColor = buttonColors[0]
-    switch (state.settings.colorizedFormulas) {
-        case "NEW":
-            if (formula.effectLevel === state.highestXTier)
-                buttonColor = buttonColors[formula.effectLevel]
-            break
-        case "EFFECT":
-            buttonColor = buttonColors[formula.effectLevel]
-            break
-        case "TARGET":
-            buttonColor = buttonColors[formula.targetLevel]
-            break
-        case "ALL":
-            buttonColor = buttonColors[state.highestXTier]
-            break
-        default:
+    let buttonColor = "#ffffff"
+    let buttonBoldness = "normal"
+    if (formula.effectLevel === state.highestXTier) {
+        buttonBoldness = "bold"
+    }
+    if (applyNeed <= state.xValue[0] && applyCost <= state.xValue[0]) {
+        buttonColor = "#CCFFCC"
     }
 
     formula.unlockMultiplier = getUnlockMultiplier(formula,state)
@@ -162,7 +152,7 @@ export default function FormulaButton({state, popup, updateState, setTotalClicks
                 {state.formulaUnlocked[formulaName] && state.xValue[0] >= applyNeed && state.xValue[0] >= applyCost && !state.formulaUsed[formulaName] && <>{spaces()}Click to apply formula!</>}
                 {!state.formulaUsed[formulaName] && <>{spaces()}<button disabled={state.activeChallenges.FULLYIDLE} 
                     onClick={()=>discardFormula(formula)}>
-                    UNEQUIP
+                    Unequip
                 </button>&nbsp;<button onClick={moveFormulaUp} disabled={state.activeChallenges.FULLYIDLE}>&nbsp;&#708;&nbsp;</button>&nbsp;<button onClick={moveFormulaDown} disabled={state.activeChallenges.FULLYIDLE}>&nbsp;&#709;&nbsp;</button></>}
             </td><td>
             </td>
@@ -174,7 +164,7 @@ export default function FormulaButton({state, popup, updateState, setTotalClicks
     } else if (state.formulaBought[formulaName]) { //EQUIPPED
         return (
             <tr><td align="left" className="block" style={{width:"auto"}}>
-                <button disabled={true} className="fbutton" style={{backgroundColor: buttonColor}}>
+                <button disabled={true} className="fbutton" style={{backgroundColor: "#ffffff"}}>
                     EQUIPPED
                 </button>
             </td><td>
@@ -185,7 +175,7 @@ export default function FormulaButton({state, popup, updateState, setTotalClicks
     } else if (state.formulaUnlocked[formulaName]) { //GET BUTTON
         return (
             <tr><td align="left" className="block" style={{width:"auto"}}>
-                <button title={tooltip} className="fbutton" style={{backgroundColor: buttonColor}}
+                <button title={tooltip} className="fbutton" style={{backgroundColor: buttonColor, fontWeight: buttonBoldness}}
                     disabled={state.activeChallenges.FULLYIDLE || state.myFormulas.length >= getInventorySize(state)}
                     onClick={()=>getFormula(formula)}>
                     GET {formula.description}
@@ -202,7 +192,7 @@ export default function FormulaButton({state, popup, updateState, setTotalClicks
         }
         return (
             <tr><td align="left" className="block" style={{"width":"auto"}}>
-                <button className="fbutton" style={{backgroundColor: buttonColor}} title={tooltip}
+                <button className="fbutton" style={{backgroundColor: "#ffffff", fontWeight: buttonBoldness}} title={tooltip}
                     disabled={state.activeChallenges.FULLYIDLE || (state.xValue[0] < formula.unlockCost * formula.unlockMultiplier && !formula.isFree)}
                     onClick={()=>unlockFormula(formula)}>
                     UNLOCK {formula.description}
@@ -210,7 +200,7 @@ export default function FormulaButton({state, popup, updateState, setTotalClicks
             </td><td>
                 {spaces()}
             </td><td>
-                {!formula.isFree ? <>Unlock{state.alphaUpgrades.AUNL ? "s" : ""} {state.alphaUpgrades.UREF ? "at" : "for" } x={formatNumber(formula.unlockCost * formula.unlockMultiplier, state.settings.numberFormat)}</> : <>First formula is free!!!</>}
+                {!formula.isFree ? <>Unlock{state.alphaUpgrades.AUNL ? "s" : ""} {state.alphaUpgrades.AUNL ? "at" : "for" } x={formatNumber(formula.unlockCost * formula.unlockMultiplier, state.settings.numberFormat)}</> : <>First formula is free!!!</>}
             </td></tr>
         )
     }

@@ -33,8 +33,21 @@ export const applyFormulaToState = (state, formula, forceApply, silent)=>{
         state.formulaApplyCount++
     }
 
-    //Would lower the value
     const newValue = formula.applyFormula(state.formulaEfficiency[formula.targetLevel], state.xValue, state)
+    //Would break maths
+    if (isNaN(newValue)) {
+        if (silent) {
+            return false
+        } else if (newValue && newValue.error) { //Expected Error
+            state.currentEnding = newValue.error
+            return false
+        } else { //Infinity Error or Unexpected Error, defaults to Infinity Ending
+            state.currentEnding = "infinity"
+            return false
+        }
+    }
+
+    //Would lower the value
     if (isNaN(newValue) || 0.9999 * state.xValue[formula.targetLevel] > newValue) {
         if (silent)
             return false;
@@ -92,14 +105,14 @@ export const autoApplySingle = (state, index) => {
     return state
 }
 
-export const applyProduction = (state, deltaMilliSeconds, applierBonus = [0,0,0,0,0]) => {
+export const applyProduction = (state, deltaMilliSeconds, applierBonus = [0,0,0,0,0,0]) => {
     const integrationFactor = [1,1,1/2,1/6,1/24] //one over factorial
     const productionBonus = state.productionBonus
     const challengeMultiplier = state.activeChallenges.SLOWPROD ? 0.01 : 1
     for(let j=0; j<state.xValue.length; j++) { //tier to be calculated
         let multiplier = 1
-        for(let k=j+1; k<state.xValue.length; k++) { //higher tiers that affect it
-            state.xValue[j]+= Math.pow(deltaMilliSeconds / 1000, k-j)  * multiplier * (state.idleMultiplier * productionBonus[k-1] * state.xValue[k] + state.autoApplyRate * applierBonus[k]) * integrationFactor[k-j]
+        for(let k=j+1; k<applierBonus.length; k++) { //higher tiers that affect it
+            state.xValue[j]+= Math.pow(deltaMilliSeconds / 1000, k-j)  * multiplier * (state.idleMultiplier * productionBonus[k-1] * (state.xValue[k]||0) + state.autoApplyRate * applierBonus[k]) * integrationFactor[k-j]
             multiplier *= challengeMultiplier * state.idleMultiplier * productionBonus[k-1]
         }
     }
@@ -112,7 +125,7 @@ export const simulateOfflineProgress = (state, deltaMilliSeconds) => {
         state = autoApply(state)
 
     // STEP 2: Linearly Approximate Auto Appliers
-    let applierBonus = [0,0,0,0,0]
+    let applierBonus = [0,0,0,0,0,0]
     let activeAppliers = 0
     if (state.alphaUpgrades.OAPP) {
         for (let index = 0; index < state.myFormulas.length; index++) {
@@ -120,6 +133,8 @@ export const simulateOfflineProgress = (state, deltaMilliSeconds) => {
             state = autoApplySingle(state,index)
             const xBefore = [...state.xValue]
             state = autoApplySingle(state,index)
+            if (formulaList[state.myFormulas[index]].offlineDisabled) //Formula too difficult for offline calculation
+                continue;
             for (let i = 0; i<4; i++) {
                 applierBonus[i+1] += state.xValue[i] - xBefore[i]
                 isActive ||= state.xValue[i] - xBefore[i]
@@ -133,7 +148,5 @@ export const simulateOfflineProgress = (state, deltaMilliSeconds) => {
     // STEP 3: Calculate Production
     state = applyProduction(state, deltaMilliSeconds - 300, applierBonus)
  
-    //TODO Cap Value for complex formula or sth like that
-
     return state
 }

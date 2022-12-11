@@ -1,8 +1,7 @@
 import FormulaTable from './FormulaTable'
 import {getUnlockMultiplier} from './FormulaButton'
-import ValueTable from './ValueTable'
+import ValueTable from './FormulaValueTable'
 import formulaList from './FormulaDictionary'
-import MultiOptionButton from '../MultiOptionButton'
 import {spaces,formatNumber} from '../utilities'
 import {getInventorySize, differentialTargets, alphaTarget, getAlphaRewardTier} from '../savestate'
 
@@ -73,7 +72,7 @@ export default function FormulaScreen({state, updateState, setTotalClicks, popup
     }
     
     const performAlphaReset = ()=>{
-      popup.confirm("You lose all your differentials but you gain a powerful Alpha Point.",()=>{
+      popup.confirm("You lose all your differentials but you gain a powerful Alpha Token.",()=>{
         updateState({name: "alphaReset"})
         setTotalClicks((x)=>x+1)
       }, state.progressionLayer >= 1)
@@ -86,8 +85,17 @@ export default function FormulaScreen({state, updateState, setTotalClicks, popup
       })
     }
 
+    const negativeSpaceInfo = ()=>{
+      popup.alert(<>When an X-Value becomes negative, you enter Negative Space.<br/>While in Negative Space: x-Resets, Alpha-Resets and Challenge Completions are disabled.<br/>You can leave Negative Space by doing a Basic Reset or aborting your run.</>)
+    }
+
     const completeChallenge = ()=>{
       updateState({name: "alphaReset"})
+      setTotalClicks((x)=>x+1)
+    }
+
+    const getWorldFormula = ()=>{
+      updateState({name: "startEnding", endingName:"worldselect"})
       setTotalClicks((x)=>x+1)
     }
 
@@ -107,6 +115,10 @@ export default function FormulaScreen({state, updateState, setTotalClicks, popup
       updateState({name:"toggleAutoApply", all:true})
     }
 
+    const sResetNames = ["x'", "x''", "x'''", "N/A"]
+    const sResetName = sResetNames[state.highestXTier]
+
+
     const differentialTarget = differentialTargets[state.highestXTier]
   
     const inventoryFormulas = Object.assign(new Array(getInventorySize(state)).fill(), state.myFormulas)
@@ -115,34 +127,38 @@ export default function FormulaScreen({state, updateState, setTotalClicks, popup
 
     const alphaRewardTier = getAlphaRewardTier(state.xValue[0])
 
-    return (<div style={{color: state.mileStoneCount >=3 ? "#99FF99" : "FFFFFF"}}>
+    return (<div style={{color: "#99FF99"}}>
         <div className="row" style={{marginTop:"0px"}}><div className="column">
         <h2 style={{marginTop:"0px"}}>X Values</h2>
             <ValueTable values={state.xValue} baseName={"x"} maxTier={state.highestXTier} numberFormat={state.settings.numberFormat}/>
             <p></p>
             {(state.mileStoneCount >= 2 || state.formulaUnlockCount >= 4) &&
-              <>{spaces()}<button onClick={resetXValues} disabled={state.activeChallenges.FULLYIDLE || state.activeChallenges.ONESHOT || !state.anyFormulaUsed}>X-Reset</button>{state.mileStoneCount === 1 && <>{spaces()}&larr; Reset x, but you can adapt your equipped formulas.</>}</>
+              <>{spaces()}<button onClick={resetXValues} disabled={state.activeChallenges.FULLYIDLE || state.activeChallenges.ONESHOT || !state.anyFormulaUsed}>Basic Reset</button>{state.mileStoneCount === 1 && <>{spaces()}&larr; Reset x, but you can adapt your equipped formulas.</>}</>
             }
             {(state.mileStoneCount >= 3 || (state.mileStoneCount === 2 && state.xValue[0] >= differentialTarget)) && state.highestXTier < 3 && 
-              <>{spaces()}<button disabled={state.activeChallenges.FULLYIDLE || state.xValue[0] < differentialTarget} onClick={resetShop}>S-Reset</button>{state.mileStoneCount === 2 && <>{spaces()}&larr; Reset the shop for a new differential</>}</>
+              <>{spaces()}<button disabled={state.inNegativeSpace || state.activeChallenges.FULLYIDLE || state.xValue[0] < differentialTarget} onClick={resetShop}>{sResetName}-Reset</button>{state.mileStoneCount === 2 && <>{spaces()}&larr; Reset the shop for a new differential</>}</>
             }
             {state.mileStoneCount >= 6 && !state.insideChallenge && (state.xValue[0] > alphaTarget || state.highestXTier === 3) &&
-              <>{spaces()}<button disabled={state.activeChallenges.FULLYIDLE || state.xValue[0] < alphaTarget} onClick={performAlphaReset}>&alpha;-Reset</button>{spaces()}</>
+              <>{spaces()}<button disabled={state.inNegativeSpace || state.activeChallenges.FULLYIDLE || state.xValue[0] < alphaTarget} onClick={performAlphaReset}>&alpha;-Reset</button>{spaces()}</>
             }
             {state.insideChallenge && state.highestXTier === 3 && state.xValue[0] > alphaTarget &&
-              <>{spaces()}<button disabled={state.activeChallenges.FULLYIDLE || state.xValue[0] < alphaTarget} onClick={completeChallenge}><b>Complete Challenge</b></button>{spaces()}</>
+              <>{spaces()}<button disabled={state.inNegativeSpace || state.activeChallenges.FULLYIDLE || state.xValue[0] < alphaTarget} onClick={completeChallenge}><b>Complete Challenge</b></button>{spaces()}</>
             }
             {state.mileStoneCount >= 6 && state.xValue[0] < alphaTarget &&
               <>{spaces()}<button disabled={state.activeChallenges.FULLYIDLE} onClick={abortAlphaReset}>Abort</button>{spaces()}</>
             }
-            {state.mileStoneCount === 1 && state.formulaUnlockCount < 4 && <p>Unlock {4 - state.formulaUnlockCount} more formula{state.formulaUnlockCount !== 3 && "s"} to enable X-Resets</p>}
+            {!state.insideChallenge && state.xValue[0] >= Infinity &&
+              <><br/><br/>{spaces()}<button onClick={getWorldFormula}><b>DISCOVER THE WORLD FORMULA</b></button>{spaces()}</>
+            }
+            {state.inNegativeSpace && <p><b>You are in Negative Space!</b>{spaces()}<button onClick={negativeSpaceInfo}>About Negative Space</button></p>}
+            {state.mileStoneCount === 1 && state.formulaUnlockCount < 4 && <p>Unlock {4 - state.formulaUnlockCount} more formula{state.formulaUnlockCount !== 3 && "s"} to enable Basic Resets</p>}
             {state.currentChallenge && <p>You are currently in the "{state.currentChallengeName}" Challenge.</p>}
             {state.activeChallenges.COUNTDOWN && <p>{Math.floor(30 - state.millisSinceCountdown / 1000)} seconds until X-Values become zero.</p>}
             {state.activeChallenges.LIMITED && <p>You can apply {100 - state.formulaApplyCount} more formulas.</p>}
-            {state.mileStoneCount >= 2 && state.highestXTier < 3 && state.xValue[0] < differentialTarget && <p>Reach x={formatNumber(differentialTarget, state.settings.numberFormat)} for the next S-Reset</p>}
+            {state.mileStoneCount >= 2 && state.highestXTier < 3 && state.xValue[0] < differentialTarget && <p>Reach x={formatNumber(differentialTarget, state.settings.numberFormat)} for the next x-Reset</p>}
             {state.mileStoneCount >= 6 && state.highestXTier === 3 && state.xValue[0] < alphaTarget && !state.insideChallenge && <p>Reach x={formatNumber(alphaTarget)} to perform an &alpha;-Reset</p>}
             {state.mileStoneCount >= 6 && state.highestXTier === 3 && state.xValue[0] < alphaTarget && state.insideChallenge && <p>Reach x={formatNumber(alphaTarget)} to complete the challenge</p>}
-            {state.mileStoneCount >= 6 && !state.insideChallenge && state.xValue[0] >= alphaTarget && <p>Alpha Reset for {alphaRewardTier.alpha} &alpha;.{alphaRewardTier.next && <>&nbsp;(Next: {alphaRewardTier.nextAlpha} &alpha; at x={formatNumber(alphaRewardTier.next)})</>}</p>}
+            {state.mileStoneCount >= 6 && !state.insideChallenge && state.xValue[0] >= alphaTarget && <p>Alpha Reset for {alphaRewardTier.alpha * Math.pow(2,state.baseAlphaLevel)} &alpha;.{alphaRewardTier.next && <>&nbsp;(Next: {alphaRewardTier.nextAlpha * Math.pow(2,state.baseAlphaLevel)} &alpha; at x={formatNumber(alphaRewardTier.next)})</>}</p>}
             {state.mileStoneCount >= 3 && state.autoUnlockIndex < shopFormulas.length && <p>Next Formula at x={formatNumber(formulaList[shopFormulas[state.autoUnlockIndex]].unlockCost * getUnlockMultiplier(formulaList[shopFormulas[state.autoUnlockIndex]],state), state.settings.numberFormat)}</p>}
             <p></p>
             {state.mileStoneCount < 6 && (state.xValue[0] >= alphaTarget && state.mileStoneCount >= 5 ?
@@ -163,22 +179,12 @@ export default function FormulaScreen({state, updateState, setTotalClicks, popup
           <p>
             {state.alphaUpgrades.MEEQ && <>
               <button onClick={memorize} disabled={state.activeChallenges.FULLYIDLE} title={"Saves equip layout so you can use it again later"}>Memorize</button>
-              {spaces()}<button onClick={remember} disabled={state.activeChallenges.FULLYIDLE} title={"Loads saved equip layout for current S-Reset"}>Remember</button>
+              {spaces()}<button onClick={remember} disabled={state.activeChallenges.FULLYIDLE} title={"Loads saved equip layout for current x-Reset"}>Remember</button>
               {spaces()}<button onClick={clearLoadout} disabled={state.activeChallenges.FULLYIDLE} title={"Unequips all unused formulas"}>Unequip</button>
             </>}
             {state.alphaUpgrades.SAPP && <>
               {spaces()}<button onClick={toggleAutoApply} disabled={state.activeChallenges.FULLYIDLE} title={"Activate/Deactivate all Auto Appliers"}>Auto</button>
             </>}
-            <br/><br/>
-            {state.alphaUpgrades.SRES && <><MultiOptionButton disabled={state.activeChallenges.FULLYIDLE} settingName="autoResetterS" statusList={["ON","OFF"]} state={state} updateState={updateState} setTotalClicks={setTotalClicks}
-              description="Shop Resetter"/></>}
-            {state.alphaUpgrades.AREM && <>{spaces()}<MultiOptionButton disabled={state.activeChallenges.FULLYIDLE} settingName="autoRemembererActive" statusList={["ON","OFF"]} state={state} updateState={updateState} setTotalClicks={setTotalClicks}
-              description="Rememberer"/></>}
-            <br/><br/>
-            {state.alphaUpgrades.ARES && <><MultiOptionButton disabled={state.activeChallenges.FULLYIDLE} settingName="autoResetterA" statusList={["ON","OFF"]} state={state} updateState={updateState} setTotalClicks={setTotalClicks}
-              description="Alpha Resetter"/></>}
-            {state.alphaUpgrades.ARES && <>{spaces()}<MultiOptionButton disabled={state.activeChallenges.FULLYIDLE} settingName="alphaThreshold" statusList={["MINIMUM","1e40","1e50","1e60","1e70","1e80","1e90","1e100"]} state={state} updateState={updateState} setTotalClicks={setTotalClicks}
-              description="Alpha Target"/></>}
           </p>
         </div><div className="column">
         <h2 style={{marginTop:"0px"}}>Shop {state.myFormulas.length >= getInventorySize(state) && <>{spaces()}[FULL INVENTORY]</>}</h2>

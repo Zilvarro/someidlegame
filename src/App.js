@@ -8,9 +8,12 @@ import FormulaScreen from './formulas/FormulaScreen'
 import OptionScreen from './OptionScreen'
 import AchievementScreen from './AchievementScreen'
 import AlphaScreen from './alpha/AlphaScreen'
+import DestinyScreen from './destiny/DestinyScreen'
 import LetterScreen from './letters/LetterScreen'
+import MainEndingTab from './endings/EndingBarScreen'
 import AutoSave from './AutoSave'
 import {PopupDialog, makeShowPopup} from './PopupDialog'
+import EndingSelectionScreen from './endings/EndingSelectionScreen';
 
 function App() {
   const [ playTime, setPlayTime ] = useState(0)
@@ -63,13 +66,20 @@ function App() {
     setIconState(state.progressionLayer + 1)
   }
 
+  if (state.currentEnding === "worldselect") {
+    return <EndingSelectionScreen state={state} popup={popup} updateState={updateState}/>
+  } else if (state.currentEnding) {
+    return <MainEndingTab state={state} updateState={updateState}/>
+  }
+
   return (<>
     <AutoSave saveState={state}/>
     <PopupDialog popupState={popupState} setPopupState={setPopupState}/>
-    <h1 style={{fontSize: "40px", marginLeft: "10px", marginBottom: "10px", textAlign:"left"}}>x={formatNumber(state.xValue[0], state.settings.numberFormat, 6)}</h1>
+    <h1 style={{fontSize: "40px", marginLeft: "10px", marginBottom: "10px", textAlign:"left"}}>x&nbsp;=&nbsp;{formatNumber(state.xValue[0], state.settings.numberFormat, 6)}</h1>
     <TabContent selectedTabKey={state.selectedTabKey}>
       <FormulaScreen tabKey="FormulaScreen" popup={popup} state={state} updateState={updateState} setTotalClicks={setTotalClicks}/>
       <AlphaScreen tabKey="AlphaScreen" popup={popup} state={state} updateState={updateState} setTotalClicks={setTotalClicks}/>
+      <DestinyScreen tabKey="DestinyScreen" popup={popup} state={state} updateState={updateState} setTotalClicks={setTotalClicks}/>
       <AchievementScreen tabKey="AchievementScreen" state={state}/>
       <LetterScreen tabKey="LetterScreen" state={state}/>
       <OptionScreen tabKey="OptionScreen" popup={popup} state={state} updateState={updateState} setTotalClicks={setTotalClicks}/>
@@ -78,16 +88,15 @@ function App() {
     <p>&nbsp;</p>
     <footer>
     <span style={{display:"inline-block"}}>
-      {state.mileStoneCount < 6 && <button style={{backgroundColor: "#FFFFFF", border:"2px solid", padding:"5px", margin:"5px", marginLeft:"10px", fontWeight:"bold"}} onClick={()=>selectTab("FormulaScreen")}>Formulas</button>}
-      {state.mileStoneCount >= 6 && <button style={{backgroundColor: "#99FF99", border:"2px solid", padding:"5px", margin:"5px", marginLeft:"10px", fontWeight:"bold"}} onClick={()=>selectTab("FormulaScreen")}>Formulas</button>}
-      {state.mileStoneCount >= 6 && <button style={{backgroundColor: "#ff7777", border:"2px solid", padding:"5px", margin:"5px", fontWeight:"bold"}} onClick={()=>selectTab("AlphaScreen")}>Alpha</button>}
+      <button style={{backgroundColor: "#99FF99", border:"2px solid", padding:"5px", margin:"5px", marginLeft:"10px", fontWeight:"bold"}} onClick={()=>selectTab("FormulaScreen")}>Formulas</button>
+      {state.progressionLayer >=1 && <button style={{backgroundColor: "#ff7777", border:"2px solid", padding:"5px", margin:"5px", fontWeight:"bold"}} onClick={()=>selectTab("AlphaScreen")}>Alpha</button>}
       {/* {state.mileStoneCount >= 1 && <button style={{backgroundColor: "#55ffbb", border:"2px solid", padding:"5px", margin:"5px", fontWeight:"bold"}} onClick={()=>selectTab("WorldScreen")}>World</button>}
-      {state.mileStoneCount >= 1 && <button style={{backgroundColor: "#663366", border:"2px solid", padding:"5px", margin:"5px", fontWeight:"bold"}} onClick={()=>selectTab("VoidScreen")}>Void</button>}
-      {state.mileStoneCount >= 1 && <button style={{backgroundColor: "#ffff88", border:"2px solid", padding:"5px", margin:"5px", fontWeight:"bold"}} onClick={()=>selectTab("DestinyScreen")}>Destiny</button>} */}
+      {state.mileStoneCount >= 1 && <button style={{backgroundColor: "#663366", border:"2px solid", padding:"5px", margin:"5px", fontWeight:"bold"}} onClick={()=>selectTab("VoidScreen")}>Void</button>} */}
+      {state.progressionLayer >=2 && <button style={{backgroundColor: "#ffff88", border:"2px solid", padding:"5px", margin:"5px", fontWeight:"bold"}} onClick={()=>selectTab("DestinyScreen")}>Destiny</button>}
     </span>
-    <span style={{display:"inline-block", marginLeft:"10px"}}>
+    <span style={{display:"inline-block"}}>
       <button style={{margin:"5px"}} onClick={()=>selectTab("AchievementScreen")}>Milestones</button>
-      {/* <button style={{margin:"5px"}} onClick={()=>selectTab("LetterScreen")}>Letters</button> */}
+      <button style={{margin:"5px"}} onClick={()=>selectTab("LetterScreen")}>Mails</button>
       <button style={{margin:"5px"}} onClick={()=>selectTab("OptionScreen")}>Options</button>
     </span>
     {/* {spaces()}<button onClick={cheat}>Cheat</button>

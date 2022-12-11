@@ -55,6 +55,11 @@ export default function OptionScreen({state, popup, updateState, setTotalClicks}
     notify.warning("CHEATER", "You cheated not only the game, but yourself!")
   }
 
+  const chapterJump = ()=>{
+    const password = window.prompt("Enter Password:");
+    updateState({name: "chapterJump", password: password})
+  }
+
   return (<div style={{padding: "10px"}}>
     <h1>Options</h1>
       <p>
@@ -89,9 +94,6 @@ export default function OptionScreen({state, popup, updateState, setTotalClicks}
         {spaces()}<MultiOptionButton settingName="shopScroll" statusList={["ON","OFF"]} state={state} updateState={updateState} setTotalClicks={setTotalClicks}
           description="Shop Scrollbar" tooltip="Controls whether the formula shop has a separate scroll bar" tooltipList={["Shop has a scroll bar","Shop does not have a scroll bar."]}/>
       </p><p>
-        {spaces()}<MultiOptionButton settingName="colorizedFormulas" statusList={["NEW","EFFECT","TARGET","ALL","OFF"]} state={state} updateState={updateState} setTotalClicks={setTotalClicks}
-          description="Formula Colors" tooltip="Controls how formulas are highlighted with colors" tooltipList={["Formulas discovered with last S-Reset", "Colored by highest differential in the formula", "Colored by differential that is affected", "All colored the same", "Not colored"]}/>
-      </p><p>
            {/* {spaces()}<MultiOptionButton settingName="showHints" statusList={["ON", "OFF"]} state={state} updateState={updateState} setTotalClicks={setTotalClicks}
           description="Show Hints" tooltip="Controls whether hints are shown" tooltipList={["Hints are shown", "Hints are not shown"]}/>
         {spaces()}<MultiOptionButton settingName="hotKeys" statusList={["ON", "OFF"]} state={state} updateState={updateState} setTotalClicks={setTotalClicks}
@@ -100,9 +102,12 @@ export default function OptionScreen({state, popup, updateState, setTotalClicks}
       <p>
         {spaces()}<button onClick={resetSave}>Hard Reset</button>
       </p>
-      <p>
+      {false && <p>
         {spaces()}<button onClick={cheat}>Cheat +1 &alpha;</button>
-      </p>
+      </p>}
+      {state.xValue[0] === 0 && state.mileStoneCount === 0 && <p>
+        {spaces()}<button onClick={chapterJump}>Chapter Jump</button>
+      </p>}
       <p>Version {state.version}</p>
   </div>)
 }

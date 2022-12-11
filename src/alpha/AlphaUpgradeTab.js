@@ -1,9 +1,8 @@
-import { spaces, secondsToHms } from '../utilities'
-// import {formatNumber} from '../utilities'
+import { spaces, secondsToHms, formatNumber} from '../utilities'
 import AlphaUpgradeButton from './AlphaUpgradeButton'
 import MultiOptionButton from '../MultiOptionButton'
 
-const alphaUpgradeTable = ["AAPP","FREF","OAPP","SAPP","BR1","UREF","AUNL","MEEQ","AREM","BR2","SLOT","PALP","SRES","ARES"]
+const alphaUpgradeTable = ["AAPP","FREF","SAPP","OAPP","BR1","AUNL","MEEQ","AREM","MEMS","BR2","SLOT","PALP","SRES","ARES"]
 
 export const countAlphaUpgrades=(state)=>{
     return alphaUpgradeTable.filter((x)=>state.alphaUpgrades[x]).length
@@ -15,7 +14,7 @@ const alphaUpgradeDictionary = {
     "AAPP": {
         id:"AAPP",
         title:"Auto Applier",
-        description:"Applies a formula for you once per second. Rate can be further upgraded.",
+        description:"Applies a formula for you twice per second. Rate can be further upgraded.",
         cost:1,
     },
     "FREF": {
@@ -25,39 +24,32 @@ const alphaUpgradeDictionary = {
         description:"Applying formulas does not reduce x.",
         cost:2,
     },
-    "OAPP": {
-        id:"OAPP",
-        requires: "FREF",
-        title:"Offline Applier",
-        description:"Auto Applier works offline. Accurracy for complex formulas may vary.",
-        cost:3,
-    },
     "SAPP": {
         id:"SAPP",
-        requires: "OAPP",
+        requires: "FREF",
         title:"Super Applier",
         description:"Auto Applier can handle multiple formulas simultaneously.",
         cost:4,
     },
-    "UREF": {
-        id:"UREF",
-        title:"Unlock Refund",
-        description:"Unlocking formulas does not reduce x.",
-        cost:1,
+    "OAPP": {
+        id:"OAPP",
+        requires: "SAPP",
+        title:"Offline Applier",
+        description:"Auto Applier works offline.",
+        cost:10,
     },
     "AUNL": {
         id:"AUNL",
-        requires: "UREF",
         title:"Auto Unlocker",
-        description:"Automatically unlocks formulas.",
-        cost:2,
+        description:"Automatically unlocks formulas. Unlocking formulas does not reduce x.",
+        cost:1,
     },
     "MEEQ": {
         id:"MEEQ",
         requires: "AUNL",
         title:"Memorize Equip",
-        description:"One Equipment layout can be saved and loaded for each stage.",
-        cost:3,
+        description:"One Equipment loadout can be saved and loaded for each stage.",
+        cost:2,
     },
     "AREM": {
         id:"AREM",
@@ -65,6 +57,13 @@ const alphaUpgradeDictionary = {
         title:"Auto Rememberer",
         description:"Memorized equipment is automatically loaded when differentials are unlocked.",
         cost:4,
+    },
+    "MEMS": {
+        id:"MEMS",
+        requires: "AREM",
+        title:"Better Memory",
+        description:"Up to three different Equipment loadouts can be saved. (Not yet implemented!)",
+        cost:10,
     },
     "SLOT": {
         id:"SLOT",
@@ -76,22 +75,22 @@ const alphaUpgradeDictionary = {
         id:"PALP",
         requires: "SLOT",
         title:"Passive Alpha",
-        description:"Gain 10% Alpha passively based on fastest Alpha-Reset.",
+        description:"Gain Alpha Tokens passively in Intervals based on fastest Alpha-Reset.",
         cost:2,
     },
     "SRES": {
         id:"SRES",
         requires: "PALP",
-        title:"Shop Resetter",
-        description:"Automatically performs Shop-Resets (S-Resets).",
-        cost:3,
+        title:"X Resetter",
+        description:"Automatically performs x-Resets.",
+        cost:4,
     },
     "ARES": {
         id:"ARES",
         requires: "SRES",
         title:"Alpha Resetter",
         description:"Automatically performs Alpha-Resets. Can also complete Challenges.",
-        cost:4,
+        cost:10,
     },
     "BR1": {
         fixed: <br/>
@@ -101,27 +100,45 @@ const alphaUpgradeDictionary = {
     },
 }
 
-const applierRates = [1,2,5,10]
-const applierCosts = [1,1,2,10]
+const applierRates = [2,5,10]
+const applierCosts = [1,3,8]
 const applierLevel = state.autoApplyLevel
 const upgradeApplierRate = ()=>{
     updateState({name:"upgradeApplierRate", level:applierLevel + 1, rate:applierRates[applierLevel + 1], cost:applierCosts[applierLevel + 1] })
+}
+const baseAlphaMultiplier = Math.pow(2,state.baseAlphaLevel)
+const baseAlphaUpgradeCost = Math.pow(5,state.baseAlphaLevel + 1)
+const upgradeBaseAlpha = ()=>{
+    updateState({name:"upgradeBaseAlpha", level:state.baseAlphaLevel + 1, cost:baseAlphaUpgradeCost })
 }
 
 return (
     <div>{<>
         <h2>Upgrades</h2>
+            {state.alphaUpgrades.SRES && <><MultiOptionButton disabled={state.activeChallenges.FULLYIDLE} settingName="autoResetterS" statusList={["ON","OFF"]} state={state} updateState={updateState} setTotalClicks={setTotalClicks}
+              description="X Resetter"/></>}
+            {state.alphaUpgrades.AREM && <>{spaces()}<MultiOptionButton disabled={state.activeChallenges.FULLYIDLE} settingName="autoRemembererActive" statusList={["ON","OFF"]} state={state} updateState={updateState} setTotalClicks={setTotalClicks}
+              description="Rememberer"/></>}
+            {(state.alphaUpgrades.SRES || state.alphaUpgrades.AREM) &&<><br/><br/></>}
+            
+            {state.alphaUpgrades.ARES && <><MultiOptionButton disabled={state.activeChallenges.FULLYIDLE} settingName="autoResetterA" statusList={["ON","OFF"]} state={state} updateState={updateState} setTotalClicks={setTotalClicks}
+              description="Alpha Resetter"/></>}
+            {state.alphaUpgrades.ARES && <>{spaces()}<MultiOptionButton disabled={state.activeChallenges.FULLYIDLE} settingName="alphaThreshold" statusList={["MINIMUM","1e40","1e50","1e60","1e70","1e80","1e90","1e100"]} state={state} updateState={updateState} setTotalClicks={setTotalClicks}
+              description="Alpha Target"/></>}
+            {(state.alphaUpgrades.SRES || state.alphaUpgrades.AREM) && <><br/><br/></>}
         {alphaUpgradeTable.map((upgrade)=><AlphaUpgradeButton key={upgrade} upgrade={alphaUpgradeDictionary[upgrade]} state={state} popup={popup} updateState={updateState}/>)}
         <br/><br/>
         <h2>Infos</h2>
+        <p>You have {formatNumber(state.alpha, state.settings.numberFormat)} Alpha Token{state.alpha !== 1 && "s"}!</p>
         <p>Time in current Alpha run: {secondsToHms(state.currentAlphaTime / 1000)}</p>
         <p>Fastest Alpha run: {secondsToHms(Math.ceil(state.bestAlphaTime / 1000))}</p>
-        {state.alphaUpgrades.PALP && <p>Next Passive Alpha: {secondsToHms(Math.max(0,((10 * state.bestAlphaTime - state.passiveAlphaTime) / 1000)))}</p>}
+        {state.alphaUpgrades.PALP && <p>Next Passive Alpha Token: {secondsToHms(Math.max(0,((10 * state.bestAlphaTime - state.passiveAlphaTime) / 1000)))}</p>}
         {state.clearedChallenges.FULLYIDLE && <>
             <p>Best Master of Idle Completion: {state.bestIdleTimeAlpha}&alpha; in {secondsToHms(Math.ceil(state.bestIdleTime  / 1000))}</p>
-            {(state.bestIdleTimeAlpha / state.bestIdleTime / 1000 > 1) ? <p>{(state.bestIdleTimeAlpha / state.bestIdleTime / 1000).toFixed()}/s</p> :<p>Next Master Alpha: {secondsToHms(Math.max(0,((state.bestIdleTime / state.bestIdleTimeAlpha - state.passiveMasterTime) / 1000)))}</p>}
+            {(state.bestIdleTimeAlpha / state.bestIdleTime * 1000 > 1) ? <p>{(state.bestIdleTimeAlpha / state.bestIdleTime * 1000).toFixed()}/s</p> :<p>Next Master Alpha Token: {secondsToHms(Math.max(0,((state.bestIdleTime / state.bestIdleTimeAlpha - state.passiveMasterTime) / 1000)))}</p>}
         </>}
         {state.alphaUpgrades.AAPP && <p>Auto Applier Rate: {state.autoApplyRate}/s{spaces()}{applierLevel<3 && <button disabled={state.alpha < applierCosts[applierLevel + 1]} onClick={upgradeApplierRate}>Upgrade for {applierCosts[applierLevel + 1]} &alpha;</button>}</p>}
+        <p>Base Alpha Tokens from &alpha;-Resets: {baseAlphaMultiplier}{spaces()}{state.baseAlphaLevel<16 && <button disabled={state.alpha < baseAlphaUpgradeCost} onClick={upgradeBaseAlpha}>Double for {baseAlphaUpgradeCost} &alpha;</button>}</p>
         </>}
     </div>)
 }
