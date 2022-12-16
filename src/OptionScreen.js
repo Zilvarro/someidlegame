@@ -102,8 +102,8 @@ export default function OptionScreen({state, popup, updateState, setTotalClicks}
       <p>
         {spaces()}<button onClick={resetSave}>Hard Reset</button>
       </p>
-      {false && <p>
-        {spaces()}<button onClick={cheat}>Cheat +1 &alpha;</button>
+      {true && <p>
+        {spaces()}<button onClick={cheat}>Cheat</button>
       </p>}
       {state.xValue[0] === 0 && state.mileStoneCount === 0 && <p>
         {spaces()}<button onClick={chapterJump}>Chapter Jump</button>

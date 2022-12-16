@@ -96,7 +96,7 @@ export default function AlphaChallengeTab({state, updateState, popup}) {
 
     return (<div>
         <h2>Challenges</h2>
-        {challengeBonus.full ? <>You completed all challenges, boosting your Formula Efficiency by 100000.</>: <>Your {challengeBonus.full} challenge completions and {challengeBonus.segment} segment completions boost your Formula Efficiency by {challengeBonus.bonus.toFixed(2)}</>}.
+        {challengeBonus.full === 13 ? <>You completed all challenges, boosting your Formula Efficiency by {challengeBonus.bonus.toFixed(2)}.</>: <>Your {challengeBonus.full} challenge completions and {challengeBonus.segment} segment completions boost your Formula Efficiency by {challengeBonus.bonus.toFixed(2)}.</>}
         {state.currentChallenge && <p>You are currently in the "{state.currentChallengeName}" Challenge.</p>}
         <p>
             {(state.xValue[0] < alphaTarget || !state.insideChallenge || state.inNegativeSpace) &&<button disabled={!state.insideChallenge} onClick={exitAlphaChallenge}>Exit Challenge</button>}

@@ -1,7 +1,6 @@
 import AlphaResearchBar from './AlphaResearchBar.js'
 import {differentialTargets, alphaTarget, getMaxxedResearchBonus} from '../savestate'
 import {formatNumber} from '../utilities'
-//TODO formatNumber on Bonuses
 const researchDictonary = {
     "x": {
         id: "x",
@@ -10,8 +9,9 @@ const researchDictonary = {
         durationBase: 1.05,
         rewardBase: 1.01,
         getMultiplier: (state)=>state.xHighScores[0]*state.formulaGodScores[0],
-        getBonusText: (level)=>("Start with x=" + Math.floor(100*Math.pow(1.01, level || 0) - 100)) + " after resets",
-        getBonusText2: ()=>("Start with x=10T after resets"),
+        getBonusText: (level,state)=>("Start with x=" + formatNumber(Math.floor(100*Math.pow(1.01, level || 0) - 100),state.settings.numberFormat)) + " after resets",
+        getBonusText2: (state)=>("Start with x=" + formatNumber(10e12, state.settings.numberFormat) + " after resets"),
+
         // getBonusText: (level,state)=>(<>Starting x is increased by {formatNumber(Math.floor(100*Math.pow(1.01, level || 0) - 100), state.settings.numberFormat,2)}</>),
         getBoostText: (state)=>(<>x={formatNumber(state.xHighScores[0],state.settings.numberFormat)} on x'-Reset</>),
         getBoostText2: (state)=>(<>x={formatNumber(state.formulaGodScores[0],state.settings.numberFormat)} during Formula God</>),
@@ -26,9 +26,8 @@ const researchDictonary = {
         durationBase: 1.05,
         rewardBase: 1.01,
         getMultiplier: (state)=>state.xHighScores[1]*state.formulaGodScores[1],
-        getBonusText: (level)=>("x' produces " + Math.pow(1.01, level || 0).toFixed(2) + " times as fast"),
-        getBonusText2: ()=>("x' produces 100B times as fast"),
-        // getBonusText: (level,state)=>(<>x' produces {formatNumber(Math.pow(1.01, level || 0), state.settings.numberFormat,2)} times as fast</>),
+        getBonusText: (level,state)=>("x' produces " + formatNumber(Math.pow(1.01, level || 0),state.settings.numberFormat) + " times as fast"),
+        getBonusText2: (state)=>("x' produces " + formatNumber(100e9,state.settings.numberFormat) + " times as fast"),
         getBoostText: (state)=>(<>x={formatNumber(state.xHighScores[1],state.settings.numberFormat)} on x''-Reset</>),
         getBoostText2: (state)=>(<>x'={formatNumber(state.formulaGodScores[1],state.settings.numberFormat)} during Formula God</>),
         checkUnlock: (state)=>(state.xValue[1] >= 20),
@@ -42,9 +41,8 @@ const researchDictonary = {
         durationBase: 1.05,
         rewardBase: 1.01,
         getMultiplier: (state)=>state.xHighScores[2]*state.formulaGodScores[2],
-        getBonusText: (level)=>("x'' produces " + Math.pow(1.01, level || 0).toFixed(2) + " times as fast"),
-        getBonusText2: ()=>("x'' produces 100B times as fast"),
-        // getBonusText: (level,state)=>(<>x'' produces {formatNumber(Math.pow(1.01, level || 0), state.settings.numberFormat,2)} times as fast</>),
+        getBonusText: (level,state)=>("x'' produces " + formatNumber(Math.pow(1.01, level || 0),state.settings.numberFormat) + " times as fast"),
+        getBonusText2: (state)=>("x'' produces " + formatNumber(100e9,state.settings.numberFormat) + " times as fast"),
         getBoostText: (state)=>(<>x={formatNumber(state.xHighScores[2],state.settings.numberFormat)} on x'''-Reset</>),
         getBoostText2: (state)=>(<>x''={formatNumber(state.formulaGodScores[2],state.settings.numberFormat)} during Formula God</>),
         checkUnlock: (state)=>(state.xValue[2] >= 20),
@@ -58,9 +56,8 @@ const researchDictonary = {
         durationBase: 1.05,
         rewardBase: 1.01,
         getMultiplier: (state)=>state.xHighScores[3]*state.formulaGodScores[3],
-        getBonusText: (level)=>("x''' produces " + Math.pow(1.01, level || 0).toFixed(2) + " times as fast"),
-        getBonusText2: ()=>("x''' produces 100B times as fast"),
-        // getBonusText: (level,state)=>(<>x''' produces {formatNumber(Math.pow(1.01, level || 0), state.settings.numberFormat,2)} times as fast</>),
+        getBonusText: (level,state)=>("x''' produces " + formatNumber(Math.pow(1.01, level || 0), state.settings.numberFormat) + " times as fast"),
+        getBonusText2: (state)=>("x''' produces " + formatNumber(100e9,state.settings.numberFormat) + " times as fast"),
         getBoostText: (state)=>(<>x={formatNumber(state.xHighScores[3],state.settings.numberFormat)} on &alpha;-Reset</>),
         getBoostText2: (state)=>(<>x'''={formatNumber(state.formulaGodScores[3],state.settings.numberFormat)} during Formula God</>),
         checkUnlock: (state)=>(state.xValue[3] >= 20),

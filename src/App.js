@@ -59,6 +59,7 @@ function App() {
 
   const selectTab = (tabKey)=>{
     updateState({name: "selectTab", tabKey: tabKey})
+    window.scrollTo(0,0)
     setTotalClicks((x)=>x+1)
   }
 

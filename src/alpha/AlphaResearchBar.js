@@ -11,7 +11,7 @@ export default function AlphaResearchBar({state, research, updateState}) {
     const remainingTime = Math.max(1, (goal - progress) / progressMultiplier)
     const percentage = Math.min(deltaMilliSeconds / research.minimumDuration, progress / goal)
     const isDone = (!researchLevel || percentage >= 1)
-    const bulkAmount = isDone ? Math.min(2500 - researchLevel, Math.max(1,Math.floor(Math.log10(progressMultiplier / goal) + 1))) : 0
+    const bulkAmount = isDone ? Math.min(2500 - (researchLevel||0), Math.max(1,Math.floor(Math.log10(progressMultiplier / goal) + 1))) : 0
     const progressBarWidth = isDone ? "100%" : Math.min(100 * percentage,99).toFixed(2) + "%"
     
     const clickResearchBar = ()=>{
@@ -37,7 +37,7 @@ export default function AlphaResearchBar({state, research, updateState}) {
           </div>
         </div>
         <div>Level: {researchLevel}</div>
-        <div>Bonus: {research.getBonusText2(state)}</div>
+        <div>Bonus: {research.getBonusText(researchLevel,state)}</div>
         <div>Boost: {research.getBoostText(state)}</div>
         {research.checkBoost2(state) && <div>Special: {research.getBoostText2(state)}</div>}
       </>
@@ -52,7 +52,6 @@ export default function AlphaResearchBar({state, research, updateState}) {
         </div>
         <div>Level: {state.researchLevel[research.id]}</div>
         <div>Bonus: {research.getBonusText(researchLevel,state)}</div>
-        {researchLevel >=2500 && <div>Bonus: {research.getBonusText2(state)}</div>}
         <div>Boost: {research.getBoostText(state)}</div>
         {research.checkBoost2(state) && <div>Special: {research.getBoostText2(state)}</div>}
       </>

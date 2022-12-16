@@ -49,7 +49,7 @@ export default function EndingBarScreen({state, popup, updateState}) {
         <div style={{position:"absolute", margin:"auto", top:"50%", left:"50%", transform:"translate(-50%,-50%)", textAlign:"center"}}>{<>
             <p><b>{headerText}</b></p><br/><br/>
             <p>{ending.currencyName}{ending.ascending ? Math.ceil(ending.currencyGoal - currencyAmount) : Math.floor(currencyAmount)}</p><br/>
-            <div onClick={clickProgressBar} style={{position: "relative", margin:"auto", color: "#000000", backgroundColor:"#ffffff", border:"2px solid", height:"20px",maxWidth:"320px", minWidth:"260px"}}>
+            <div onClick={clickProgressBar} style={{position: "relative", margin:"auto", color: "#000000", backgroundColor:"#ffffff", border:"2px solid", height:"20px",width:"300px"}}>
                 <div style={{backgroundColor:currentAction.barColor || "#aaaaaa", border:"0px", height:"20px", width:progressBarWidth}}>
                     <div style={{userSelect:"none",whiteSpace:"nowrap",position:"absolute", left:"50%", transform:"translateX(-50%)"}}><b>{currentAction.title}</b></div>
                 </div>

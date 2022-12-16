@@ -477,6 +477,17 @@ export const endingList = {
         endingName:"infinite",
         instaDestiny:true,
     }]},
+    timeout: {actions:[{
+        title: "Timed Out",
+        teaseTitle:"????? ???",
+        durationSeconds: 3,
+        headerText: <>~Bad Ending~</>,
+        teaseHeaderText: <>~??? ???????~</>,
+        storyText: <>Sometimes, when things are not working out favorably, it is best to quit early.<br/>Instead of wasting time like you just did.</>,
+        final:true,
+        endingName:"timeout",
+        instaDestiny:true,
+    }]},
 }
 
-export const orderedEndings = ["divide","imaginary","logarithm","infinite","negative","good","evil","skipped","true"]
+export const orderedEndings = ["timeout","divide","imaginary","logarithm","infinite","negative","good","evil","skipped","true"]

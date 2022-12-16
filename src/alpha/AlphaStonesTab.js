@@ -5,7 +5,7 @@ import {formatNumber, spaces} from '../utilities'
 export const calcStoneResultForX = (state, grid)=>{
     const stoneLevels = grid.flat().map((id)=>(state.startingStoneLevel[id]||0))
     const stoneLevelCounts = stoneLevels.reduce((acc, e) => acc.set(e, (acc.get(e) || 0) + 1), new Map())
-    const startingXBonus = [...stoneLevelCounts.entries()].reduce((acc,[level,count])=>(acc+=Math.pow(level,count)),0)
+    const startingXBonus = [...stoneLevelCounts.entries()].reduce((acc,[level,count])=>(acc+=level === 0 ? 0 : Math.pow(count,level)),0)
     return startingXBonus
 }
 

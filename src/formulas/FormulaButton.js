@@ -14,13 +14,13 @@ export const getUnlockMultiplier = (formula, state)=>{
         unlockMultiplier = 1
     } else {
         if (effectLevel < 1 && state.highestXTier >= 1) {
-            formula.unlockMultiplier *= 4
+            unlockMultiplier *= 4
         }
         if (effectLevel < 2 && state.highestXTier >= 2) {
-            formula.unlockMultiplier *= 12
+            unlockMultiplier *= 12
         }
         if (effectLevel < 3 && state.highestXTier >= 3) {
-            formula.unlockMultiplier *= 8000
+            unlockMultiplier *= 8000
         }
     }
     return unlockMultiplier
@@ -28,8 +28,8 @@ export const getUnlockMultiplier = (formula, state)=>{
 
 export default function FormulaButton({state, popup, updateState, setTotalClicks, formulaName, context, myIndex}) {
     const applyFormula = (formula,evt)=>{
-        if (state.settings.valueReduction === "CONFIRM" && 0.9999 * state.xValue[formula.targetLevel] > formula.applyFormula(state.formulaEfficiency[formula.targetLevel],state.xValue, state)) {
-            popup.confirm("This will lower your X value. Are you sure?\n(You can skip this pop-up by using Shift+Click)",()=>{
+        if (!state.decreaseCooldown && state.settings.valueReduction === "CONFIRM" && 0.9999 * state.xValue[formula.targetLevel] > formula.applyFormula(state.formulaEfficiency[formula.targetLevel],state.xValue, state)) {
+            popup.confirm("This will lower your X value. Are you sure?\n(If you confirm, this pop-up is disabled until your next Reset. You can also skip this pop-up by using Shift+Click)",()=>{
                 updateState({name: "applyFormula", formula: formula, updateState: updateState, forceApply: true})
                 setTotalClicks((x)=>x+1)
             })
@@ -149,11 +149,11 @@ export default function FormulaButton({state, popup, updateState, setTotalClicks
                 {!state.formulaUnlocked[formulaName] && !lockedByChallenge && <>{spaces()}Unlocks at x={formatNumber(formula.unlockCost * formula.unlockMultiplier, state.settings.numberFormat)}</> }
                 {state.formulaUnlocked[formulaName] && !!applyCost && state.xValue[0] < applyCost && <>{spaces()}{state.alphaUpgrades.FREF ? "Need":"Cost"}: x={formatNumber(applyCost, state.settings.numberFormat)}</> }
                 {state.formulaUnlocked[formulaName] && !!applyNeed && state.xValue[0] < applyNeed && <>{spaces()}Need: x={formatNumber(applyNeed, state.settings.numberFormat)}</>}
-                {state.formulaUnlocked[formulaName] && state.xValue[0] >= applyNeed && state.xValue[0] >= applyCost && !state.formulaUsed[formulaName] && <>{spaces()}Click to apply formula!</>}
-                {!state.formulaUsed[formulaName] && <>{spaces()}<button disabled={state.activeChallenges.FULLYIDLE} 
+                {state.formulaUnlocked[formulaName] && state.xValue[0] >= applyNeed && state.xValue[0] >= applyCost && !state.formulaUsed[formulaName] && <>{spaces()}Click to apply!</>}
+                {!state.formulaUsed[formulaName] && <span style={{display:"inline-block"}}>{spaces()}<button disabled={state.activeChallenges.FULLYIDLE} 
                     onClick={()=>discardFormula(formula)}>
                     Unequip
-                </button>&nbsp;<button onClick={moveFormulaUp} disabled={state.activeChallenges.FULLYIDLE}>&nbsp;&#708;&nbsp;</button>&nbsp;<button onClick={moveFormulaDown} disabled={state.activeChallenges.FULLYIDLE}>&nbsp;&#709;&nbsp;</button></>}
+                </button>&nbsp;<button onClick={moveFormulaUp} disabled={state.activeChallenges.FULLYIDLE}>&nbsp;&#708;&nbsp;</button>&nbsp;<button onClick={moveFormulaDown} disabled={state.activeChallenges.FULLYIDLE}>&nbsp;&#709;&nbsp;</button></span>}
             </td><td>
             </td>
             <td align="left" className="block" style={{width:"auto"}}></td>
@@ -164,7 +164,7 @@ export default function FormulaButton({state, popup, updateState, setTotalClicks
     } else if (state.formulaBought[formulaName]) { //EQUIPPED
         return (
             <tr><td align="left" className="block" style={{width:"auto"}}>
-                <button disabled={true} className="fbutton" style={{backgroundColor: "#ffffff"}}>
+                <button disabled={true} className="fbutton" style={{backgroundColor: "#CCFFCC"}}>
                     EQUIPPED
                 </button>
             </td><td>

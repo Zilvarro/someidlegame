@@ -3,12 +3,12 @@ import {notify,secondsToHms} from './utilities'
 import formulaList from './formulas/FormulaDictionary'
 import {shopFormulas} from './formulas/FormulaScreen'
 import {isLockedByChallenge} from './formulas/FormulaButton'
-import {alphaChallengeDictionary} from './alpha/AlphaChallengeTab'
 import {calcStoneResultForX} from './alpha/AlphaStonesTab'
 import {startingStones, stoneTable, stoneList} from './alpha/AlphaStoneDictionary'
 import * as progresscalculation from './progresscalculation'
+// import { Buffer } from "buffer";
 
-export const version = "0.16"
+export const version = "0.23"
 export const newSave = {
     version: version,
     progressionLayer: 0,
@@ -25,11 +25,13 @@ export const newSave = {
     formulaBought: {},
     formulaUsed: {},
     inNegativeSpace: false,
+    decreaseCooldown: false,
     myFormulas: [],
     autoApply: [false,false,false,false,false],
     autoApplyLevel: 0,
     autoApplyRate: 2,
-    equipLayouts: [[],[],[],[]],
+    equipLayouts: [[[],[],[],[]],[[],[],[],[]],[[],[],[],[]]],
+    selectedLayout: 0,
     anyFormulaUsed: true,
     xResetCount: 0,
     formulaUnlockCount: 0,
@@ -51,14 +53,15 @@ export const newSave = {
     justLaunched: true,
     lastPlayTime: 0,
     currentAlphaTime: 0,
-    bestAlphaTime: Infinity,
-    bestIdleTime: Infinity,
+    bestAlphaTime: 1e100,
+    bestIdleTime: 1800e3,
     bestIdleTimeAlpha: 1,
     passiveAlphaTime: 0,
     passiveMasterTime: 0,
     insideChallenge: false,
     currentChallenge: null,
     currentChallengeName: null,
+    currentChallengeTime: 0,
     activeChallenges: {},
     clearedChallenges: {},
     challengeProgress: {},
@@ -83,7 +86,7 @@ export const newSave = {
         shopPrices: "OFF",
         showHints: "ON",
         hotKeys: "ON",
-        shopScroll: "ON",
+        shopScroll: "OFF",
         autoResetterS: "OFF",
         autoResetterA: "OFF",
         alphaThreshold: "MINIMUM",
@@ -118,6 +121,12 @@ export const getSaveGame = ()=>{
             newgame.settings.autoLoad = "OFF"
             return newgame
         } else {
+            //*TEMPORARY*
+            //const encodedState = Buffer.from(JSON.stringify(state)).toString("base64");
+            // navigator.clipboard.writeText(savedgame);
+            // notify.success("Copied Old State")
+            // return ({...structuredClone(newSave), saveTimeStamp: Date.now(), calcTimeStamp: Date.now()})
+
             return {...structuredClone(newSave), ...savedgamejson, settings:{...structuredClone(newSave.settings), ...savedgamejson.settings}, saveTimeStamp: Date.now(), currentEnding: newSave.currentEnding, justLaunched: true}
         }
     }
@@ -132,6 +141,13 @@ export const loadGame = ()=>{
     else {
         notify.success("Game Loaded")
         const savedgamejson = JSON.parse(savedgame)
+
+        //*TEMPORARY*
+        // const encodedState = Buffer.from(JSON.stringify(savedgamejson)).toString("base64");
+        // navigator.clipboard.writeText(encodedState);
+        //     notify.success("Copied Old State")
+        // return ({...structuredClone(newSave), saveTimeStamp: Date.now(), calcTimeStamp: Date.now()})
+
         return {...structuredClone(newSave), ...savedgamejson, settings:{...structuredClone(newSave.settings), ...savedgamejson.settings}, saveTimeStamp: Date.now(), currentEnding: newSave.currentEnding, justLaunched: true}
 
     }
@@ -139,7 +155,7 @@ export const loadGame = ()=>{
 
 export const getStartingX = (state)=>{
     const fromStartingStones = state.startingStoneX
-    const fromResearch = state.researchLevel["x"] >= 2500 ? 30e12 : Math.floor(100*Math.pow(1.01, state.researchLevel["x"] || 0)-100);
+    const fromResearch = state.researchLevel["x"] >= 2500 ? 10e12 : Math.floor(100*Math.pow(1.01, state.researchLevel["x"] || 0)-100);
     return Math.max(fromStartingStones + fromResearch, fromStartingStones * fromResearch)
 }
 
@@ -217,8 +233,10 @@ const performAlphaReset = (state)=>{
     state.formulaApplyCount = 0
     state.autoUnlockIndex = 0
     state.insideChallenge = false
+    state.decreaseCooldown = false
     state.currentChallenge = null
     state.currentChallengeName = null
+    state.currentChallengeTime = 0
     state.activeChallenges = {}
     return state
 }
@@ -241,13 +259,13 @@ const giveAlphaRewards = (state)=>{
             if (state.currentAlphaTime / alphaReward < state.bestIdleTime / state.bestIdleTimeAlpha) {
                 state.bestIdleTimeAlpha = alphaReward
                 state.bestIdleTime = Math.max(1000, state.currentAlphaTime)
+                state.passiveMasterTime = Math.min(state.passiveMasterTime, state.bestIdleTime / state.bestIdleTimeAlpha)
             }
         }
 
-        if (!state.clearedChallenges[state.currentChallenge])
-            notify.success("Challenge Complete", alphaChallengeDictionary[state.currentChallenge].title)
-
         //General Challenge Stuff
+        if (!state.clearedChallenges[state.currentChallenge])
+            notify.success("Challenge Complete", state.currentChallengeName)
         state.challengeProgress[state.currentChallenge] = 4
         state.clearedChallenges[state.currentChallenge] = true
         state.activeChallenges = {}
@@ -260,6 +278,7 @@ const giveAlphaRewards = (state)=>{
     } else {
         state.alpha += alphaReward
         state.bestAlphaTime = Math.max(1000,Math.min(state.currentAlphaTime, state.bestAlphaTime))
+        state.passiveAlphaTime = Math.min(state.passiveAlphaTime, state.bestAlphaTime)
         state.xHighScores[state.highestXTier] = Math.max(state.xHighScores[state.highestXTier], state.xValue[0])
     }
     return state
@@ -271,12 +290,14 @@ const performXReset = (state)=>{
     state.autoApply = [false,false,false,false,false]
     state.anyFormulaUsed = false
     state.inNegativeSpace = false
+    state.decreaseCooldown = false
     state.xResetCount++
 }
 
 const performShopReset = (state)=>{
     state.xValue = [getStartingX(state),0,0,0]
     state.millisSinceCountdown = 0
+    state.currentChallengeTime = 0
     state.formulaUsed = {}
     state.anyFormulaUsed = false
     state.formulaBought = {}
@@ -285,14 +306,15 @@ const performShopReset = (state)=>{
     state.formulaUnlockCount = 0
     state.xResetCount = 0
     state.inNegativeSpace = false
+    state.decreaseCooldown = false
     state.formulaApplyCount = 0
     state.autoUnlockIndex = 0
     return state
 }
 
-const rememberLoadout = (state)=>{
-    if (state.alphaUpgrades.AREM && state.settings.autoRemembererActive === "ON") {
-        state.myFormulas = state.equipLayouts[state.highestXTier].slice(0,getInventorySize(state))
+const rememberLoadout = (state, isManual)=>{
+    if ((state.alphaUpgrades.AREM && state.settings.autoRemembererActive === "ON") || isManual) {
+        state.myFormulas = state.equipLayouts[state.selectedLayout][state.highestXTier].slice(0,getInventorySize(state))
         state.formulaBought = state.myFormulas.reduce((a,v)=>({...a, [v]:true}),{})
     } else {
         state.myFormulas = []
@@ -301,9 +323,12 @@ const rememberLoadout = (state)=>{
 }
 
 const upgradeXTier = (state)=>{
-    state.xHighScores[state.highestXTier] = Math.max(state.xHighScores[state.highestXTier], state.xValue[0])
+    if (state.progressionLayer !== 0)
+        state.xHighScores[state.highestXTier] = Math.max(state.xHighScores[state.highestXTier], state.xValue[0])
     state.highestXTier++
     if (state.currentChallenge) {
+        if (!state.clearedChallenges[state.currentChallenge])
+            notify.success("Segment Complete", state.currentChallengeName)
         state.challengeProgress[state.currentChallenge] = Math.max(state.challengeProgress[state.currentChallenge] || 0,state.highestXTier)
         state = updateFormulaEfficiency(state)
     }
@@ -311,10 +336,9 @@ const upgradeXTier = (state)=>{
 }
 
 const updateProductionBonus = (state)=>{
-    const researchBonus = 1 //getMaxxedResearchBonus(state).bonus (This turned out to be too OP)
-    state.productionBonus[0] = researchBonus*(state.researchLevel["x'"] >= 2500 ? 300e9 : Math.pow(1.01, state.researchLevel["x'"] || 0 ))
-    state.productionBonus[1] = researchBonus*(state.researchLevel["x''"] >= 2500 ? 300e9 : Math.pow(1.01, state.researchLevel["x''"] || 0))
-    state.productionBonus[2] = researchBonus*(state.researchLevel["x'''"] >= 2500 ? 300e9 : Math.pow(1.01, state.researchLevel["x'''"] || 0))
+    state.productionBonus[0] = Math.pow(1.01, state.researchLevel["x'"] || 0 )
+    state.productionBonus[1] = Math.pow(1.01, state.researchLevel["x''"] || 0)
+    state.productionBonus[2] = Math.pow(1.01, state.researchLevel["x'''"] || 0)
     return state
 }
 
@@ -331,18 +355,10 @@ export const getChallengeBonus = (state)=>{
             clearedSegments += state.challengeProgress[c]
     }
 
-    if (clearedFull >= 13) {
-        return {
-            bonus: 100000,
-            full: 13,
-            segment: 52,
-        }
-    } else {
-        return {
-            bonus:(1 + 0.1 * clearedSegments) * Math.pow(2, clearedFull),
-            full: clearedFull,
-            segment: clearedSegments,
-        }
+    return {
+        bonus:(1 + 0.1 * clearedSegments) * Math.pow(2, clearedFull),
+        full: clearedFull,
+        segment: clearedSegments,
     }
 }
 
@@ -382,14 +398,19 @@ export const saveReducer = (state, action)=>{
         }
         
         let deltaMilliSeconds = (timeStamp - state.calcTimeStamp)
-        
+
         if (deltaMilliSeconds < 120000) { //Quick Computation
-            state.currentAlphaTime += deltaMilliSeconds
+            if (state.insideChallenge || state.anyFormulaUsed || state.xResetCount || state.highestXTier > 0)
+                state.currentAlphaTime += deltaMilliSeconds
+            state.currentChallengeTime += deltaMilliSeconds
             const challengeMultiplier = state.activeChallenges.SLOWPROD ? 0.01 : 1
 
             //Regular Production
             for(let i=1; i<state.xValue.length; i++) {
-                state.xValue[i-1]+= deltaMilliSeconds * state.productionBonus[i-1] *challengeMultiplier * state.idleMultiplier * state.xValue[i] / 1000
+                //Close to 0 does not produce
+                if (Math.abs(state.xValue[i]) >= 0.5) {
+                    state.xValue[i-1]+= deltaMilliSeconds * state.productionBonus[i-1] *challengeMultiplier * state.idleMultiplier * state.xValue[i] / 1000
+                }
             }
 
             //Challenge Decay
@@ -412,34 +433,62 @@ export const saveReducer = (state, action)=>{
                 }   
             }
         } else if (!state.currentChallenge && (state.settings.offlineProgress === "ON" || (state.settings.offlineProgress === "ACTIVE" && !state.justLaunched))) { //Offline Progress
-            state.currentAlphaTime += deltaMilliSeconds
+            if (state.anyFormulaUsed || state.highestXTier > 0 || state.xResetCount)
+                state.currentAlphaTime += deltaMilliSeconds
+            state.currentChallengeTime += deltaMilliSeconds
             const xBefore = state.xValue[0]
             state = progresscalculation.applyIdleProgress(state, deltaMilliSeconds)
             const factor = state.xValue[0] / xBefore
             if (state.settings.offlineProgressPopup === "ON" || (state.settings.offlineProgressPopup === "LAUNCH" && state.justLaunched)){
                 if (factor && factor !== Infinity && factor > 1.01 ){
-                    popup.alert("You were away for " + secondsToHms(Math.floor(deltaMilliSeconds / 60000)) + ".\nYour x increased by a factor of " + factor.toFixed(2))
+                    popup.alert("You were away for " + secondsToHms(Math.floor(deltaMilliSeconds / 1000)) + ".\nYour x increased by a factor of " + factor.toFixed(2))
                 } else {
-                    popup.alert("You were away for " + secondsToHms(Math.floor(deltaMilliSeconds / 60000)) + ".")
+                    popup.alert("You were away for " + secondsToHms(Math.floor(deltaMilliSeconds / 1000)) + ".")
                 }
             }
         } else if (state.settings.offlineProgressPopup === "ON" || (state.settings.offlineProgressPopup === "LAUNCH" && state.justLaunched)){
-            popup.alert("You were away for " + secondsToHms(Math.floor(deltaMilliSeconds / 60000)) + ".")
+            popup.alert("You were away for " + secondsToHms(Math.floor(deltaMilliSeconds / 1000)) + ".")
             deltaMilliSeconds = 0 //prevents further progress
         }
 
         //Apply Mouse Hold / Touch Hold events
+        let recoverHold = false
+        let recoverValue = 0
+        let recoverTier = 0
         if (state.holdAction?.type === "ApplyFormula"){
             if(state.holdAction.delay > 0) {
                 state.holdAction.delay--
             } else {
             const formula = formulaList[state.holdAction.formulaName]
+                let xBeforeHold = state.xValue[formula.targetLevel]
                 const isApplied = progresscalculation.applyFormulaToState(state, formula, false)
                 if (!isApplied) {
                     state.holdAction = null
                 }
+
+                //Allows players to force an xValue down by holding the button
+                //There are strategies where applying the hold first/last would be beneficial and I want both to work
+                if (state.xValue[formula.targetLevel] <= xBeforeHold) {
+                    recoverHold = true
+                    recoverValue = state.xValue[formula.targetLevel]
+                    recoverTier = formula.targetLevel
+                }
             }
         }
+
+        //Auto Appliers
+        state.millisSinceAutoApply += deltaMilliSeconds
+        if (state.alphaUpgrades.AAPP && state.millisSinceAutoApply > 1000 / state.autoApplyRate){
+            for (let i = 0; i<5; i++) {
+                if (state.autoApply[i] && state.myFormulas.length > i) {
+                    progresscalculation.applyFormulaToState(state,formulaList[state.myFormulas[i]],false, true)
+                }
+            }
+            state.millisSinceAutoApply = Math.min(100, state.millisSinceAutoApply - 1000 / state.autoApplyRate) //Buffer up to 100 ms
+        }
+
+        if (recoverHold)
+            state.xValue[recoverTier] = recoverValue
 
         if (state.activeChallenges.FORMULAGOD) {
             for (let i = 0; i < 4; i++)
@@ -453,17 +502,6 @@ export const saveReducer = (state, action)=>{
             state.xValue=[0,0,0,0]
         }
 
-        //Auto Appliers
-        state.millisSinceAutoApply += deltaMilliSeconds
-        if (state.alphaUpgrades.AAPP && state.millisSinceAutoApply > 1000 / state.autoApplyRate){
-            for (let i = 0; i<5; i++) {
-                if (state.autoApply[i] && state.myFormulas.length > i) {
-                    progresscalculation.applyFormulaToState(state,formulaList[state.myFormulas[i]],false, true)
-                }
-            }
-            state.millisSinceAutoApply = 0
-        }
-        
         //Check if next milestone is reached
         if (milestoneList[state.mileStoneCount]?.check(state)){
             notify.success("New Milestone", milestoneList[state.mileStoneCount].name)
@@ -489,17 +527,25 @@ export const saveReducer = (state, action)=>{
         state.tickFormula=false
 
         //Auto Unlocker
-        let formula = formulaList[shopFormulas[state.autoUnlockIndex]]
-        if (state.alphaUpgrades.AUNL  && state.autoUnlockIndex < shopFormulas.length) {
-            if (formula.effectLevel <= state.highestXTier && (state.xValue[0] >= formula.unlockCost * formula.unlockMultiplier || formula.isFree)) {
-                state.formulaUnlocked[formula.formulaName] = true
-                state.formulaUnlockCount++
-            }
-        }
-        
-        while (state.autoUnlockIndex < shopFormulas.length && (isLockedByChallenge(state,formula) || state.formulaUnlocked[formula.formulaName] || formula.effectLevel > state.highestXTier)) {
-            state.autoUnlockIndex++
+        let formula
+        for (; state.autoUnlockIndex < shopFormulas.length; state.autoUnlockIndex++) {
             formula = formulaList[shopFormulas[state.autoUnlockIndex]]
+
+            //Unlock not possible/necessary
+            if (isLockedByChallenge(state,formula) || state.formulaUnlocked[formula.formulaName] || formula.effectLevel > state.highestXTier)
+                continue
+
+            //Not enough x for unlock (future formulas are even more expensive)
+            if (state.xValue[0] < formula.unlockCost * formula.unlockMultiplier && !formula.isFree)
+                break
+
+            //No Auto-Unlock
+            if (!state.alphaUpgrades.AUNL)
+                break
+
+            //perform Unlock
+            state.formulaUnlocked[formula.formulaName] = true
+            state.formulaUnlockCount++
         }
 
         //Passive Alpha from Upgrade
@@ -535,8 +581,8 @@ export const saveReducer = (state, action)=>{
         }
 
         //Failed Challenge
-        if (state.insideChallenge && state.currentAlphaTime > 1800e3) {
-            notify.error("Challenge Failed", "30 minute time limit is up")
+        if (state.insideChallenge && state.currentChallengeTime > 1800e3) {
+            state.currentEnding = "timeout"
             performAlphaReset(state)
             performShopReset(state)
             rememberLoadout(state)
@@ -546,6 +592,13 @@ export const saveReducer = (state, action)=>{
         const lastSaveMilliseconds = (timeStamp - state.saveTimeStamp)
         if (state.mileStoneCount > 0 && state.settings.autoSave === "ON" && lastSaveMilliseconds >= 10000) { //TODO
             save(state)
+        }
+
+        //Failsafe NaN
+        if (!state.currentEnding && isNaN(state.xValue[0]))
+        {
+            performXReset(state)
+            state.currentEnding = "infinite"
         }
         break;
     case "selectTab":
@@ -562,6 +615,7 @@ export const saveReducer = (state, action)=>{
         break;
     case "changeSetting":
         state.settings[action.settingName] = action.nextStatus
+        state.decreaseCooldown = false
         break;
     case "changeHold":
         state.holdAction = action.newValue
@@ -622,18 +676,23 @@ export const saveReducer = (state, action)=>{
         }
         break;
     case "cheat":
-        if (state.mileStoneCount < 6) {
-            state.mileStoneCount = 6
-            state.progressionLayer = 1
-            state.alpha++
-        } else {
-            state.alpha = 1
-            state.bestAlphaTime = Infinity
-            state.bestIdleTime = Infinity
-            state.bestIdleTimeAlpha = 1
-            state.passiveAlphaTime = 0
-            state.passiveMasterTime = 0
-        }
+        state.alpha = 0
+        state.bestIdleTime = 1800e3
+        state.bestIdleTimeAlpha = 1
+        state.passiveMasterTime = 0
+
+        // if (state.mileStoneCount < 6) {
+        //     state.mileStoneCount = 6
+        //     state.progressionLayer = 1
+        //     state.alpha++
+        // } else {
+        //     state.alpha = 1
+        //     state.bestAlphaTime = Infinity
+        //     state.bestIdleTime = Infinity
+        //     state.bestIdleTimeAlpha = 1
+        //     state.passiveAlphaTime = 0
+        //     state.passiveMasterTime = 0
+        // }
         break;
     case "chapterJump":
         switch (action.password) {
@@ -673,12 +732,15 @@ export const saveReducer = (state, action)=>{
         }
         break;
     case "memorize":
-        state.equipLayouts[state.highestXTier] = structuredClone(state.myFormulas)
-        notify.success("Equip Layout Saved")
+        state.equipLayouts[state.selectedLayout][state.highestXTier] = structuredClone(state.myFormulas)
+        notify.success("Equip Loadout Saved")
         break;
     case "remember":
-        rememberLoadout(state)
-        notify.success("Equip Layout Loaded")
+        rememberLoadout(state,true)
+        notify.success("Equip Loadout Loaded")
+        break;
+    case "selectLoadout":
+        state.selectedLayout = action.index || 0
         break;
     case "clearLoadout":
         state.myFormulas = state.myFormulas.filter(formulaName => state.formulaUsed[formulaName])
@@ -721,6 +783,7 @@ export const saveReducer = (state, action)=>{
         rememberLoadout(state)
         break;
     case "startResearch":
+        debugger
         state.researchStartTime[action.research.id] = Date.now()
         state.researchLevel[action.research.id] = Math.min(2500, (state.researchLevel[action.research.id] || 0) + action.bulkAmount)
         state = updateProductionBonus(state)
@@ -756,6 +819,7 @@ export const saveReducer = (state, action)=>{
         state.currentEnding = action.endingName
         break;
     case "completeEnding":
+        let isNew = !state.completedEndings[action.endingName]
         state.completedEndings[action.endingName] = true
         performXReset(state)
         state.currentEnding = ""
@@ -763,10 +827,11 @@ export const saveReducer = (state, action)=>{
             state.progressionLayer = 2
             notify.success("DESTINY", "You finished the game!")
             performAlphaReset(state)
-        } else if (action.endingName === "good" || action.endingName === "evil" || action.endingName === "true" || action.endingName === "world") {
+        } else if (action.endingName === "good" || action.endingName === "evil" || action.endingName === "true" || action.endingName === "skipped" || action.endingName === "world") {
             performAlphaReset(state)
         } else { //BadEndings
-            state.badEndingCount++
+            if (isNew)
+                state.badEndingCount++
             performXReset(state)
         }
         break;

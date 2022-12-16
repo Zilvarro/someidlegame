@@ -13,8 +13,8 @@ export default function DestinyWelcomeTab({state, popup, updateState}) {
                 {state.destinyStars < 1 && <><p>Claim this Destiny Star as a reward!</p><br/><button onClick={claimFirstStar}><b>CLAIM DESTINY STAR</b></button></>}
                 {state.destinyStars >= 1 && <>
                     <p>You have {state.destinyStars} Destiny Star{state.destinyStars !== 1 && "s"}.</p>
-                    <p>The Overall Game speed is multiplied by your Destiny Stars.</p><br/><br/><br/><br/><br/>
-                    <button onClick={performDestinyReset} className="fbutton" style={{ backgroundColor:"#FFFF88", fontWeight:"bold", width:"250px"}} ><b>{"CHANGE YOUR DESTINY"}</b></button>
+                    <p>Your Destiny Stars multiply the Overall Game Speed.</p><br/><br/><br/><br/><br/>
+                    <button onClick={performDestinyReset} className="fbutton" style={{ backgroundColor:"#FFFF88", fontWeight:"bold", width:"280px"}} ><b>{"CHANGE YOUR DESTINY"}</b></button>
                 </>}
             </>}
         </div>)

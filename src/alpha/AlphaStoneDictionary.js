@@ -11,7 +11,7 @@ export const startingStones = {
     "BadEndings":{
         id: "BadEndings",
         title: "Breaking Maths",
-        description: <>Reach a Bad Ending three times</>,
+        description: <>Reach three distinct Bad Endings</>,
         check: (state=>(state.badEndingCount >= 3)),
     },
     "StartingValue":{
@@ -30,8 +30,8 @@ export const startingStones = {
     "Timewall":{
         id: "Timewall",
         title: "Timewall ",
-        description: <>&alpha;-Reset with at least x=1e110 and &alpha;=1e10</>,
-        check: (state=>(state.xHighScores[3] >= 1e110 && state.alpha >= 1e10)),
+        description: <>&alpha;-Reset with at least x=1e110 and &alpha;=5e9</>,
+        check: (state=>(state.xHighScores[3] >= 1e110 && state.alpha >= 5e9)),
     },
     "AllChallenges":{
         id: "AllChallenges",

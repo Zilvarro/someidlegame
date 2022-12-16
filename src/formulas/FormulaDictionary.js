@@ -2,7 +2,7 @@ const formulaList = {
     //Tier 1 Formulas
     "x+1": {
         formulaName: "x+1",
-        description: <>x &rarr; x + 1</>,
+        description: <>x &#10141; x + 1</>,
         unlockCost: 30,
         applyCost: 0,
         applyNeed: 0,
@@ -12,7 +12,7 @@ const formulaList = {
     },
     "x+5": {
         formulaName: "x+5",
-        description: <>x &rarr; x + 5</>,
+        description: <>x &#10141; x + 5</>,
         unlockCost: 50,
         applyCost: 0,
         applyNeed: 20,
@@ -21,7 +21,7 @@ const formulaList = {
     },
     "x+10": {
         formulaName: "x+10",
-        description: <>x &rarr; x + 10</>,
+        description: <>x &#10141; x + 10</>,
         unlockCost: 500,
         applyCost: 0,
         applyNeed: 100,
@@ -30,7 +30,7 @@ const formulaList = {
     },
     "x+20": {
         formulaName: "x+20",
-        description: <>x &rarr; x + 20</>,
+        description: <>x &#10141; x + 20</>,
         unlockCost: 2000,
         applyCost: 0,
         applyNeed: 300,
@@ -39,7 +39,7 @@ const formulaList = {
     },
     "x+50": {
         formulaName: "x+50",
-        description: <>x &rarr; x + 50</>,
+        description: <>x &#10141; x + 50</>,
         unlockCost: 5000,
         applyCost: 0,
         applyNeed: 800,
@@ -48,7 +48,7 @@ const formulaList = {
     },
     "x+100": {
         formulaName: "x+100",
-        description: <>x &rarr; x + 100</>,
+        description: <>x &#10141; x + 100</>,
         unlockCost: 10000,
         applyCost: 0,
         applyNeed: 2000,
@@ -59,7 +59,7 @@ const formulaList = {
     //Tier 2 Formulas
     "x'=1": {
         formulaName: "x'=1",
-        description: <>x' &rarr; 1</>,
+        description: <>x' &#10141; 1</>,
         unlockCost: 0,
         applyCost: 0,
         applyNeed: 0,
@@ -69,7 +69,7 @@ const formulaList = {
     },
     "x'=24": {
         formulaName: "x'=24",
-        description: <>x' &rarr; 24</>,
+        description: <>x' &#10141; 24</>,
         unlockCost: 600,
         applyCost: 30,
         applyNeed: 0,
@@ -78,7 +78,7 @@ const formulaList = {
     },
     "x'+1": {
         formulaName: "x'+1",
-        description: <>x' &rarr; x' + 1</>,
+        description: <>x' &#10141; x' + 1</>,
         unlockCost: 3000,
         applyCost: 50,
         applyNeed: 0,
@@ -87,7 +87,7 @@ const formulaList = {
     },
     "x+1000": {
         formulaName: "x+1000",
-        description: <>x &rarr; x + 1000</>,
+        description: <>x &#10141; x + 1000</>,
         unlockCost: 80000, //*4
         applyCost: 0,
         applyNeed: 10000,
@@ -96,7 +96,7 @@ const formulaList = {
     },
     "x'+3": {
         formulaName: "x'+3",
-        description: <>x' &rarr; x' + 3</>,
+        description: <>x' &#10141; x' + 3</>,
         unlockCost: 600000,
         applyCost: 300,
         applyNeed: 0,
@@ -105,7 +105,7 @@ const formulaList = {
     },
     "x+x'": {
         formulaName: "x+x'",
-        description: <>x &rarr; x + x'</>,
+        description: <>x &#10141; x + x'</>,
         unlockCost: 1e6,
         applyCost: 0,
         applyNeed: 10,
@@ -116,7 +116,7 @@ const formulaList = {
     },
     "x'+220": {
         formulaName: "x'+220",
-        description: <>x' &rarr; x' + 220</>,
+        description: <>x' &#10141; x' + 220</>,
         unlockCost: 10e6,
         applyCost: 100000,
         applyNeed: 0,
@@ -126,9 +126,9 @@ const formulaList = {
     "x'=420K": {
         formulaName: "x'=420K",
         descriptions: {
-            "LETTER": <>x' &rarr; 420K</>,
-            "SCIENTIFIC": <>x' &rarr; 420000</>,
-            "AMBIGUOUS": <>x' &rarr; 420?</>,
+            "LETTER": <>x' &#10141; 420K</>,
+            "SCIENTIFIC": <>x' &#10141; 420000</>,
+            "AMBIGUOUS": <>x' &#10141; 420?</>,
         },
         unlockCost: 69e6,
         applyCost: 69,
@@ -139,9 +139,9 @@ const formulaList = {
     "x+50M": {
         formulaName: "x+50M",
         descriptions: {
-            "LETTER": <>x &rarr; x + 50M</>,
-            "SCIENTIFIC": <>x &rarr; x + 5e7</>,
-            "AMBIGUOUS": <>x &rarr; x + 50?</>,
+            "LETTER": <>x &#10141; x + 50M</>,
+            "SCIENTIFIC": <>x &#10141; x + 5e7</>,
+            "AMBIGUOUS": <>x &#10141; x + 50?</>,
         },
         unlockCost: 500e6, //*4
         applyCost: 0,
@@ -153,7 +153,7 @@ const formulaList = {
     //Tier 3 Formulas
     "x''=1": {
         formulaName: "x''=1",
-        description: <>x'' &rarr; 1</>,
+        description: <>x'' &#10141; 1</>,
         unlockCost: 200,
         applyCost: 0,
         applyNeed: 0,
@@ -163,7 +163,7 @@ const formulaList = {
     },
     "x''=2": {
         formulaName: "x''=2",
-        description: <>x'' &rarr; 2</>,
+        description: <>x'' &#10141; 2</>,
         unlockCost: 1500,
         applyCost: 100,
         applyNeed: 0,
@@ -172,7 +172,7 @@ const formulaList = {
     },
     "x''=3": {
         formulaName: "x''=3",
-        description: <>x'' &rarr; 3</>,
+        description: <>x'' &#10141; 3</>,
         unlockCost: 2800,
         applyCost: 1000,
         applyNeed: 0,
@@ -181,7 +181,7 @@ const formulaList = {
     },
     "x''=#U": {
         formulaName: "x''=#U",
-        description: <>x'' &rarr; 1.25<sup>#U</sup></>,
+        description: <>x'' &#10141; 1.25<sup>#U</sup></>,
         unlockCost: 13000,
         applyCost: 5000,
         applyNeed: 0,
@@ -192,7 +192,7 @@ const formulaList = {
     },
     "x'=1000*x''": {
         formulaName: "x'=1000*x''",
-        description: <>x' &rarr; 1000x''</>,
+        description: <>x' &#10141; 1000x''</>,
         unlockCost: 111000,
         applyCost: 11000,
         applyNeed: 0,
@@ -203,7 +203,7 @@ const formulaList = {
     },
     "x''=sqrt(x)": {
         formulaName: "x''=sqrt(x)",
-        description: <>x'' &rarr; x<sup>0.3</sup></>,
+        description: <>x'' &#10141; x<sup>0.3</sup></>,
         unlockCost: 9e6,
         applyCost: 100000,
         applyNeed: 0,
@@ -213,7 +213,7 @@ const formulaList = {
     },
     "x''+1": {
         formulaName: "x''+1",
-        description: <>x'' &rarr; x''  + 1</>,
+        description: <>x'' &#10141; x''  + 1</>,
         unlockCost: 1.9e9,
         applyCost: 100000,
         applyNeed: 0,
@@ -222,7 +222,7 @@ const formulaList = {
     },
     "x''+130": {
         formulaName: "x''+130",
-        description: <>x'' &rarr; x'' + 130</>,
+        description: <>x'' &#10141; x'' + 130</>,
         unlockCost: 37e9,
         applyCost: 49e6,
         applyNeed: 0,
@@ -231,7 +231,7 @@ const formulaList = {
     },
     "x'+x^0.6": {
         formulaName: "x'+x^0.6",
-        description: <>x' &rarr; x' + x<sup>0.6</sup></>,
+        description: <>x' &#10141; x' + x<sup>0.6</sup></>,
         unlockCost: 100e9, //*12
         applyCost: 250e6,
         applyNeed: 0,
@@ -242,9 +242,9 @@ const formulaList = {
     "x''+10B": {
         formulaName: "x''+10B",
         descriptions: {
-            "LETTER": <>x'' &rarr; x'' + 10B</>,
-            "SCIENTIFIC": <>x'' &rarr; x'' + 1e10</>,
-            "AMBIGUOUS": <>x'' &rarr; x'' + 10?</>,
+            "LETTER": <>x'' &#10141; x'' + 10B</>,
+            "SCIENTIFIC": <>x'' &#10141; x'' + 1e10</>,
+            "AMBIGUOUS": <>x'' &#10141; x'' + 10?</>,
         },
         unlockCost: 1e15, //??? check pricing
         applyCost: 200e6,
@@ -255,9 +255,9 @@ const formulaList = {
     "x+50P": {
         formulaName: "x+50P",
         descriptions: {
-            "LETTER": <>x &rarr; x + 50P</>,
-            "SCIENTIFIC": <>x &rarr; x + 5e19</>,
-            "AMBIGUOUS": <>x &rarr; x + 50?</>,
+            "LETTER": <>x &#10141; x + 50P</>,
+            "SCIENTIFIC": <>x &#10141; x + 5e19</>,
+            "AMBIGUOUS": <>x &#10141; x + 50?</>,
         },
         unlockCost: 4e17, //*48
         applyCost: 0, 
@@ -269,7 +269,7 @@ const formulaList = {
     //Tier 4 Formulas
     "x'''=1": {
         formulaName: "x'''=1",
-        description: <>x''' &rarr; 1</>,
+        description: <>x''' &#10141; 1</>,
         unlockCost: 2000,
         applyCost: 0,
         applyNeed: 0,
@@ -279,7 +279,7 @@ const formulaList = {
     },
     "x'''=(#U^2)/12": {
         formulaName: "x'''=(#U^2)/12",
-        description: <>x''' &rarr; #U<sup>2</sup>/12</>,
+        description: <>x''' &#10141; #U<sup>2</sup>/12</>,
         unlockCost: 1e6,
         applyCost: 10000,
         applyNeed: 0,
@@ -291,7 +291,7 @@ const formulaList = {
     },
     "x'''=4": {
         formulaName: "x'''=4",
-        description: <>x''' &rarr; 4</>,
+        description: <>x''' &#10141; 4</>,
         unlockCost: 10000,
         applyCost: 100,
         applyNeed: 0,
@@ -300,18 +300,18 @@ const formulaList = {
     },
     "x'''=sqrt(2*#R)": {
         formulaName: "x'''=sqrt(2*#R)",
-        description: <>x''' &rarr; sqrt(2*#R)</>,
+        description: <>x''' &#10141; sqrt(2*#B)</>,
         unlockCost: 50000,
         applyCost: 3000,
         applyNeed: 0,
         targetLevel: 3,
         applyFormula: (eff, x,state)=>(Math.floor(Math.sqrt(2*state.xResetCount) * eff)),
-        explanation: "Boosted by number of X-Resets (since S-Reset).",
+        explanation: "Boosted by number of Basic Resets (since x-Reset).",
         complex: true,
     },
     "x'+x''+x'''": {
         formulaName: "x'+x''+x'''",
-        description: <>x' &rarr; x'+x''+x'''</>,
+        description: <>x' &#10141; x'+x''+x'''</>,
         unlockCost: 80e6,
         applyCost: 2e5,
         applyNeed: 0,
@@ -322,7 +322,7 @@ const formulaList = {
     },
     "x''+x'''^2": {
         formulaName: "x''+x'''^2",
-        description: <>x'' &rarr; x''+x'''<sup>2</sup></>,
+        description: <>x'' &#10141; x''+x'''<sup>2</sup></>,
         unlockCost: 10e9,
         applyCost: 2e6,
         applyNeed: 0,
@@ -333,7 +333,7 @@ const formulaList = {
     },
     "x'''+1": {
         formulaName: "x'''+1",
-        description: <>x''' &rarr; x'''+1</>,
+        description: <>x''' &#10141; x'''+1</>,
         unlockCost: 4e12,
         applyCost: 400,
         applyNeed: 0,
@@ -343,9 +343,9 @@ const formulaList = {
     "x=10Q*x'''*x''/x'": {
         formulaName: "x=10Q*x'''*x''/x'",
         descriptions: {
-            "LETTER": <>x &rarr; 10Q * x''' * x'' / x'</>,
-            "SCIENTIFIC": <>x &rarr; 1e16 * x''' * x'' / x'</>,
-            "AMBIGUOUS": <>x &rarr; 10? * x''' * x'' / x'</>,
+            "LETTER": <>x &#10141; 10Q * x''' * x'' / x'</>,
+            "SCIENTIFIC": <>x &#10141; 1e16 * x''' * x'' / x'</>,
+            "AMBIGUOUS": <>x &#10141; 10? * x''' * x'' / x'</>,
         },
         unlockCost: 2e15,
         applyCost: 0,
@@ -358,9 +358,9 @@ const formulaList = {
     "x'=5Q*x'''": {
         formulaName: "x'=5Q*x'''",
         descriptions: {
-            "LETTER": <>x' &rarr; 5Q * x'''</>,
-            "SCIENTIFIC": <>x' &rarr; 5e15 * x'''</>,
-            "AMBIGUOUS": <>x' &rarr; 5? * x'''</>,
+            "LETTER": <>x' &#10141; 5Q * x'''</>,
+            "SCIENTIFIC": <>x' &#10141; 5e15 * x'''</>,
+            "AMBIGUOUS": <>x' &#10141; 5? * x'''</>,
         },
         unlockCost: 120e18,
         applyCost: 1e10,
@@ -372,7 +372,7 @@ const formulaList = {
     },
     "x'''+log2(x)^2": {
         formulaName: "x'''+log2(x)^2",
-        description: <>x''' &rarr; x''' + log<sub>2</sub>(x)<sup>2</sup></>,
+        description: <>x''' &#10141; x''' + log<sub>2</sub>(x)<sup>2</sup></>,
         unlockCost: 30e21,
         applyCost: 5e6,
         applyNeed: 0,
@@ -383,21 +383,21 @@ const formulaList = {
     },
     "x'''+log2(#F/#E)^13": {
         formulaName: "x'''+log2(#F/#E)^13",
-        description: <>x''' &rarr; x''' + log<sub>2</sub>(#F / #E)<sup>13</sup></>,
+        description: <>x''' &#10141; x''' + log<sub>2</sub>(#F / #E)<sup>13</sup></>,
         unlockCost: 6e24,
         applyCost: 1e20,
         applyNeed: 0,
         targetLevel: 3,
         applyFormula: (eff, x,state)=>(state.formulaApplyCount <= 0 ? {error:"logarithm"} : x[3] + Math.pow(Math.log2(state.formulaApplyCount / state.myFormulas.length),13) * eff),
-        explanation: "Boosted by formula applications (since S-Reset). Diminished by number of equipped formulas.",
+        explanation: "Boosted by formula applications (since x-Reset). Diminished by number of equipped formulas.",
         complex: true,
     },
     "x'+30S": {
         formulaName: "x'+30S",
         descriptions: {
-            "LETTER": <>x' &rarr; x' + 30S</>,
-            "SCIENTIFIC": <>x' &rarr; x' + 3e22</>,
-            "AMBIGUOUS": <>x' &rarr; x' + 30?</>,
+            "LETTER": <>x' &#10141; x' + 30S</>,
+            "SCIENTIFIC": <>x' &#10141; x' + 3e22</>,
+            "AMBIGUOUS": <>x' &#10141; x' + 30?</>,
         },
         unlockCost: 2e23, //*96K
         applyCost: 1e15,
@@ -408,9 +408,9 @@ const formulaList = {
     "x''+40P": {
         formulaName: "x''+40P",
         descriptions: {
-            "LETTER": <>x'' &rarr; x'' + 40P</>,
-            "SCIENTIFIC": <>x'' &rarr; x'' + 4e19</>,
-            "AMBIGUOUS": <>x'' &rarr; x' + 40?</>,
+            "LETTER": <>x'' &#10141; x'' + 40P</>,
+            "SCIENTIFIC": <>x'' &#10141; x'' + 4e19</>,
+            "AMBIGUOUS": <>x'' &#10141; x' + 40?</>,
         },
         unlockCost: 25e24, //*8K
         applyCost: 1e21,
@@ -419,30 +419,31 @@ const formulaList = {
         applyFormula: (eff, x)=>(x[2] + 40e18 * eff),
     },
     "x'''*sqrt(300S-x''')/500B": {
-        formulaName: "x'''*sqrt(300S-x''')/500B",
+        formulaName: "x'''*sqrt(300S-x''')/500B", //x'''*sqrt(300S-x'''/2)/500B
         descriptions: {
-            "LETTER": <>x''' &rarr; x''' * sqrt(300S - x''') / 500B</>,
-            "SCIENTIFIC": <>x''' &rarr; x''' * sqrt(3e23 - x''') / 5e11</>,
-            "AMBIGUOUS": <>x''' &rarr; x''' * sqrt(300? - x''') / 500?</>,
+            "LETTER": <>x''' &#10141; x''' * sqrt(300S - x''') / 500B</>,
+            "SCIENTIFIC": <>x''' &#10141; x''' * sqrt(3e23 - x''') / 5e11</>,
+            "AMBIGUOUS": <>x''' &#10141; x''' * sqrt(300? - x''') / 500?</>,
         },
         unlockCost: 5e30,
         applyCost: 1e9,
         applyNeed: 0,
         targetLevel: 3,
-        applyFormula: (eff, x)=>((250e21 + 50e21 * eff - x[3])<0 ? {error:"imaginary"} : Math.floor(x[3]*Math.sqrt(250e21 + 50e21 * eff - x[3]) / 500e9)),
+        applyFormula: (eff, x)=>((300e21 - x[3] / eff)<0 ? {error:"imaginary"} : Math.floor(x[3]*Math.sqrt(300e21 - x[3] / eff) / 500e9)),
+        //applyFormula: (eff, x)=>((250e21 + 50e21 * eff - x[3])<0 ? {error:"imaginary"} : Math.floor(x[3]*Math.sqrt(250e21 + 50e21 * eff - x[3]) / 500e9)),
         explanation: "sqrt is the square root.",
         complex: true,
         offlineDisabled: true,
     },
     "x''+1V": {
         formulaName: "x''+1V",
-        description: <>x'' &rarr; x'' + 1V</>,
+        description: <>x'' &#10141; x'' + 1V</>,
         descriptions: {
-            "LETTER": <>x'' &rarr; x'' + 1V</>,
-            "SCIENTIFIC": <>x''' &rarr; x''' + 1e24</>,
-            "AMBIGUOUS": <>x''' &rarr; x''' + 1?</>,
+            "LETTER": <>x'' &#10141; x'' + 1V</>,
+            "SCIENTIFIC": <>x''' &#10141; x''' + 1e24</>,
+            "AMBIGUOUS": <>x''' &#10141; x''' + 1?</>,
         },
-        unlockCost: 200e33,
+        unlockCost: 50e30, //*8000
         applyCost: 10e33,
         applyNeed: 0,
         targetLevel: 2,
@@ -450,11 +451,11 @@ const formulaList = {
     },
     "x'''+5S": {
         formulaName: "x'''+5S",
-        description: <>x''' &rarr; x''' + 5S</>,
+        description: <>x''' &#10141; x''' + 5S</>,
         descriptions: {
-            "LETTER": <>x''' &rarr; x''' + 5S</>,
-            "SCIENTIFIC": <>x''' &rarr; x''' + 5e21</>,
-            "AMBIGUOUS": <>x''' &rarr; x''' + 5?</>,
+            "LETTER": <>x''' &#10141; x''' + 5S</>,
+            "SCIENTIFIC": <>x''' &#10141; x''' + 5e21</>,
+            "AMBIGUOUS": <>x''' &#10141; x''' + 5?</>,
         },
         unlockCost: 900e33,
         applyCost: 100e33,
