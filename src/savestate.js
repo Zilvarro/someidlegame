@@ -8,7 +8,7 @@ import {startingStones, stoneTable, stoneList} from './alpha/AlphaStoneDictionar
 import * as progresscalculation from './progresscalculation'
 // import { Buffer } from "buffer";
 
-export const version = "0.23"
+export const version = "0.25"
 export const newSave = {
     version: version,
     progressionLayer: 0,
@@ -709,12 +709,12 @@ export const saveReducer = (state, action)=>{
                 state.highestXTier = 2
                 notify.success("CHAPTER 3: SECOND DIFFERENTIAL")
                 break;
-            case "TR1PL3PR1M3":
+            case "7R1PL3PR1M3":
                 state.mileStoneCount = 5
                 state.highestXTier = 3
                 notify.success("CHAPTER 4: THIRD DIFFERENTIAL")
                 break;
-            case "4LPH4T0K3N":
+            case "4LPH470K3N":
                 state.alpha = 1
                 state.mileStoneCount = 6
                 state.progressionLayer = 1

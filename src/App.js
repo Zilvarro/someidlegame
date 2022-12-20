@@ -52,7 +52,7 @@ function App() {
       link2.rel = 'apple-touch-icon';
       document.getElementsByTagName('head')[0].appendChild(link2);
     }
-    const filenames = ["IconNeutral.png", "IconFormulas.png", "IconAlpha.png", "IconNeutral.png"]
+    const filenames = ["IconNeutral.png", "IconFormulas.png", "IconAlpha.png", "IconDestiny.png"]
     link.href = window.location.href + "/" + filenames[iconState]
     link2.href = window.location.href + "/" + filenames[iconState]
   }, [iconState]);
@@ -97,7 +97,7 @@ function App() {
     </span>
     <span style={{display:"inline-block"}}>
       <button style={{margin:"5px"}} onClick={()=>selectTab("AchievementScreen")}>Milestones</button>
-      <button style={{margin:"5px"}} onClick={()=>selectTab("LetterScreen")}>Mails</button>
+      {/* <button style={{margin:"5px"}} onClick={()=>selectTab("LetterScreen")}>Mails</button> */}
       <button style={{margin:"5px"}} onClick={()=>selectTab("OptionScreen")}>Options</button>
     </span>
     {/* {spaces()}<button onClick={cheat}>Cheat</button>

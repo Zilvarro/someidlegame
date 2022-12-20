@@ -5,7 +5,7 @@ export const spaces = ()=>{
     return (<>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</>)
 }
 
-export const formatNumber = (number, numberFormat, decimals=0)=>{
+export const formatNumber = (number, numberFormat, decimals=0, smallfixed=false)=>{
     if (number < 0) return "-" + formatNumber(-number, decimals, numberFormat)
     number *= 1.0000000001 //hopefully less Javascript Jank
 
@@ -14,6 +14,8 @@ export const formatNumber = (number, numberFormat, decimals=0)=>{
         return "Infinity"
     } else if (isNaN(number)) {
         return "NaN"
+    } else if (smallfixed && number < 1e6) {
+        return number.toFixed(decimals)
     } else if (number < 1e6 && (decimals > 0 || numberFormat === "SCIENTIFIC")) {
         return number.toFixed(0)
     } else {
