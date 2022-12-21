@@ -1,1 +1,2 @@
-This is going to be a small demo for an idle game.
+# Idle Formulas
+An incremental game about using various mathematical formulas to increase the value of x.

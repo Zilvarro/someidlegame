@@ -1,0 +1,56 @@
+~~~~~~~~~~GENERAL~~~~~~~~~~
+
+Buttons should be readable when disabled (black Text)
+Numbers should be formatted correctly
+
+
+~~~~~~~~~~FORMULAS~~~~~~~~~~
+
+Absolute x in offline progress popup, if less than +10%
+x per second
+Show # Variables
+Hotkeys
+Shop favs and hidden
+Formula darker green when > +5%
+
+
+~~~~~~~~~~~ALPHA~~~~~~~~~~~
+
+Alpha in offline progress popup
+Back button to quit endings early
+Make Master of Idle Alpha "gain" clearer
+Starting Stones show calculation
+Passive Alpha / Master of Idle cap
+Notification for new highscores
+Confirmation Popup for Memorize
+
+
+~~~~~~~~~~DESTINY~~~~~~~~~~
+
+Global Speed Multiplier
+Destiny Resets
+Decouple Game Logic from Milestones
+
+
+~~~~~~~~~~~MAILS~~~~~~~~~~~
+
+Mailbox
+Event System
+Shop Favorites
+x per Second
+Research Introduction
+Challenge Introduction
+Starting Stones Introduction
+World Formula Lore
+Suspicious Mail
+Maths Coaching
+Market Research
+x-Mail Prime Advertisement
+Chapter Completion Stats
+
+
+~~~~~~~~~~OPTIONS~~~~~~~~~~
+
+Remove Formula Coloring Options
+Configuration for confirmation popups
+Dynamic header bar (x, alpha, stars)
