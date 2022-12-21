@@ -33,58 +33,62 @@ const evilActions = [
         durationSeconds: 3,
     },
     {
-        title: "KILL A PERSON", //1 per 10 Seconds
+        title: "KILL SOMEONE", //1 per 10 Seconds
         durationSeconds: 10,
+        repeat: 2,
+        progress: 1,
     },
     {
         title: "HIRE AN ASSASSIN", //1 per Second
         durationSeconds: 1,
-        unlocksAt: 3,
-        productionBonus: 1,
+        repeat: 19,
+        generator: "Assassins"
     },
     {
         title: "HIRE A KILLER", //100 per Second
         durationSeconds: 2,
-        unlocksAt: 100,
-        productionBonus: 100,
+        repeat: 13,
+        generator: "Killers"
     },
     {
         title: "HIRE A TERRORIST", //10000 per Second
         durationSeconds: 3,
-        unlocksAt: 10000,
-        productionBonus: 10000,
+        repeat: 7,
+        generator: "Terrorists"
     },
     {
         title: "FEED WORLD FORMULA",
-        unlocksAt: 1000000,
         durationSeconds: 1,
-        feedingBonus: 1,
+        repeat: 9,
         headerText: <>You can feed your evil energy into the World Formula!</>,
     },
     {
         title: "ENHANCE WORLD FORMULA",
         durationSeconds: 10,
-        unlocksAtFeeding: 10,
         headerText: <>The World formula has absorbed enough evil energy to be enhanced!</>,
     },
     {
         title: "ELIMINATE HALF OF POPULATION",
         durationSeconds: 5,
+        split: 2,
+        requirement: 7999999988,
         headerText: <>The World formula is at maximum power!</>,
     },
     {
         title: "KILL A PERSON",
+        progress: 1,
         durationSeconds: 10,
+        requirement: 7999999999,
         headerText: <>Your Hirees are dead! Even the World Formula is disgusted by your Actions and refuses to help.<br/><br/>You will have to finish this completely on your own.</>
     },
     {
         title: "KILL A PERSON",
-        durationSeconds: 20,
-        unlocksAt: 7999999999,
+        progress: 1,
+        durationSeconds: 10,
         hesitance: true,
     },
     {
-        title: "You are Dead",
+        title: "You are Dead!",
         durationSeconds: 3,
         headerText: <>~Evil Ending~</>,
         teaseHeaderText: <>~???? ???????~</>,
@@ -105,14 +109,14 @@ const evilGenerators = [
     },
     {
         title: "Terrorists",
-        production: 1000,
+        production: 10000,
     }
 ]
 const goodActions = [
     {
         title: "LISTEN TO A FRIEND",
         durationSeconds: 3,
-        headerText: <>The World Formula lets you achieve anything!</>
+        headerText: <>The World Formula lets you achieve anything!</>,
     },
     {
         title: "HELP AN ELDERLY",
@@ -145,56 +149,60 @@ const goodActions = [
     {
         title: "CURE AN ILLNESS", //1 per 10 Seconds
         durationSeconds: 10,
+        progress: 1,
+        repeat: 2,
     },
     {
         title: "HIRE A RESEARCHER", //1 per 10 Seconds
         durationSeconds: 5,
-        unlocksAt: 3,
-        productionBonus: 0.1,
+        repeat: 3,
+        generator: "Researchers"
     },
     {
         title: "HIRE A SCIENTIST", //1 per 2 Seconds
         durationSeconds: 5,
-        unlocksAt: 20,
-        productionBonus: 0.5,
+        repeat: 7,
+        generator: "Scientists"
     },
     {
         title: "HIRE A GENIUS", //3 per Second
         durationSeconds: 5,
-        unlocksAt: 200,
-        productionBonus: 5,
+        repeat: 11,
+        generator: "Geniuses"
     },
     {
         title: "FEED WORLD FORMULA",
-        unlocksAt: 1000,
         durationSeconds: 1,
         feedingBonus: 1,
+        repeat: 9,
         headerText: <>You can feed your good energy into the World Formula!</>,
     },
     {
         title: "ENHANCE WORLD FORMULA",
         durationSeconds: 10,
-        unlocksAtFeeding: 10,
         headerText: <>The World formula has absorbed enough good energy to be enhanced!</>,
     },
     {
         title: "CURE HALF",
         durationSeconds: 5,
+        requirement: 29988,
+        split: 2,
         headerText: <>The World formula is at maximum power!</>,
     },
     {
         title: "CURE AN ILLNESS",
         durationSeconds: 15,
-        unlocksAt: 29988,
-        headerText: <>Those last Illnesses are really tough. Neither your hirees nor the World Formula is able to help with them! <br/><br/>You will have to finish this completely on your own.</>,
+        requirement: 29999,
+        progress: 1,
+        headerText: <>Those last Illnesses are really tough. Neither your hirees nor the World Formula are able to cure them! <br/><br/>You will have to finish this completely on your own.</>,
     },
     {
         title: "CURE AN ILLNESS",
         durationSeconds: 60,
-        unlocksAt: 29999,
+        progress: 1,
     },
     {
-        title: "You are Cured",
+        title: "You are Cured!",
         endingName:"good",
         durationSeconds: 3,
         headerText: <>~Good Ending~</>,
@@ -207,15 +215,15 @@ const goodActions = [
 const goodGenerators = [
     {
         title: "Researchers",
-        production: 1,
+        production: 0.1,
     },
     {
         title: "Scientists",
-        production: 100,
+        production: 1,
     },
     {
         title: "Geniuses",
-        production: 10000,
+        production: 10,
     }
 ]
 
@@ -223,56 +231,71 @@ const trueActions = [
     {
         title: "ADD 1",
         durationSeconds: 1,
-        target: 5,
+        repeat: 4,
+        getValue: (r)=>(r),
         headerText: <>The World Formula makes numbers go up!</>
     },
     {
         title: "ROUND UP GENEROUSLY",
         durationSeconds: 5,
+        getValue: ()=>100,
         setAmount: 100,
     },
     {
         title: "MULTIPLY BY 2",
         durationSeconds: 1,
-        target: 20,
+        repeat: 19,
+        getValue: (r)=>(100*Math.pow(2,r)),
     },
     {
         title: "ROUND UP GENEROUSLY",
         durationSeconds: 5,
-        setAmount: 10, //1e10   Example 10^(2*10^7)=2ee7
-        setE: 1,
+        getValue: (r)=>1e10,
     },
     {
         title: "RAISE BY 2",
+        repeat: 18,
+        getValue: (r)=>("1e"+10*Math.pow(2,r)),
+        durationSeconds: 1,
+    },
+    {
+        title: "RAISE BY 2",
+        repeat: 18,
+        getValue: (r)=>{
+            const numbertext = Math.pow(2,r+19).toExponential()
+            const prefix = numbertext.charAt(0)
+            const suffix = numbertext.split("+")[1]
+            return (prefix + "ee" + suffix)
+        },
         durationSeconds: 1,
     },
     {
         title: "ROUND UP GENEROUSLY",
         durationSeconds: 5,
-        setAmount: 1,
-        setE: 3
+        getValue: ()=>"1eee5"
     },
     {
         title: "FEED WORLD FORMULA",
         durationSeconds: 1,
+        repeat: 9,
         headerText:<>You can feed your incremental energy into the World Formula!</>,
     },
     {
         title: "ENHANCE WORLD FORMULA",
         durationSeconds: 10,
-        unlocksAtFeeding: 10,
         headerText: <>The World formula has absorbed enough incremental energy to be enhanced!</>,
     },
     {
         title: "ADD ANOTHER E",
         durationSeconds: 1,
+        repeat: 29,
+        getValue: (r)=>("1" + ("e").repeat(r+3) + "5"),
         headerText: <>The World formula is at maximum power!</>,
     },
     {
         title: "ROUND UP GENEROUSLY",
         durationSeconds: 10,
-        setAmount: 1,
-        setE: 100
+        getValue: (r)=>("1" + ("e").repeat(500) + "5"),
     },
     {
         title: "LOOK AT YOUR CREATION",
@@ -302,16 +325,28 @@ const trueActions = [
     },
     {
         title: "FIND INNER PEACE",
-        durationSeconds: 1,
+        durationSeconds: 5,
         headerText: <>The World formula is at maximum power!<br/><br/>You found 2 inner peaces!</>,
     },
     {
-        title: "PREPARE TO MOVE ON",
-        durationSeconds: 30,
+        title: "FIND INNER PEACE",
+        durationSeconds: 5,
         headerText: <>The World formula is at maximum power!<br/><br/>You found 3 inner peaces!</>,
     },
     {
+        title: "FIND INNER PEACE",
+        durationSeconds: 5,
+        headerText: <>The World formula is at maximum power!<br/><br/>You found 4 inner peaces!</>,
+    },
+    {
+        title: "PREPARE TO MOVE ON",
+        getValue: ()=>0,
+        durationSeconds: 30,
+        headerText: <>The World formula is at maximum power!<br/><br/>You found 5 inner peaces!</>,
+    },
+    {
         title: "MOVE ON",
+        getValue: ()=>0,
         durationSeconds: 10,
         headerText: <></>,
     },
@@ -378,7 +413,7 @@ export const endingList = {
         generators:goodGenerators,
         currencyName: "Illnesses: ",
         currencyGoal: 30000,
-        productionName: "CPS",
+        productionName: "CpS",
         ascending: -1,
     },
     evil: {
@@ -388,8 +423,9 @@ export const endingList = {
         generators:evilGenerators,
         currencyName: "World Population: ", 
         currencyGoal: 8000000000,
-        productionName: "KPS",
+        productionName: "KpS",
         ascending: -1,
+        generatorDecay: true,
     },
     true: {
         title:<>Numbers and Games</>,
@@ -397,9 +433,10 @@ export const endingList = {
         actions:trueActions,
         generators:[],
         currencyName: "x = ",
-        currencyGoal: 1000,
+        currencyGoal: Infinity,
         productionName: "",
         ascending: 1,
+        valueBased: true,
     },
     world: {
         actions:worldActions,
@@ -408,12 +445,13 @@ export const endingList = {
         currencyGoal: 1000,
         productionName: "",
         ascending: 1,
+        valueBased: true,
     },
     skipped: {
         title:"No Ambitions",
         teaseTitle:"?? ?????????",
     actions:[{
-        title: "You are Speedrunning",
+        title: "You are Speedrunning!",
         durationSeconds: 3,
         headerText: <>~Skipped Ending~</>,
         teaseHeaderText: <>~??????? ???????~</>,

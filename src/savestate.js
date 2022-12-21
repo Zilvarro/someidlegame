@@ -6,7 +6,6 @@ import {isLockedByChallenge} from './formulas/FormulaButton'
 import {calcStoneResultForX} from './alpha/AlphaStonesTab'
 import {startingStones, stoneTable, stoneList} from './alpha/AlphaStoneDictionary'
 import * as progresscalculation from './progresscalculation'
-// import { Buffer } from "buffer";
 
 export const version = "0.25"
 export const newSave = {
