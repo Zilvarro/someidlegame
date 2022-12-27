@@ -568,7 +568,7 @@ export const saveReducer = (state, action)=>{
         //Auto Resetters
         const alphaThreshold = alphaThresholds[state.settings.alphaThreshold] || alphaTarget
 
-        if (!state.inNegativeSpace && state.settings.autoResetterA !== "OFF" && state.alphaUpgrades.ARES && state.xValue[0] >= alphaThreshold) {
+        if (!state.inNegativeSpace && state.settings.autoResetterA !== "OFF" && state.alphaUpgrades.ARES && state.highestXTier === 3 && state.xValue[0] >= alphaThreshold) {
             giveAlphaRewards(state)
             performAlphaReset(state)
             performShopReset(state)
@@ -782,7 +782,6 @@ export const saveReducer = (state, action)=>{
         rememberLoadout(state)
         break;
     case "startResearch":
-        debugger
         state.researchStartTime[action.research.id] = Date.now()
         state.researchLevel[action.research.id] = Math.min(2500, (state.researchLevel[action.research.id] || 0) + action.bulkAmount)
         state = updateProductionBonus(state)

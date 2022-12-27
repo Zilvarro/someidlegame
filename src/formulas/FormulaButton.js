@@ -114,7 +114,7 @@ export default function FormulaButton({state, popup, updateState, setTotalClicks
         switch(e.type){
         case "mousedown":
         case "touchstart":
-            updateState({name:"changeHold", newValue:{type:"ApplyFormula", formulaName:formula.formulaName, delay: 3}})
+            updateState({name:"changeHold", newValue:{type:"ApplyFormula", formulaName:formula.formulaName, delay: 5}})
             break
         case "mouseup":
         case "mouseleave":

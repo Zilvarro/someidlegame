@@ -45,9 +45,9 @@ export default function AlphaResearchBar({state, research, updateState}) {
     } else {
       return (
         <>
-        <div onClick={clickResearchBar} style={{position: "relative", color:"#000000", backgroundColor:"#ffffff", border:"2px solid", height:"20px",width:"80%", maxWidth:"320px"}}>
-          <div style={{backgroundColor:"#ff9999", border:"0px", height:"20px", width:progressBarWidth}}>
-            <div style={{userSelect:"none",whiteSpace:"nowrap",position:"absolute", left:"50%", transform:"translateX(-50%)"}}><b>{isDone ? <>RESEARCH {research.id}{bulkAmount > 1 && <>&nbsp;(+{bulkAmount})</>}</> : secondsToHms(Math.ceil(remainingTime))}</b></div>
+        <div onClick={clickResearchBar} style={{position: "relative", color:"#000000", backgroundColor:"#ffffff", border:"2px solid", height:"25px",width:"80%", maxWidth:"320px"}}>
+          <div style={{backgroundColor:"#ff9999", border:"0px", height:"25px", width:progressBarWidth}}>
+            <div style={{userSelect:"none",whiteSpace:"nowrap",lineHeight:"25px", position:"absolute", left:"50%", transform:"translateX(-50%)"}}><b>{isDone ? <>RESEARCH {research.id}{bulkAmount > 1 && <>&nbsp;(+{bulkAmount})</>}</> : secondsToHms(Math.ceil(remainingTime))}</b></div>
           </div>
         </div>
         <div>Level: {state.researchLevel[research.id]}</div>

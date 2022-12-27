@@ -23,6 +23,11 @@ export default function EndingBarScreen({state, popup, updateState}) {
     const goal = 1000 * currentAction.durationSeconds //Change speed here for debugging
     const percentage = deltaMilliSeconds / goal
     const isDone = (percentage >= 1)
+
+    if (currentAction.final) {
+        return <EndingFinalScreen state={state} action={currentAction} updateState={updateState} popup={popup}/>
+    }
+
     let hesitancePercentage = percentage
     if (currentAction.hesitance) {
         if (percentage < 0.8)
@@ -34,7 +39,7 @@ export default function EndingBarScreen({state, popup, updateState}) {
     }
     const progressBarWidth = isDone ? "100%" : Math.min(101 * hesitancePercentage,100).toFixed(2) + "%"
     
-    const currencyPerSecond = ending.generators.reduce((a,v)=>(a+(generatorAmounts[v.title]||0) * v.production),0)
+    const currencyPerSecond = ending.generators ? ending.generators.reduce((a,v)=>(a+(generatorAmounts[v.title]||0) * v.production),0) : 0
     const cpsMultiplier = Math.max(0,Math.min(1, 1.49 - 1.5 * currencyAmount / ending.currencyGoal))
     const generatorMultiplier = ending.generatorDecay ? cpsMultiplier : 1
     const deltaUpdate = Date.now() - lastUpdateTime
@@ -83,17 +88,13 @@ export default function EndingBarScreen({state, popup, updateState}) {
             setStartTime(Date.now())
     }
 
-    if (currentAction.final) {
-        return <EndingFinalScreen state={state} action={currentAction} updateState={updateState} popup={popup}/>
-    }
-        
     return (
         <div style={{position:"absolute", margin:"auto", top:"50%", left:"50%", transform:"translate(-50%,-50%)", textAlign:"center"}}>{<>
             <p><b>{headerText}</b></p><br/>
             {(currencyAmount > 0 || currencyAmount.length > 0) && <p>{ending.currencyName}{ending.ascending === -1 ? Math.ceil(ending.currencyGoal - currencyAmount) : currencyAmount}</p>}<br/>
-            <div onClick={clickProgressBar} style={{position: "relative", margin:"auto", color: "#000000", backgroundColor:"#ffffff", border:"2px solid", height:"20px",width:"300px"}}>
-                <div style={{backgroundColor:currentAction.barColor || "#aaaaaa", border:"0px", height:"20px", width:progressBarWidth}}>
-                    <div style={{userSelect:"none",whiteSpace:"nowrap",position:"absolute", left:"50%", transform:"translateX(-50%)"}}><b>{currentAction.title}</b></div>
+            <div onClick={clickProgressBar} style={{position: "relative", margin:"auto", color: "#000000", backgroundColor:"#ffffff", border:"2px solid", height:"25px",width:"300px"}}>
+                <div style={{backgroundColor:currentAction.barColor || "#aaaaaa", border:"0px", height:"25px", width:progressBarWidth}}>
+                    <div style={{userSelect:"none",whiteSpace:"nowrap",lineHeight:"25px",position:"absolute", left:"50%", transform:"translateX(-50%)"}}><b>{currentAction.title}</b></div>
                 </div>
             </div><br/><br/>
             {ending.generators.map((generator)=>

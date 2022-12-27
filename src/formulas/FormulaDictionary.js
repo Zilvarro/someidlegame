@@ -300,13 +300,13 @@ const formulaList = {
     },
     "x'''=sqrt(2*#R)": {
         formulaName: "x'''=sqrt(2*#R)",
-        description: <>x''' &#10141; sqrt(2*#B)</>,
+        description: <>x''' &#10141; 2*log<sub>2</sub>(#B)<sup>2</sup></>,
         unlockCost: 50000,
         applyCost: 3000,
         applyNeed: 0,
         targetLevel: 3,
-        applyFormula: (eff, x,state)=>(Math.floor(Math.sqrt(2*state.xResetCount) * eff)),
-        explanation: "Boosted by number of Basic Resets (since x-Reset).",
+        applyFormula: (eff, x,state)=>(state.xResetCount <= 0 ? {error:"logarithm"} : Math.floor(2 * Math.pow(Math.log2(state.xResetCount),2) * eff)),
+        explanation: "Boosted by number of Basic Resets (since x-Reset). log2 is the base 2 logarithm",
         complex: true,
     },
     "x'+x''+x'''": {
@@ -440,8 +440,8 @@ const formulaList = {
         description: <>x'' &#10141; x'' + 1V</>,
         descriptions: {
             "LETTER": <>x'' &#10141; x'' + 1V</>,
-            "SCIENTIFIC": <>x''' &#10141; x''' + 1e24</>,
-            "AMBIGUOUS": <>x''' &#10141; x''' + 1?</>,
+            "SCIENTIFIC": <>x'' &#10141; x'' + 1e24</>,
+            "AMBIGUOUS": <>x'' &#10141; x'' + 1?</>,
         },
         unlockCost: 50e30, //*8000
         applyCost: 10e33,

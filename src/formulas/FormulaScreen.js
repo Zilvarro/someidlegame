@@ -100,7 +100,9 @@ export default function FormulaScreen({state, updateState, setTotalClicks, popup
     }
 
     const memorize = ()=>{
-      updateState({name: "memorize"})
+      popup.confirm("Save this loadout for later use?", ()=>{
+        updateState({name: "memorize"})
+      })
     }
 
     const remember = ()=>{
@@ -162,7 +164,7 @@ export default function FormulaScreen({state, updateState, setTotalClicks, popup
           <p>
             {(state.alphaUpgrades.MEEQ) && <>
               <button onClick={memorize} disabled={state.activeChallenges.FULLYIDLE} title={"Saves equip layout so you can use it again later"}>Memorize</button>
-              {spaces()}<button onClick={remember} disabled={state.activeChallenges.FULLYIDLE} title={"Loads saved equip layout for current x-Reset"}>Remember</button>
+              {spaces()}<button onClick={remember} disabled={state.activeChallenges.FULLYIDLE || state.anyFormulaUsed} title={"Loads saved equip layout for current x-Reset"}>Remember</button>
               {spaces()}<button onClick={clearLoadout} disabled={state.activeChallenges.FULLYIDLE} title={"Unequips all unused formulas"}>Unequip</button>
             </>}
             {(state.alphaUpgrades.SAPP) && <>
@@ -191,12 +193,12 @@ export default function FormulaScreen({state, updateState, setTotalClicks, popup
             {state.progressionLayer === 0 && state.autoUnlockIndex < shopFormulas.length && nextUnlockCost > alphaTarget && <p>Almost done! Let's fill this bar!</p>}
             <p></p>
             {state.progressionLayer === 0 && (state.xValue[0] >= alphaTarget ?
-                <button onClick={performAlphaReset} style={{backgroundColor:"#99FF99", fontWeight:"bold", border:"2px solid", height:"20px", width:"280px"}}>
+                <button onClick={performAlphaReset} style={{backgroundColor:"#99FF99", fontWeight:"bold", border:"2px solid", height:"25px", width:"280px"}}>
                   SEEK THE BEGINNING
                 </button>
             : 
-              <div style={{color:"#000000", backgroundColor:"#ffffff", border:"2px solid", height:"20px",width:"280px"}}>
-                <div style={{backgroundColor:"#99FF99", border:"0px", height:"20px", width:progressBarWidth}}></div>
+              <div style={{color:"#000000", backgroundColor:"#ffffff", border:"2px solid", height:"25px",width:"280px"}}>
+                <div style={{backgroundColor:"#99FF99", border:"0px", height:"25px", width:progressBarWidth}}></div>
               </div>
             )}
         </div><div className="column">

@@ -339,10 +339,20 @@ const trueActions = [
         headerText: <>The World formula is at maximum power!<br/><br/>You found 4 inner peaces!</>,
     },
     {
+        title: "FIND INNER PEACE",
+        durationSeconds: 5,
+        headerText: <>The World formula is at maximum power!<br/><br/>You found 5 inner peaces!</>,
+    },
+    {
+        title: "PEACE THE PEACES TOGETHER",
+        durationSeconds: 5,
+        headerText: <>The World formula is at maximum power!<br/><br/>You found 6 inner peaces!</>,
+    },
+    {
         title: "PREPARE TO MOVE ON",
         getValue: ()=>0,
         durationSeconds: 30,
-        headerText: <>The World formula is at maximum power!<br/><br/>You found 5 inner peaces!</>,
+        headerText: <>The World formula is at maximum power!<br/><br/>You solved the peace puzzle!</>,
     },
     {
         title: "MOVE ON",
@@ -369,7 +379,11 @@ const worldActions = [
     {
         title: "MOVE ON",
         durationSeconds: 10,
-        headerText: <>Hey, why are you back here?.</>,
+    },
+    {
+        title: "MOVE ON",
+        durationSeconds: 10,
+        headerText: <>Hey, why are you back here?</>,
     },
     {
         title: "MOVE ON",
