@@ -58,7 +58,7 @@ export const applyFormulaToState = (state, formula, forceApply, silent)=>{
 
         switch (state.settings.valueReduction) {
             case "CONFIRM":
-                if (!forceApply) {
+                if (!forceApply && !state.decreaseCooldown) {
                     return false
                 } else {
                     state.decreaseCooldown = true

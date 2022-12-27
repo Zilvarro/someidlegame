@@ -7,14 +7,14 @@ import {calcStoneResultForX} from './alpha/AlphaStonesTab'
 import {startingStones, stoneTable, stoneList} from './alpha/AlphaStoneDictionary'
 import * as progresscalculation from './progresscalculation'
 
-export const version = "0.25"
+export const version = "0.26"
 export const newSave = {
     version: version,
     progressionLayer: 0,
     selectedTabKey: "FormulaScreen",
     selectedAlphaTabKey: "AlphaUpgradeTab",
     xValue: [0,0,0,0],
-    xHighScores: [30e3,30e9,30e21,30e33],
+    xHighScores: [20e3,20e9,20e21,20e33],
     formulaGodScores: [1,1,1,1],
     productionBonus: [1,1,1,1],
     formulaEfficiency: [1,1,1,1],
@@ -93,8 +93,8 @@ export const newSave = {
     }
 }
 
-export const differentialTargets = [30e3,30e9,30e21,Infinity]
-export const alphaTarget = 30e33
+export const differentialTargets = [20e3,20e9,20e21,Infinity]
+export const alphaTarget = 20e33
 const alphaThresholds = {
     "MINIMUM": alphaTarget,
     "1e40": 1e40,
@@ -154,7 +154,7 @@ export const loadGame = ()=>{
 
 export const getStartingX = (state)=>{
     const fromStartingStones = state.startingStoneX
-    const fromResearch = state.researchLevel["x"] >= 2500 ? 10e12 : Math.floor(100*Math.pow(1.01, state.researchLevel["x"] || 0)-100);
+    const fromResearch = Math.floor(100*Math.pow(1.01, state.researchLevel["x"] || 0)-100);
     return Math.max(fromStartingStones + fromResearch, fromStartingStones * fromResearch)
 }
 

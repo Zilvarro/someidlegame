@@ -373,7 +373,7 @@ const formulaList = {
     "x'''+log2(x)^2": {
         formulaName: "x'''+log2(x)^2",
         description: <>x''' &#10141; x''' + log<sub>2</sub>(x)<sup>2</sup></>,
-        unlockCost: 30e21,
+        unlockCost: 20e21,
         applyCost: 5e6,
         applyNeed: 0,
         targetLevel: 3,
