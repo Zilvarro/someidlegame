@@ -7,7 +7,7 @@ import {calcStoneResultForX} from './alpha/AlphaStonesTab'
 import {startingStones, stoneTable, stoneList} from './alpha/AlphaStoneDictionary'
 import * as progresscalculation from './progresscalculation'
 
-export const version = "0.26"
+export const version = "0.28"
 export const newSave = {
     version: version,
     progressionLayer: 0,
@@ -355,7 +355,7 @@ export const getChallengeBonus = (state)=>{
     }
 
     return {
-        bonus:(1 + 0.1 * clearedSegments) * Math.pow(2, clearedFull),
+        bonus:(1 + 0.15 * clearedSegments) * Math.pow(2, clearedFull),
         full: clearedFull,
         segment: clearedSegments,
     }
@@ -389,7 +389,7 @@ export const saveReducer = (state, action)=>{
 
         state.lastPlayTime = action.playTime
         const timeStamp = Date.now()
-        if (state.xValue[0]===-Infinity) {
+        if (state.xValue.includes(-Infinity)) {
             state.currentEnding = "negative"
             performXReset(state)
         } else if (state.xValue[0]<0||state.xValue[1]<0||state.xValue[2]<0||state.xValue[3]<0) {
@@ -675,10 +675,12 @@ export const saveReducer = (state, action)=>{
         }
         break;
     case "cheat":
-        state.alpha = 0
-        state.bestIdleTime = 1800e3
-        state.bestIdleTimeAlpha = 1
-        state.passiveMasterTime = 0
+        updateFormulaEfficiency(state)
+        updateProductionBonus(state)
+        // state.alpha = 0
+        // state.bestIdleTime = 1800e3
+        // state.bestIdleTimeAlpha = 1
+        // state.passiveMasterTime = 0
 
         // if (state.mileStoneCount < 6) {
         //     state.mileStoneCount = 6

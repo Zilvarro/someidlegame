@@ -86,7 +86,7 @@ export default function AlphaChallengeTab({state, updateState, popup}) {
     const openChallengeInfo = ()=>{
         popup.alert(<>All challenges have a 30 minute time limit.
             <br/>Formula Offline Progress is disabled during Challenges.
-            <br/>Each completed segment grants +10% Formula Efficiency.
+            <br/>Each completed segment grants +15% Formula Efficiency.
             <br/>Every fully completed challenge doubles your Formula Efficiency.
             <br/>"Master of Idle" and "Formula God" give additional secret perks.
         </>)

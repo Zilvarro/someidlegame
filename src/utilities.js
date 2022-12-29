@@ -6,7 +6,7 @@ export const spaces = ()=>{
 }
 
 export const formatNumber = (number, numberFormat, decimals=0, smallfixed=false)=>{
-    if (number < 0) return "-" + formatNumber(-number, decimals, numberFormat)
+    if (number < 0) return "-" + formatNumber(-number, numberFormat, decimals, smallfixed)
     number *= 1.0000000001 //hopefully less Javascript Jank
 
     const sNumberString = Math.floor(number).toExponential(10)

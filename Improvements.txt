@@ -16,7 +16,7 @@ Formula darker green when > +5%
 Avoid Line breaks for Unlock Cost (PC, Shop Scrollbar)
 Negative Space Rounding
 Resetters should work properly while on other tabs
-Make logarithm crashable
+Basic Formulas should work while in Negative Space
 
 
 ~~~~~~~~~~~ALPHA~~~~~~~~~~~
