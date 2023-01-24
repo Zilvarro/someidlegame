@@ -129,6 +129,14 @@ export const applyProduction = (state, deltaMilliSeconds, applierBonus = [0,0,0,
     return state
 }
 
+export const getStarLightRate = (state)=>{
+    return state.lightAdder * Math.pow(2,state.lightDoubler) * Math.pow(state.destinyStars, state.lightRaiser)
+}
+
+export const generateStarLight = (state, deltaMilliSeconds) => {
+    state.starLight += deltaMilliSeconds / 1000 * getStarLightRate(state)
+}
+
 export const simulateOfflineProgress = (state, deltaMilliSeconds) => {
     // STEP 1: Auto Apply Once
     if (state.alphaUpgrades.AAPP)

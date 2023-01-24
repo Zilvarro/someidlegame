@@ -7,7 +7,7 @@ import {calcStoneResultForX} from './alpha/AlphaStonesTab'
 import {startingStones, stoneTable, stoneList} from './alpha/AlphaStoneDictionary'
 import * as progresscalculation from './progresscalculation'
 
-export const version = "0.29"
+export const version = "0.30"
 export const newSave = {
     version: version,
     progressionLayer: 0,
@@ -37,6 +37,11 @@ export const newSave = {
     formulaApplyCount: 0,
     alpha: 0,
     destinyStars: 0,
+    starLight: 0,
+    lightAdder: 0,
+    lightDoubler: 0,
+    lightRaiser: 0,
+    starConstellations: 0,
     tickFormula: false,
     idleMultiplier: 1,
     boughtAlpha: [false,false],
@@ -591,6 +596,9 @@ export const saveReducer = (state, action)=>{
             rememberLoadout(state)
         }
 
+        //Generate Starlight for Destiny Layer
+        progresscalculation.generateStarLight(state, deltaMilliSeconds)
+
         //Autosave
         const lastSaveMilliseconds = (timeStamp - state.saveTimeStamp)
         if (state.mileStoneCount > 0 && state.settings.autoSave === "ON" && lastSaveMilliseconds >= 10000) { //TODO
@@ -726,7 +734,7 @@ export const saveReducer = (state, action)=>{
                 notify.success("CHAPTER 5: ALPHA")
                 break;
             case "D3571NY574R":
-                state.destinyStars = 1
+                state.destinyStars = 0
                 state.mileStoneCount = 12
                 state.progressionLayer = 2
                 notify.success("POSTGAME: DESTINY")
@@ -851,7 +859,13 @@ export const saveReducer = (state, action)=>{
         break;
     case "performDestinyReset":
         state.destinyStars += 1
-        state = {...structuredClone(newSave), calcTimeStamp: Date.now(), saveTimeStamp: Date.now(), settings:state.settings, destinyStars:state.destinyStars};
+        state = {...structuredClone(newSave), calcTimeStamp: Date.now(), saveTimeStamp: Date.now(), settings:state.settings, 
+            destinyStars:state.destinyStars, lightAdder:state.lightAdder, lightDoubler:state.lightDoubler, lightRaiser:state.lightRaiser, starConstellations:state.starConstellations};
+        break;
+    case "buyLightUpgrade":
+        state[action.currency] += 1
+        if (action.cost < Infinity)
+            state.starLight -= action.cost
         break;
     default:
         console.error("Action " + action.name + " not found.")

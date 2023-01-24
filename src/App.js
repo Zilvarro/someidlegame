@@ -93,7 +93,7 @@ function App() {
       {state.progressionLayer >=1 && <button style={{backgroundColor: "#ff7777", border:"2px solid", padding:"5px", margin:"5px", fontWeight:"bold"}} onClick={()=>selectTab("AlphaScreen")}>Alpha</button>}
       {/* {state.mileStoneCount >= 1 && <button style={{backgroundColor: "#55ffbb", border:"2px solid", padding:"5px", margin:"5px", fontWeight:"bold"}} onClick={()=>selectTab("WorldScreen")}>World</button>}
       {state.mileStoneCount >= 1 && <button style={{backgroundColor: "#663366", border:"2px solid", padding:"5px", margin:"5px", fontWeight:"bold"}} onClick={()=>selectTab("VoidScreen")}>Void</button>} */}
-      {state.progressionLayer >=2 && <button style={{backgroundColor: "#ffff88", border:"2px solid", padding:"5px", margin:"5px", fontWeight:"bold"}} onClick={()=>selectTab("DestinyScreen")}>Destiny</button>}
+      {(state.progressionLayer >=2 || state.destinyStars > 0) && <button style={{backgroundColor: "#ffff88", border:"2px solid", padding:"5px", margin:"5px", fontWeight:"bold"}} onClick={()=>selectTab("DestinyScreen")}>Destiny</button>}
     </span>
     <span style={{display:"inline-block"}}>
       <button style={{margin:"5px"}} onClick={()=>selectTab("AchievementScreen")}>Milestones</button>
