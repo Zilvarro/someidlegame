@@ -103,3 +103,17 @@ export const secondsToHms = (seconds)=>{
     var sZero = mDisplay && s < 10 ? "0" : "";
     return dDisplay + hZero + hDisplay + mZero + mDisplay + sZero + sDisplay;
 }
+
+export const logB = (base, value)=>Math.log(value)/Math.log(base);
+
+export const geometricSum = (base, steps)=>{
+    return (1 - Math.pow(base, steps + 1)) / (1 - base)
+}
+
+export const reverseGeometric = (base, sumvalue)=>{
+    return Math.floor(logB(base,sumvalue*(base-1) + 1))
+}
+
+export const clamp = (lower, value, upper)=>{
+    return Math.min(Math.max(lower,value),upper)
+}

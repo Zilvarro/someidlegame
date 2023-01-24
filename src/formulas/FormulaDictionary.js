@@ -65,6 +65,7 @@ const formulaList = {
         applyNeed: 0,
         targetLevel: 1,
         isBasic: true,
+        isStatic: true,
         applyFormula: (eff, x)=>(1 * eff),
     },
     "x'=24": {
@@ -74,6 +75,7 @@ const formulaList = {
         applyCost: 30,
         applyNeed: 0,
         targetLevel: 1,
+        isStatic: true,
         applyFormula: (eff, x)=>(24 * eff),
     },
     "x'+1": {
@@ -134,6 +136,7 @@ const formulaList = {
         applyCost: 69,
         applyNeed: 0,
         targetLevel: 1,
+        isStatic: true,
         applyFormula: (eff, x)=>(420000 * eff),
     },
     "x+50M": {
@@ -159,6 +162,7 @@ const formulaList = {
         applyNeed: 0,
         targetLevel: 2,
         isBasic: true,
+        isStatic: true,
         applyFormula: (eff, x)=>(1 * eff),
     },
     "x''=2": {
@@ -168,6 +172,7 @@ const formulaList = {
         applyCost: 100,
         applyNeed: 0,
         targetLevel: 2,
+        isStatic: true,
         applyFormula: (eff, x)=>(2 * eff),
     },
     "x''=3": {
@@ -177,6 +182,7 @@ const formulaList = {
         applyCost: 1000,
         applyNeed: 0,
         targetLevel: 2,
+        isStatic: true,
         applyFormula: (eff, x)=>(3 * eff),
     },
     "x''=#U": {
@@ -188,6 +194,7 @@ const formulaList = {
         targetLevel: 2,
         applyFormula: (eff, x,state)=>(Math.floor(Math.pow(1.25,state.formulaUnlockCount) * eff)),
         explanation: "Boosted by number of unlocked formulas.",
+        isStatic: true,
         complex: true,
     },
     "x'=1000*x''": {
@@ -198,6 +205,7 @@ const formulaList = {
         applyNeed: 0,
         targetLevel: 1,
         effectLevel: 2,
+        isStatic: true,
         applyFormula: (eff, x)=>(Math.floor(1000*x[2] * eff)),
         complex: true,
     },
@@ -208,6 +216,7 @@ const formulaList = {
         applyCost: 100000,
         applyNeed: 0,
         targetLevel: 2,
+        isStatic: true,
         applyFormula: (eff, x)=>(x<0 ? {error:"imaginary"} : Math.floor(Math.pow(x[0],0.3) * eff)),
         complex: true,
     },
@@ -275,6 +284,7 @@ const formulaList = {
         applyNeed: 0,
         targetLevel: 3,
         isBasic: true,
+        isStatic: true,
         applyFormula: (eff, x)=>(1 * eff),
     },
     "x'''=(#U^2)/12": {
@@ -284,6 +294,7 @@ const formulaList = {
         applyCost: 10000,
         applyNeed: 0,
         targetLevel: 3,
+        isStatic: true,
         applyFormula: (eff, x,state)=>(Math.floor(Math.pow(state.formulaUnlockCount,2)/12 * eff)),
         explanation: "Boosted by number of unlocked formulas.",
         complex: true,
@@ -296,6 +307,7 @@ const formulaList = {
         applyCost: 100,
         applyNeed: 0,
         targetLevel: 3,
+        isStatic: true,
         applyFormula: (eff, x)=>(4 * eff),
     },
     "x'''=sqrt(2*#R)": {
@@ -305,6 +317,7 @@ const formulaList = {
         applyCost: 3000,
         applyNeed: 0,
         targetLevel: 3,
+        isStatic: true,
         applyFormula: (eff, x,state)=>(state.xResetCount <= 0 ? {error:"logarithm"} : Math.floor(2 * Math.pow(Math.log2(state.xResetCount),2) * eff)),
         explanation: "Boosted by number of Basic Resets (since x-Reset). log2 is the base 2 logarithm",
         complex: true,
@@ -352,6 +365,7 @@ const formulaList = {
         applyNeed: 1e9,
         targetLevel: 0,
         effectLevel: 3,
+        isStatic: true,
         applyFormula: (eff, x)=>(x[1] === 0 ? {error:"divide"} : 1e16*x[3]*x[2]/x[1] * eff),
         complex: true,
     },
@@ -367,6 +381,7 @@ const formulaList = {
         applyNeed: 0,
         targetLevel: 1,
         effectLevel: 3,
+        isStatic: true,
         applyFormula: (eff, x)=>(5e15*x[3] * eff),
         complex: true,
     },
@@ -430,9 +445,9 @@ const formulaList = {
         applyNeed: 0,
         targetLevel: 3,
         applyFormula: (eff, x)=>((300e21 - x[3] / eff)<0 ? {error:"imaginary"} : Math.floor(x[3]*Math.sqrt(300e21 - x[3] / eff) / 500e9)),
-        //applyFormula: (eff, x)=>((250e21 + 50e21 * eff - x[3])<0 ? {error:"imaginary"} : Math.floor(x[3]*Math.sqrt(250e21 + 50e21 * eff - x[3]) / 500e9)),
         explanation: "sqrt is the square root.",
         complex: true,
+        isStatic: true, //counts as static because too complicated
         offlineDisabled: true,
     },
     "x''+1V": {

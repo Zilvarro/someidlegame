@@ -11,8 +11,6 @@ const researchDictonary = {
         getMultiplier: (state)=>state.xHighScores[0]*state.formulaGodScores[0],
         getBonusText: (level,state)=>("Start with x=" + formatNumber(Math.floor(100*Math.pow(1.01, level || 0) - 100),state.settings.numberFormat,0,true)) + " after resets",
         getBonusText2: (state)=>("Start with x=" + formatNumber(10e12, state.settings.numberFormat,0,true) + " after resets"),
-
-        // getBonusText: (level,state)=>(<>Starting x is increased by {formatNumber(Math.floor(100*Math.pow(1.01, level || 0) - 100), state.settings.numberFormat,2)}</>),
         getBoostText: (state)=>(<>x={formatNumber(state.xHighScores[0],state.settings.numberFormat)} on x'-Reset</>),
         getBoostText2: (state)=>(<>x={formatNumber(state.formulaGodScores[0],state.settings.numberFormat)} during Formula God</>),
         checkUnlock: (state)=>(state.xValue[0] >= 20),

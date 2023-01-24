@@ -7,7 +7,7 @@ import {calcStoneResultForX} from './alpha/AlphaStonesTab'
 import {startingStones, stoneTable, stoneList} from './alpha/AlphaStoneDictionary'
 import * as progresscalculation from './progresscalculation'
 
-export const version = "0.28"
+export const version = "0.29"
 export const newSave = {
     version: version,
     progressionLayer: 0,
@@ -163,6 +163,10 @@ export const getInventorySize = (state)=>{
         return 1
     else
         return state.alphaUpgrades.SLOT ? 4 : 3
+}
+
+export const getGlobalMultiplier = (state)=>{
+    return state.idleMultiplier * (state.destinyStars || 1)
 }
 
 export const save = (state)=>{
@@ -408,7 +412,7 @@ export const saveReducer = (state, action)=>{
             for(let i=1; i<state.xValue.length; i++) {
                 //Close to 0 does not produce
                 if (Math.abs(state.xValue[i]) >= 0.5) {
-                    state.xValue[i-1]+= deltaMilliSeconds * state.productionBonus[i-1] *challengeMultiplier * state.idleMultiplier * state.xValue[i] / 1000
+                    state.xValue[i-1]+= deltaMilliSeconds * state.productionBonus[i-1] *challengeMultiplier * getGlobalMultiplier(state) * state.xValue[i] / 1000
                 }
             }
 
@@ -460,7 +464,7 @@ export const saveReducer = (state, action)=>{
             } else {
             const formula = formulaList[state.holdAction.formulaName]
                 let xBeforeHold = state.xValue[formula.targetLevel]
-                const isApplied = progresscalculation.applyFormulaToState(state, formula, false)
+                const isApplied = progresscalculation.applyFormulaToState(state, formula, false, false, true)
                 if (!isApplied) {
                     state.holdAction = null
                 }
@@ -480,7 +484,7 @@ export const saveReducer = (state, action)=>{
         if (state.alphaUpgrades.AAPP && state.millisSinceAutoApply > 1000 / state.autoApplyRate){
             for (let i = 0; i<5; i++) {
                 if (state.autoApply[i] && state.myFormulas.length > i) {
-                    progresscalculation.applyFormulaToState(state,formulaList[state.myFormulas[i]],false, true)
+                    progresscalculation.applyFormulaToState(state,formulaList[state.myFormulas[i]],false, true, true)
                 }
             }
             state.millisSinceAutoApply = Math.min(100, state.millisSinceAutoApply - 1000 / state.autoApplyRate) //Buffer up to 100 ms
@@ -606,7 +610,7 @@ export const saveReducer = (state, action)=>{
     case "selectAlphaTab":
         state.selectedAlphaTabKey = action.tabKey
         break;
-    case "reset":
+    case "hardreset":
         state = {...structuredClone(newSave), calcTimeStamp: Date.now(), saveTimeStamp: Date.now()};
         break;
     case "load":
@@ -727,6 +731,13 @@ export const saveReducer = (state, action)=>{
                 state.progressionLayer = 2
                 notify.success("POSTGAME: DESTINY")
                 break;
+            case "DEVTEST":
+                state.destinyStars = 10
+                state.alpha = 1
+                state.mileStoneCount = 6
+                state.progressionLayer = 1
+                notify.success("DEVTEST")
+                break;
             default:
                 notify.error("WRONG PASSWORD")
                 break;
@@ -837,6 +848,10 @@ export const saveReducer = (state, action)=>{
         break;
     case "claimFirstStar":
         state.destinyStars = 1
+        break;
+    case "performDestinyReset":
+        state.destinyStars += 1
+        state = {...structuredClone(newSave), calcTimeStamp: Date.now(), saveTimeStamp: Date.now(), settings:state.settings, destinyStars:state.destinyStars};
         break;
     default:
         console.error("Action " + action.name + " not found.")

@@ -1,20 +1,28 @@
-import {secondsToHms} from '../utilities'
+import { getGlobalMultiplier } from '../savestate'
+import {secondsToHms, reverseGeometric, clamp, geometricSum} from '../utilities'
 
 //TODO Account for offline progress being disabled
 export default function AlphaResearchBar({state, research, updateState}) {
     const startTime = state.researchStartTime[research.id]
     const researchLevel = state.researchLevel[research.id]
     const deltaMilliSeconds = startTime ? Date.now() - startTime : 0
-    const progressMultiplier = research.getMultiplier(state)
+    const progressMultiplier = getGlobalMultiplier(state) * research.getMultiplier(state)
     const progress = progressMultiplier * deltaMilliSeconds / 1000
     const goal = research.durationStart * Math.pow(research.durationBase, researchLevel || 0)
     const remainingTime = Math.max(1, (goal - progress) / progressMultiplier)
     const percentage = Math.min(deltaMilliSeconds / research.minimumDuration, progress / goal)
     const isDone = (!researchLevel || percentage >= 1)
-    const bulkAmount = isDone ? Math.min(2500 - (researchLevel||0), Math.max(1,Math.floor(Math.log10(progressMultiplier / goal) + 1))) : 0
+    const leftToMaxx = 2500 - (researchLevel||0)
+    const bulkCurrency = progressMultiplier / goal //Based on how many times research would complete within one second
+    const globalBulk = isDone ? Math.min(getGlobalMultiplier(state), reverseGeometric(research.durationBase, bulkCurrency)) : 0
+    const globalCost = geometricSum(research.durationBase, globalBulk)
+    const remainingCurrency = (bulkCurrency - globalCost) / Math.pow(research.durationBase, globalBulk)
+    const slowBulk = remainingCurrency >= 10 ? Math.floor(Math.log10(remainingCurrency)) : 0
+    const bulkAmount = clamp(slowBulk, globalBulk, leftToMaxx)
     const progressBarWidth = isDone ? "100%" : Math.min(100 * percentage,99).toFixed(2) + "%"
     
     const clickResearchBar = ()=>{
+      console.log(reverseGeometric(1.05,5))
       if (isDone)
         updateState({name: "startResearch", research: research, bulkAmount: bulkAmount})
     }

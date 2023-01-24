@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { getGlobalMultiplier } from '../savestate'
 
 import {endingList} from './EndingDictionary'
 import EndingFinalScreen from './EndingFinalScreen'
@@ -20,8 +21,8 @@ export default function EndingBarScreen({state, popup, updateState}) {
     const [ lastUpdateTime , setLastUpdateTime ] = useState(Date.now())
 
     const deltaMilliSeconds = startTime ? Date.now() - startTime : 0
-    const goal = 1000 * currentAction.durationSeconds //Change speed here for debugging
-    const percentage = deltaMilliSeconds / goal
+    const goal = 1000 * currentAction.durationSeconds
+    const percentage = getGlobalMultiplier(state) * deltaMilliSeconds / goal
     const isDone = (percentage >= 1)
 
     if (currentAction.final) {

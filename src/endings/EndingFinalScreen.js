@@ -1,8 +1,9 @@
 import { useState } from 'react'
+import { getGlobalMultiplier } from '../savestate'
 
 export default function EndingFinalScreen({state, action, popup, updateState, children}) {
     const [ startTime , ] = useState(Date.now())
-    const buttonsVisible = action.instaDestiny || (Date.now() - startTime > 10000)
+    const buttonsVisible = action.instaDestiny || (getGlobalMultiplier(state)*(Date.now() - startTime) > 10000)
     const changeDestiny=()=>{
         updateState({name:"completeEnding",endingName:action.endingName})
     }

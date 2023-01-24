@@ -100,9 +100,6 @@ function App() {
       {/* <button style={{margin:"5px"}} onClick={()=>selectTab("LetterScreen")}>Mails</button> */}
       <button style={{margin:"5px"}} onClick={()=>selectTab("OptionScreen")}>Options</button>
     </span>
-    {/* {spaces()}<button onClick={cheat}>Cheat</button>
-    {spaces()}<input type="range" onChange={onSliderChange} id="idleMult" name="idleMult" min="1" max="20" value="1"/>&nbsp;{state.idleMultiplier}
-    {spaces()}{Math.floor(playTime / 10)}{spaces()} */}
     </footer>
   </>);
 }

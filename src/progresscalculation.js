@@ -1,7 +1,8 @@
 import formulaList from './formulas/FormulaDictionary'
+import { getGlobalMultiplier } from './savestate'
 import { notify } from './utilities'
 
-export const applyFormulaToState = (state, formula, forceApply, silent)=>{
+export const applyFormulaToState = (state, formula, forceApply, silent, multiApply)=>{
     if (!formula) return false
 
     let applyNeed = formula.applyNeed
@@ -25,8 +26,11 @@ export const applyFormulaToState = (state, formula, forceApply, silent)=>{
     const newValue = formula.applyFormula(state.formulaEfficiency[formula.targetLevel], state.xValue, state)
 
     const actuallyApply = () => {
-        const deductCost = !state.alphaUpgrades.FREF && state.xValue[formula.targetLevel] !== newValue
-        state.xValue[formula.targetLevel] = formula.applyFormula(state.formulaEfficiency[formula.targetLevel], state.xValue, state)
+        const deductCost = applyCost > 0 && !state.alphaUpgrades.FREF && state.xValue[formula.targetLevel] !== newValue
+        const maxApplyTimes = deductCost ? state.xValue[0] / applyCost : Infinity 
+        const applyTimes = multiApply && !formula.isStatic ? Math.floor(Math.min(getGlobalMultiplier(state), maxApplyTimes)) : 1
+        const efficiency = state.formulaEfficiency[formula.targetLevel] * applyTimes
+        state.xValue[formula.targetLevel] = formula.applyFormula(efficiency, state.xValue, state)
         if (state.activeChallenges.RESETOTHER) {
             state.xValue = state.xValue.map((v,i)=>(i === formula.targetLevel ? v : 0))
         }
@@ -34,7 +38,7 @@ export const applyFormulaToState = (state, formula, forceApply, silent)=>{
         state.anyFormulaUsed = true
         state.formulaApplyCount++
         if (deductCost) { //Cost only deducted if value changes
-            state.xValue[0] -= applyCost
+            state.xValue[0] -= applyCost * applyTimes
         }
     }
 
@@ -115,12 +119,11 @@ export const applyProduction = (state, deltaMilliSeconds, applierBonus = [0,0,0,
     const integrationFactor = [1,1,1/2,1/6,1/24,1/120,1/720] //one over factorial
     const productionBonus = state.productionBonus
     const challengeMultiplier = state.activeChallenges.SLOWPROD ? 0.01 : 1
-    // debugger
     for(let j=0; j<state.xValue.length; j++) { //tier to be calculated
         let multiplier = 1
         for(let k=j+1; k<applierBonus.length; k++) { //higher tiers that affect it
-            state.xValue[j]+= Math.pow(deltaMilliSeconds / 1000, k-j)  * multiplier * (state.idleMultiplier * (productionBonus[k-1]||1) * (state.xValue[k]||0) + state.autoApplyRate * applierBonus[k]) * integrationFactor[k-j]
-            multiplier *= challengeMultiplier * state.idleMultiplier * (productionBonus[k-1]||1)
+            state.xValue[j]+= Math.pow(deltaMilliSeconds / 1000, k-j)  * multiplier * ((productionBonus[k-1]||1) * (state.xValue[k]||0) + state.autoApplyRate * applierBonus[k]) * integrationFactor[k-j]
+            multiplier *= challengeMultiplier * (productionBonus[k-1]||1)
         }
     }
     return state
@@ -153,7 +156,7 @@ export const simulateOfflineProgress = (state, deltaMilliSeconds) => {
     state.formulaApplyCount += Math.floor(activeAppliers * state.autoApplyRate * (deltaMilliSeconds - 300) / 1000)
 
     // STEP 3: Calculate Production
-    state = applyProduction(state, deltaMilliSeconds - 300, applierBonus)
+    state = applyProduction(state, (deltaMilliSeconds - 300) * getGlobalMultiplier(state), applierBonus)
  
     return state
 }

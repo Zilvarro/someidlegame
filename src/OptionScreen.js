@@ -42,7 +42,7 @@ export default function OptionScreen({state, popup, updateState, setTotalClicks}
     popup.confirm("This resets everything and you do not get anything in return. Are you really sure?",()=>{
       popup.confirm("Are you really really sure?",()=>{
         popup.confirm("Are you totally absolutely enthusiastically sure?",()=>{
-          updateState({name: "reset"})
+          updateState({name: "hardreset"})
           setTotalClicks((x)=>x+1)
           notify.warning("Game Reset")
         })

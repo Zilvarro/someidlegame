@@ -32,12 +32,11 @@ World Ending First Label not shown
 Stone for Alpha Upgrades only when everything bought
 Abort the current challenge
 Maxxed Research Multiplier on top of page
+Research Offline Progress cannot be disabled
 
 
 ~~~~~~~~~~DESTINY~~~~~~~~~~
 
-Global Speed Multiplier
-Destiny Resets
 Decouple Game Logic from Milestones
 
 
