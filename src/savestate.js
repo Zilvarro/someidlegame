@@ -7,7 +7,7 @@ import {calcStoneResultForX} from './alpha/AlphaStonesTab'
 import {startingStones, stoneTable, stoneList} from './alpha/AlphaStoneDictionary'
 import * as progresscalculation from './progresscalculation'
 
-export const version = "0.31"
+export const version = "0.32"
 export const newSave = {
     version: version,
     progressionLayer: 0,
@@ -80,6 +80,7 @@ export const newSave = {
     baseAlphaLevel: 0,
     currentEnding: "",
     completedEndings: {},
+    allTimeEndings: {},
     badEndingCount: 0,
     passedTime: 0, //For Debugging
     settings: {
@@ -824,6 +825,7 @@ export const saveReducer = (state, action)=>{
         state.currentEnding = action.endingName
         break;
     case "completeEnding":
+        state.allTimeEndings[action.endingName] = true
         let isNew = !state.completedEndings[action.endingName]
         state.completedEndings[action.endingName] = true
         performXReset(state)

@@ -154,11 +154,11 @@ export default function AchievementScreen({state}) {
       </ol>
       <br/>
 
-    {Object.keys(state.completedEndings).length > 0 && <><h1>Endings</h1>
+    {(Object.keys(state.completedEndings).length > 0 || state.destinyStars > 0) && <><h1>Endings</h1>
       <ul style={{listStyle:"none"}}>
         {orderedEndings.map((endingName, index)=>{
           const ending = endingList[endingName]
-          return <Ending key={endingName} state={state} ending={ending} isReached={state.completedEndings[endingName]}/>
+          return <Ending key={endingName} state={state} ending={ending} isRevealed={state.allTimeEndings[endingName]} isReached={state.completedEndings[endingName]}/>
         })}
       </ul></>}
   </div>)
@@ -172,11 +172,13 @@ function Milestone({milestone,isReached, state}) {
   return <li style={{margin:"5px", color: isReached ? mileStoneColors[milestone.tier] : "000000"}}>[{milestone.name}]&nbsp;&nbsp;{milestone.description}</li>
 }
 
-function Ending({ending, isReached, state}) {
+function Ending({ending, isRevealed, isReached, state}) {
   const lastSlide = ending.actions[ending.actions.length - 1] 
-  if (!isReached && !state.completedEndings["true"])
+  if (!isReached && !isRevealed && state.destinyStars < 1)
     return undefined
-  if (!isReached)
+  if (!isReached && !isRevealed)
     return <li style={{margin:"5px", color: "#aaaaaa"}}>[{ending.teaseHeaderText || lastSlide.teaseHeaderText}]&nbsp;&nbsp;{ending.teaseTitle || lastSlide.teaseTitle}</li>
-  return <li style={{margin:"5px", color:"#ffffff"}}>[{ending.headerText||lastSlide.headerText}]&nbsp;&nbsp;{ending.title || lastSlide.title}</li>
+  if (isReached || state.progressionLayer >= 2)
+    return <li style={{margin:"5px", color:"#ffffff"}}>[{ending.headerText||lastSlide.headerText}]&nbsp;&nbsp;{ending.title || lastSlide.title}</li>
+  return <li style={{margin:"5px", color:"#aaaaaa"}}>[{ending.headerText||lastSlide.headerText}]&nbsp;&nbsp;{ending.title || lastSlide.title}</li>
 }

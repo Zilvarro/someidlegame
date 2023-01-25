@@ -55,7 +55,7 @@ export const startingStones = {
         id: "AllUpgrades",
         title: "Upgrade Complete",
         description: <>Buy everything on the Alpha Upgrades Tab</>,
-        check: (state)=>countAlphaUpgrades(state)>=12, //TODO also require other upgrades
+        check: (state)=>(countAlphaUpgrades(state)>=12 && state.autoApplyLevel >= 2 && state.baseAlphaLevel >= 12),
     },
 }
 
