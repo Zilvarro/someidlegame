@@ -1,3 +1,4 @@
+import { constellationPrices } from './destiny/DestinyConstellationDictionary'
 import formulaList from './formulas/FormulaDictionary'
 import { getGlobalMultiplier } from './savestate'
 import { notify } from './utilities'
@@ -135,6 +136,7 @@ export const getStarLightRate = (state)=>{
 
 export const generateStarLight = (state, deltaMilliSeconds) => {
     state.starLight += deltaMilliSeconds / 1000 * getStarLightRate(state)
+    state.starLight = Math.min(state.starLight,constellationPrices[state.constellationCount])
 }
 
 export const simulateOfflineProgress = (state, deltaMilliSeconds) => {

@@ -11,7 +11,7 @@ class AutoSave extends React.Component{
   }
 
   onUnload(e){
-    if (this.props.saveState.settings.autoSave === "ON" && this.props.saveState.mileStoneCount > 0) {
+    if (this.props.saveState.settings.autoSave === "ON" && (this.props.saveState.mileStoneCount > 0 || this.props.saveState.destinyStars > 0)) {
       this.save(this.props.saveState)
     }
   }

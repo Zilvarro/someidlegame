@@ -1,4 +1,4 @@
-import {milestoneList} from './AchievementScreen' 
+import {destinyMileStoneList, milestoneList} from './AchievementScreen' 
 import {notify,secondsToHms} from './utilities'
 import formulaList from './formulas/FormulaDictionary'
 import {shopFormulas} from './formulas/FormulaScreen'
@@ -7,7 +7,7 @@ import {calcStoneResultForX} from './alpha/AlphaStonesTab'
 import {startingStones, stoneTable, stoneList} from './alpha/AlphaStoneDictionary'
 import * as progresscalculation from './progresscalculation'
 
-export const version = "0.30"
+export const version = "0.31"
 export const newSave = {
     version: version,
     progressionLayer: 0,
@@ -41,7 +41,8 @@ export const newSave = {
     lightAdder: 0,
     lightDoubler: 0,
     lightRaiser: 0,
-    starConstellations: 0,
+    starConstellations: {},
+    constellationCount: 0,
     tickFormula: false,
     idleMultiplier: 1,
     boughtAlpha: [false,false],
@@ -52,6 +53,7 @@ export const newSave = {
     millisSinceAutoApply: 0,
     millisSinceCountdown: 0,
     mileStoneCount: 0,
+    destinyMileStoneCount: 0,
     holdAction: null,
     isHolding: false,
     justLaunched: true,
@@ -79,6 +81,7 @@ export const newSave = {
     currentEnding: "",
     completedEndings: {},
     badEndingCount: 0,
+    passedTime: 0, //For Debugging
     settings: {
         valueReduction: "CONFIRM",
         offlineProgress: "ON",
@@ -516,6 +519,12 @@ export const saveReducer = (state, action)=>{
             state.mileStoneCount++
         }
 
+        //Check if next destiny milestone is reached
+        if (destinyMileStoneList[state.destinyMileStoneCount]?.check(state)){
+            notify.success("New Milestone", destinyMileStoneList[state.destinyMileStoneCount].name)
+            state.destinyMileStoneCount++
+        }
+
         //Check if new starting stones are turned
         stoneList.forEach(stoneName => {
             if (!state.startingStoneTurned[stoneName] && startingStones[stoneName]?.check(state)){
@@ -687,25 +696,7 @@ export const saveReducer = (state, action)=>{
         }
         break;
     case "cheat":
-        updateFormulaEfficiency(state)
-        updateProductionBonus(state)
-        // state.alpha = 0
-        // state.bestIdleTime = 1800e3
-        // state.bestIdleTimeAlpha = 1
-        // state.passiveMasterTime = 0
-
-        // if (state.mileStoneCount < 6) {
-        //     state.mileStoneCount = 6
-        //     state.progressionLayer = 1
-        //     state.alpha++
-        // } else {
-        //     state.alpha = 1
-        //     state.bestAlphaTime = Infinity
-        //     state.bestIdleTime = Infinity
-        //     state.bestIdleTimeAlpha = 1
-        //     state.passiveAlphaTime = 0
-        //     state.passiveMasterTime = 0
-        // }
+        state.starConstellations = {}
         break;
     case "chapterJump":
         switch (action.password) {
@@ -859,13 +850,26 @@ export const saveReducer = (state, action)=>{
         break;
     case "performDestinyReset":
         state.destinyStars += 1
-        state = {...structuredClone(newSave), calcTimeStamp: Date.now(), saveTimeStamp: Date.now(), settings:state.settings, 
-            destinyStars:state.destinyStars, lightAdder:state.lightAdder, lightDoubler:state.lightDoubler, lightRaiser:state.lightRaiser, starConstellations:state.starConstellations};
+        state = {...structuredClone(newSave), calcTimeStamp: Date.now(), saveTimeStamp: Date.now(), settings:state.settings, mileStoneCount:state.mileStoneCount,
+            destinyStars:state.destinyStars, starLight:state.starLight, lightAdder:state.lightAdder, lightDoubler:state.lightDoubler, lightRaiser:state.lightRaiser, starConstellations:state.starConstellations, constellationCount:state.constellationCount};
         break;
     case "buyLightUpgrade":
         state[action.currency] += 1
         if (action.cost < Infinity)
             state.starLight -= action.cost
+            
+        break;
+    case "completeConstellation":
+        state.constellationCount += 1
+        state.starConstellations[action.constellation.id] = true
+        state.starLight = 0
+        state.lightAdder = 0
+        state.lightDoubler = 0
+        state.lightRaiser = 0
+        break;
+    case "passTime":
+        state.passedTime += action.time
+        progresscalculation.generateStarLight(state,action.time)
         break;
     default:
         console.error("Action " + action.name + " not found.")

@@ -75,42 +75,45 @@ export const milestoneList = [
     description:<>State your greatest wish</>,
     check: (state)=>(state.completedEndings["worldselect"]),
     tier: 1,
+  },
+]
+
+export const destinyMileStoneList = [{
+    id:"StarLight",
+    name:"Light of the Stars",
+    description:<>Get 100 Starlight</>,
+    check: (state)=>(state.starLight >= 100),
+    tier: 4,
   },{
-    id:"DestinyReset",
-    name:"New Game Plus",
-    description:<>Perform a Destiny Reset</>,
-    check: (state)=>(state.destinyStars >= 2),
-    tier: 2,
+    id:"LuminousMoon",
+    name:"Glow of the Moon",
+    description:<>Get a Luminous Moon</>,
+    check: (state)=>(state.lightRaiser >= 1),
+    tier: 4,
   },{
-    id:"3Stars",
+    id:"ConstellationsA",
     name:"Aspiring",
-    description:<>Get 3 Destiny Stars</>,
-    check: (state)=>(state.destinyStars >= 3),
-    tier: 2,
+    description:<>Get 1 Star Constellation</>,
+    check: (state)=>(state.constellationCount >= 1),
+    tier: 4,
   },{
-    id:"5Stars",
+    id:"ConstellationsB",
     name:"Ambitious",
-    description:<>Get 5 Destiny Stars</>,
-    check: (state)=>(state.destinyStars >= 5),
-    tier: 2,
+    description:<>Get 3 Star Constellations</>,
+    check: (state)=>(state.constellationCount >= 3),
+    tier: 4,
   },{
-    id:"10Stars",
+    id:"ConstellationsC",
     name:"Committed",
-    description:<>Get 10 Destiny Stars</>,
-    check: (state)=>(state.destinyStars >= 10),
-    tier: 2,
+    description:<>Get 6 Star Constellations</>,
+    check: (state)=>(state.constellationCount >= 6),
+    tier: 4,
   },{
-    id:"20Stars",
-    name:"Dedicated",
-    description:<>Get 20 Destiny Stars</>,
-    check: (state)=>(state.destinyStars >= 20),
-    tier: 2,
-  },{
-    id:"100Stars",
-    name:"Addicted",
-    description:<>Finish the game with 100 Destiny Stars</>,
-    check: (state)=>(state.destinyStars >= 100 && state.progressionLayer >= 2),
-    tier: 2,
+    id:"ConstellationsD",
+    name:"Enlightened",
+    description:<>Get all 12 Star Constellations</>,
+    check: (state)=>(state.constellationCount >= 12),
+    tier: 4,
   },
 ]
 
@@ -134,7 +137,7 @@ export const layerList = [
     name:"DESTINY",
     description: "Wait there's more?",
     check: (state)=>(state.destinyStars >= 1),
-    tier: 2,
+    tier: 4,
   },
 ]
 
@@ -144,6 +147,9 @@ export default function AchievementScreen({state}) {
       <ol>
         {milestoneList.map((milestone, index)=>
           <Milestone key={milestone.id} state={state} milestone={milestone} isReached={state.mileStoneCount > index}/>
+        )}
+        {destinyMileStoneList.map((milestone, index)=>
+          <Milestone key={milestone.id} state={state} milestone={milestone} isReached={state.destinyMileStoneCount > index}/>
         )}
       </ol>
       <br/>
@@ -159,7 +165,7 @@ export default function AchievementScreen({state}) {
 }
 
 function Milestone({milestone,isReached, state}) {
-  if (state.progressionLayer < milestone.tier)
+  if (state.progressionLayer < milestone.tier && state.destinyStars < 1)
     return undefined
 
   const mileStoneColors=["#99FF99","#ff7777","#55ffbb","#663366","#ffff88"]
