@@ -132,11 +132,10 @@ return (
         <p>You have {formatNumber(state.alpha, state.settings.numberFormat)} Alpha Token{state.alpha !== 1 && "s"}!</p>
         <p>Time in current Alpha run: {secondsToHms(state.currentAlphaTime / 1000)}</p>
         {state.bestAlphaTime<1e50 && <p>Fastest Alpha run: {secondsToHms(Math.ceil(state.bestAlphaTime / 1000))}</p>}
-        {state.alphaUpgrades.PALP && <p>Next Passive Alpha Token: {secondsToHms(Math.max(0,((state.bestAlphaTime - state.passiveAlphaTime) / 1000)))}</p>}
         {state.clearedChallenges.FULLYIDLE && <>
             <p>Best Master of Idle: {state.bestIdleTimeAlpha}&alpha; in {secondsToHms(Math.ceil(state.bestIdleTime  / 1000))}</p>
-            {(state.bestIdleTimeAlpha / state.bestIdleTime * 1000 > 1) ? <p>Master Alpha Tokens:{(state.bestIdleTimeAlpha / state.bestIdleTime * 1000).toFixed()}/s</p> :<p>Next Master Alpha Token: {secondsToHms(Math.max(0,((state.bestIdleTime / state.bestIdleTimeAlpha - state.passiveMasterTime) / 1000)))}</p>}
         </>}
+        {state.alphaUpgrades.PALP && ((state.passiveAlphaInterval <= 1000) ? <p>Passive Alpha Tokens:{(1000 / state.passiveAlphaInterval).toFixed()}/s</p> :<p>Next Passive Alpha Token: {secondsToHms(Math.max(0,((state.passiveAlphaInterval - state.passiveAlphaTime) / 1000)))}</p>)}
         {state.alphaUpgrades.AAPP && <p>Auto Applier Rate: {state.autoApplyRate}/s{spaces()}{applierLevel<2 && <button disabled={state.alpha < applierCosts[applierLevel + 1]} onClick={upgradeApplierRate}>Upgrade for {applierCosts[applierLevel + 1]} &alpha;</button>}</p>}
         <p>Base Tokens per &alpha;-Reset: {baseAlphaMultiplier}{spaces()}{state.baseAlphaLevel<12 && <button disabled={state.alpha < baseAlphaUpgradeCost} onClick={upgradeBaseAlpha}>Double for {baseAlphaUpgradeCost} &alpha;</button>}</p>
         </>}

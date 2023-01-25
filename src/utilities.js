@@ -1,5 +1,6 @@
 import Notify from 'simple-notify'
 import 'simple-notify/dist/simple-notify.min.css'
+import { getGlobalMultiplier } from './savestate'
 
 export const spaces = ()=>{
     return (<>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</>)
@@ -116,4 +117,13 @@ export const reverseGeometric = (base, sumvalue)=>{
 
 export const clamp = (lower, value, upper)=>{
     return Math.min(Math.max(lower,value),upper)
+}
+
+export const getRewardInterval = (amount, milliSeconds, globalMultiplier)=>{
+    if (globalMultiplier <= 1 || milliSeconds > 11000)
+        return Math.min(1000, milliSeconds) / amount
+    else if (milliSeconds <= 1000)
+        return 1000 / (amount * globalMultiplier)
+    else
+        return milliSeconds / (amount * Math.pow(globalMultiplier, 1.1 - milliSeconds / 10000))
 }

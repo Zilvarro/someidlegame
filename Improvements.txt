@@ -37,8 +37,7 @@ Research Offline Progress cannot be disabled
 
 ~~~~~~~~~~DESTINY~~~~~~~~~~
 
-Decouple Game Logic from Milestones
-
+Passive Alpha
 
 ~~~~~~~~~~~MAILS~~~~~~~~~~~
 

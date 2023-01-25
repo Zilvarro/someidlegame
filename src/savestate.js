@@ -1,5 +1,5 @@
 import {destinyMileStoneList, milestoneList} from './AchievementScreen' 
-import {notify,secondsToHms} from './utilities'
+import {getRewardInterval, notify,secondsToHms} from './utilities'
 import formulaList from './formulas/FormulaDictionary'
 import {shopFormulas} from './formulas/FormulaScreen'
 import {isLockedByChallenge} from './formulas/FormulaButton'
@@ -63,7 +63,7 @@ export const newSave = {
     bestIdleTime: 1800e3,
     bestIdleTimeAlpha: 1,
     passiveAlphaTime: 0,
-    passiveMasterTime: 0,
+    passiveAlphaInterval: 1e100,
     insideChallenge: false,
     currentChallenge: null,
     currentChallengeName: null,
@@ -267,10 +267,13 @@ const giveAlphaRewards = (state)=>{
     if (state.currentChallenge) {
         //Passive Alpha from Master of Idle
         if (state.currentChallenge === "FULLYIDLE" && state.clearedChallenges[state.currentChallenge]) {
-            if (state.currentAlphaTime / alphaReward < state.bestIdleTime / state.bestIdleTimeAlpha) {
+            const newRewardInterval = getRewardInterval(alphaReward, state.currentAlphaTime, getGlobalMultiplier(state))
+            const oldMOIRewardInterval = getRewardInterval(state.bestIdleTimeAlpha, state.bestIdleTime, getGlobalMultiplier(state))
+            if (newRewardInterval < state.passiveAlphaInterval || newRewardInterval < oldMOIRewardInterval) {
+                state.passiveAlphaInterval = Math.min(state.passiveAlphaInterval, newRewardInterval)
+                state.passiveAlphaTime = Math.min(state.passiveAlphaTime, newRewardInterval)
                 state.bestIdleTimeAlpha = alphaReward
                 state.bestIdleTime = Math.max(1000, state.currentAlphaTime)
-                state.passiveMasterTime = Math.min(state.passiveMasterTime, state.bestIdleTime / state.bestIdleTimeAlpha)
             }
         }
 
@@ -290,6 +293,7 @@ const giveAlphaRewards = (state)=>{
         state.alpha += alphaReward
         state.bestAlphaTime = Math.max(1000,Math.min(state.currentAlphaTime, state.bestAlphaTime))
         state.passiveAlphaTime = Math.min(state.passiveAlphaTime, state.bestAlphaTime)
+        state.passiveAlphaInterval = Math.min(state.passiveAlphaInterval, getRewardInterval(1, state.bestAlphaTime, getGlobalMultiplier(state)))
         state.xHighScores[state.highestXTier] = Math.max(state.xHighScores[state.highestXTier], state.xValue[0])
     }
     return state
@@ -568,20 +572,11 @@ export const saveReducer = (state, action)=>{
         //Passive Alpha from Upgrade
         if (state.alphaUpgrades.PALP) {
             state.passiveAlphaTime += deltaMilliSeconds
-            if (state.passiveAlphaTime >= state.bestAlphaTime) {
-                state.alpha += Math.floor(state.passiveAlphaTime / state.bestAlphaTime)
-                state.passiveAlphaTime %= state.bestAlphaTime
+            if (state.passiveAlphaTime >= state.passiveAlphaInterval) {
+                state.alpha += Math.floor(state.passiveAlphaTime / state.passiveAlphaInterval)
+                state.passiveAlphaTime %= state.passiveAlphaInterval
             }
-        }
-
-        //Passive Alpha from Master of Idle
-        if (state.clearedChallenges.FULLYIDLE) {
-            state.passiveMasterTime += deltaMilliSeconds
-            if (state.passiveMasterTime * state.bestIdleTimeAlpha >= state.bestIdleTime) {
-                state.alpha += Math.floor(state.passiveMasterTime * state.bestIdleTimeAlpha / state.bestIdleTime)
-                state.passiveMasterTime %= state.bestIdleTime / state.bestIdleTimeAlpha
-            }
-        }     
+        }   
 
         //Auto Resetters
         const alphaThreshold = alphaThresholds[state.settings.alphaThreshold] || alphaTarget
