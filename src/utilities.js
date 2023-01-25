@@ -1,6 +1,5 @@
 import Notify from 'simple-notify'
 import 'simple-notify/dist/simple-notify.min.css'
-import { getGlobalMultiplier } from './savestate'
 
 export const spaces = ()=>{
     return (<>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</>)
