@@ -14,6 +14,7 @@ const starlightDictionary = {
         maxAmount: 1e6,
         className: undefined,
         hideAmount: true,
+        useDefaultStyle: true,
     },
     adder: {
         id: "adder",
@@ -99,8 +100,20 @@ function DestinyStarlightButton({state, updateState, upgrade}) {
             return
         updateState({name:"buyLightUpgrade", currency:currency, cost:cost})
     }
-    const buttonStyle = {width: "200px", backgroundColor: "#ffffff", fontWeight: "bolder"}
+    const isMaxxed = state[upgrade.currency] >= upgrade.maxAmount
+    const buttonStyle={
+        margin:"2px",
+        border:"0px", 
+        padding:"0px", 
+        fontWeight: "bold",
+        width:"200px", 
+        height:"50px", 
+        fontSize:"16px",
+        backgroundColor: isMaxxed ? "#ffff88" : undefined,
+        color: "black",
+    }
+    //const buttonStyle = {width: "200px", backgroundColor: isMaxxed ? "#ffff00" : "#ffffff", fontWeight: "bolder"}
     const actualCost = Math.floor(upgrade.costBase*Math.pow(upgrade.costMultiplier, state[upgrade.currency]) * Math.pow(0.5, state.constellationCount))
-    return <><button className={upgrade.className} title={upgrade.description} style={buttonStyle} onClick={()=>buyLight(upgrade.currency, actualCost)} disabled={state[upgrade.currency] >= upgrade.maxAmount || state.starLight < actualCost}>{upgrade.title}{!upgrade.hideAmount && <>&nbsp;({state[upgrade.currency]})</>}</button>{state[upgrade.currency] < 1000 && actualCost > 0 && <>&nbsp;&nbsp;Cost: &lambda;={formatNumber(actualCost,state.settings.numberFormat)}</>}<br/></>
+    return <><button title={upgrade.description} style={upgrade.useDefaultStyle ? undefined : buttonStyle} onClick={()=>buyLight(upgrade.currency, actualCost)} disabled={isMaxxed || state.starLight < actualCost}>{upgrade.title}{!upgrade.hideAmount && <>&nbsp;({state[upgrade.currency]})</>}</button>{state[upgrade.currency] < 1000 && actualCost > 0 && <>&nbsp;&nbsp;Cost: &lambda;={formatNumber(actualCost,state.settings.numberFormat)}</>}<br/></>
                     
 }

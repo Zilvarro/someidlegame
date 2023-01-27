@@ -2,6 +2,7 @@
 
 Buttons should be readable when disabled (black Text)
 Numbers should be formatted correctly
+Reclicking Main Tab cycles through sub-tabs
 
 
 ~~~~~~~~~~FORMULAS~~~~~~~~~~
@@ -16,7 +17,9 @@ Avoid Line breaks for Unlock Cost (PC, Shop Scrollbar)
 Negative Space Rounding
 Resetters should work properly while on other tabs
 Basic Formulas should work while in Negative Space
-
+Highest x Tier messed up in Shop :-/
+Discover the World Formula an bessere Stelle
+Move Resetter Toggles to top of this page
 
 ~~~~~~~~~~~ALPHA~~~~~~~~~~~
 
@@ -29,6 +32,7 @@ World Ending First Label not shown
 Abort the current challenge Popup Text
 Maxxed Research Multiplier on top of page
 Research Offline Progress cannot be disabled
+Timewall Alpha Requirement not formatted
 
 ~~~~~~~~~~DESTINY~~~~~~~~~~
 

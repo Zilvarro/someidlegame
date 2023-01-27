@@ -30,7 +30,7 @@ export const startingStones = {
     "Timewall":{
         id: "Timewall",
         title: "Timewall ",
-        description: <>&alpha;-Reset with at least x=1e110 and &alpha;=5e9</>,
+        description: <>&alpha;-Reset while having at least five billion Alpha and x=1e110</>,
         check: (state=>(state.xHighScores[3] >= 1e110 && state.alpha >= 5e9)),
     },
     "AllChallenges":{

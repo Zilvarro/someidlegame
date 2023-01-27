@@ -162,9 +162,9 @@ export const loadGame = ()=>{
 }
 
 export const getStartingX = (state)=>{
-    const fromStartingStones = state.startingStoneX
+    const fromStartingStones = Math.max(state.startingStoneX, 1)
     const fromResearch = Math.floor(100*Math.pow(1.01, state.researchLevel["x"] || 0)-100);
-    return Math.max(fromStartingStones + fromResearch, fromStartingStones * fromResearch)
+    return fromStartingStones * fromResearch
 }
 
 export const getInventorySize = (state)=>{

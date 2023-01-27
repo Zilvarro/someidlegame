@@ -84,8 +84,8 @@ export default function AlphaStonesTab({state, popup, updateState}) {
                     <AlphaStartingStone key={stoneId} state={state} stone={startingStones[stoneId]} boundary={boundaries[index][indey]} popup={popup} updateState={updateState}/>
                 )}</div>)}
                 <br/>
-                <div style={{fontSize:"20px",fontWeight:"bold"}}>{spaces()}s<sub>x</sub> = {formatNumber(xBonus, state.settings.numberFormat)}</div>
-                <div>{spaces()}adds or multiplies Starting x</div>
+                <div style={{fontSize:"20px",fontWeight:"bold"}}>{spaces()}s<sub>x</sub> = {formatNumber(xBonus, state.settings.numberFormat)}</div><br/>
+                {xBonus > 1 && <div>{spaces()} s<sub>x</sub> multiplies Starting x</div>}
             </>}
         </div>)
 }
