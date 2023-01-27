@@ -120,7 +120,7 @@ export const clamp = (lower, value, upper)=>{
 
 export const getRewardInterval = (amount, milliSeconds, globalMultiplier)=>{
     if (globalMultiplier <= 1 || milliSeconds > 11000)
-        return Math.min(1000, milliSeconds) / amount
+        return Math.max(1000, milliSeconds) / amount
     else if (milliSeconds <= 1000)
         return 1000 / (amount * globalMultiplier)
     else

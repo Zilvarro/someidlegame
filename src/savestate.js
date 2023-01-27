@@ -7,7 +7,7 @@ import {calcStoneResultForX} from './alpha/AlphaStonesTab'
 import {startingStones, stoneTable, stoneList} from './alpha/AlphaStoneDictionary'
 import * as progresscalculation from './progresscalculation'
 
-export const version = "0.32"
+export const version = "0.34"
 export const newSave = {
     version: version,
     progressionLayer: 0,
@@ -692,7 +692,8 @@ export const saveReducer = (state, action)=>{
         }
         break;
     case "cheat":
-        state.starConstellations = {}
+        state.alpha = 0
+        state.passiveAlphaInterval = state.bestAlphaTime
         break;
     case "chapterJump":
         switch (action.password) {

@@ -2,7 +2,7 @@ import { spaces, secondsToHms, formatNumber} from '../utilities'
 import AlphaUpgradeButton from './AlphaUpgradeButton'
 import MultiOptionButton from '../MultiOptionButton'
 
-const alphaUpgradeTable = ["AAPP","FREF","SAPP","OAPP","BR1","AUNL","MEEQ","AREM","MEMS","BR2","SLOT","PALP","SRES","ARES"]
+const alphaUpgradeTable = ["BR2","SLOT","PALP","SRES","ARES","BR1","AAPP","FREF","SAPP","OAPP","BR2","AUNL","MEEQ","AREM","MEMS"]
 
 export const countAlphaUpgrades=(state)=>{
     return alphaUpgradeTable.filter((x)=>state.alphaUpgrades[x]).length
@@ -36,7 +36,7 @@ const alphaUpgradeDictionary = {
         requires: "SAPP",
         title:"Offline Applier",
         description:"Auto Applier works offline.",
-        cost:100,
+        cost:1000,
     },
     "AUNL": {
         id:"AUNL",
@@ -62,8 +62,8 @@ const alphaUpgradeDictionary = {
         id:"MEMS",
         requires: "AREM",
         title:"Better Memory",
-        description:"Up to three different Equipment loadouts can be saved. (Not yet implemented!)",
-        cost:100,
+        description:"Up to three different Equipment loadouts can be saved.",
+        cost:10000,
     },
     "SLOT": {
         id:"SLOT",

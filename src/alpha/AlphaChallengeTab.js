@@ -1,5 +1,5 @@
 import AlphaChallengeButton from './AlphaChallengeButton.js'
-import {getChallengeBonus, alphaTarget} from '../savestate.js'
+import {getChallengeBonus} from '../savestate.js'
 import { spaces } from '../utilities.js'
 
 export const alphaChallengeTable = ["SLOWPROD","SIMPLEONLY","DECREASE","LIMITED","RESETOTHER","NEWONLY","SMALLINV","COMPLEX","COUNTDOWN","SINGLEUSE","ONESHOT","FULLYIDLE", "FORMULAGOD"]
@@ -80,9 +80,6 @@ export default function AlphaChallengeTab({state, updateState, popup}) {
             updateState({name: "exitChallenge"})
         })
     }
-    const completeAlphaChallenge = ()=>{
-        updateState({name: "alphaReset"})
-    }
     const openChallengeInfo = ()=>{
         popup.alert(<>All challenges have a 30 minute time limit.
             <br/>Formula Offline Progress is disabled during Challenges.
@@ -99,8 +96,7 @@ export default function AlphaChallengeTab({state, updateState, popup}) {
         {challengeBonus.full === 13 ? <>You completed all challenges, boosting your Formula Efficiency by {challengeBonus.bonus.toFixed(2)}.</>: <>Your {challengeBonus.full} challenge completions and {challengeBonus.segment} segment completions boost your Formula Efficiency by {challengeBonus.bonus.toFixed(2)}.</>}
         {state.currentChallenge && <p>You are currently in the "{state.currentChallengeName}" Challenge.</p>}
         <p>
-            {(state.xValue[0] < alphaTarget || !state.insideChallenge || state.inNegativeSpace) &&<button disabled={!state.insideChallenge} onClick={exitAlphaChallenge}>Exit Challenge</button>}
-            {state.xValue[0] >= alphaTarget && state.insideChallenge && !state.inNegativeSpace && <button onClick={completeAlphaChallenge}>Complete Challenge</button>}
+            <button disabled={!state.insideChallenge} onClick={exitAlphaChallenge}>Exit Challenge</button>
             {spaces()}<button onClick={openChallengeInfo}>About Challenges</button>
         </p>
         {alphaChallengeTable.map((challenge)=>

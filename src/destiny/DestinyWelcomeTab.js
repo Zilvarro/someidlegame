@@ -3,6 +3,50 @@ import { formatNumber } from "../utilities"
 import { starConstellations, constellationList, constellationPrices} from "./DestinyConstellationDictionary"
 import DestinyConstellationButton from "./DestinyConstellationButton"
 
+const starlightDictionary = {
+    single: {
+        id: "single",
+        title: "Gaze at the night sky",
+        description: "A single ray of Starlight may strike your eye",
+        currency: "starLight",
+        costBase: 0,
+        costMultiplier: 1,
+        maxAmount: 1e6,
+        className: undefined,
+        hideAmount: true,
+    },
+    adder: {
+        id: "adder",
+        title: "Astral Glance",
+        description: "Each Astral Glance produces one Starlight per Second",
+        currency: "lightAdder",
+        costBase: 100,
+        costMultiplier: 1.15,
+        maxAmount: 1000,
+        className: "fbutton",
+    },
+    doubler: {
+        id: "doubler",
+        title: "Shooting Star",
+        description: "Each Shooting Star doubles Starlight gained from Astral Glances",
+        currency: "lightDoubler",
+        costBase: 1000,
+        costMultiplier: 8,
+        maxAmount: 1000,
+        className: "fbutton",
+    },
+    raiser: {
+        id: "raiser",
+        title: "Luminous Moon",
+        description: "Each Luminous Moon multiplies Starlight gain by the number of Destiny Stars",
+        currency: "lightRaiser",
+        costBase: 10000,
+        costMultiplier: 1000,
+        maxAmount: 1000,
+        className: "fbutton",
+    },
+}
+
 export default function DestinyWelcomeTab({state, popup, updateState}) {
     
     const claimFirstStar = ()=>{
@@ -14,21 +58,9 @@ export default function DestinyWelcomeTab({state, popup, updateState}) {
         })
     }
 
-    const buyLight = (currency,cost)=>{
-        if (state.starLight < cost)
-            return
-        updateState({name:"buyLightUpgrade", currency:currency, cost:cost})
-    }
-
     // const passTime = (time)=>{
     //     updateState({name:"passTime", time:time*1000})
     // }
-
-    const adderCost = Math.floor(100*Math.pow(1.15,state.lightAdder) * Math.pow(0.5, state.constellationCount))
-    const doublerCost = Math.floor(1000*Math.pow(8,state.lightDoubler) * Math.pow(0.5, state.constellationCount))
-    const raiserCost = Math.floor(10000*Math.pow(1000,state.lightRaiser) * Math.pow(0.5, state.constellationCount))
-
-    const buttonStyle = {width: "200px", backgroundColor: "#ffffff", fontWeight: "bolder"}
 
     return (
         <div>{<>
@@ -36,7 +68,7 @@ export default function DestinyWelcomeTab({state, popup, updateState}) {
                 {state.destinyStars < 1 && <><h2>You finished the game!</h2><p>Claim this Destiny Star as a reward!</p><br/><button onClick={claimFirstStar}><b>CLAIM DESTINY STAR</b></button></>}
                 {state.destinyStars >= 1 && <>
                     <h2>Destiny Stars</h2>
-                    <p>You have {state.destinyStars} Destiny Star{state.destinyStars !== 1 && "s"}.<br/>They multiply the Overall Game Speed.<br/>You get Destiny stars by replaying the game.</p>
+                    <p>You have {state.destinyStars} Destiny Star{state.destinyStars !== 1 && "s"}.<br/>Destiny Stars multiply the speed of the previous layers.<br/>You can get Destiny Stars by replaying the game.</p>
                     {state.progressionLayer >= 2 && <button onClick={performDestinyReset} className="fbutton" style={{ backgroundColor:"#FFFF88", fontWeight:"bold", width:"280px"}} ><b>{"CHANGE YOUR DESTINY"}</b></button>}
                     <br/><h2>Starlight</h2>
                     <h3>&lambda; = {formatNumber(Math.floor(state.starLight),state.settings.numberFormat,3)}</h3>
@@ -47,10 +79,11 @@ export default function DestinyWelcomeTab({state, popup, updateState}) {
                     <button onClick={()=>passTime(24*3600)}>+ 1 Day</button><br/>
                     <div>Passed Time: {secondsToHms(state.passedTime / 1000)}</div> */}
                     <br/>
-                    <button className="fbutton" title="Each Astral Glance produces one Starlight every Second" style={buttonStyle} onClick={()=>buyLight("lightAdder",adderCost)} disabled={state.lightAdder >= 5000 || state.starLight < adderCost}>Astral Glance ({state.lightAdder})</button>{state.lightAdder < 5000 && <>&nbsp;&nbsp;Cost: &lambda;={formatNumber(adderCost,state.settings.numberFormat)}</>}<br/>
-                    <button className="fbutton" title="Each Shooting Star doubles Starlight gained from Astral Glances" style={buttonStyle} onClick={()=>buyLight("lightDoubler",doublerCost)} disabled={state.lightDoubler >= 1000 || state.starLight < doublerCost}>Shooting Star ({state.lightDoubler})</button>{state.lightAdder < 5000 && <>&nbsp;&nbsp;Cost: &lambda;={formatNumber(doublerCost,state.settings.numberFormat)}</>}<br/>
-                    <button className="fbutton" title="Each Luminous Moon multiplies Starlight gain by the number of Destiny Stars" style={buttonStyle} onClick={()=>buyLight("lightRaiser",raiserCost)} disabled={state.lightRaiser >= 200 || state.starLight < raiserCost}>Luminous Moon ({state.lightRaiser})</button>{state.lightAdder < 5000 && <>&nbsp;&nbsp;Cost: &lambda;={formatNumber(raiserCost,state.settings.numberFormat)}</>}<br/><br/>
-                    {getStarLightRate(state) < 20 && <><button onClick={()=>buyLight("starLight",0)}>Gaze at the night sky</button><br/><br/></>}
+                    <DestinyStarlightButton upgrade={starlightDictionary["adder"]} state={state} updateState={updateState}/>
+                    <DestinyStarlightButton upgrade={starlightDictionary["doubler"]} state={state} updateState={updateState}/>
+                    <DestinyStarlightButton upgrade={starlightDictionary["raiser"]} state={state} updateState={updateState}/><br/>
+                    {getStarLightRate(state) < 20 && <><DestinyStarlightButton upgrade={starlightDictionary["single"]} state={state} updateState={updateState}/><br/></>}
+                    {/* {getStarLightRate(state) < 20 && <><button onClick={()=>updateState({name:"buyLightUpgrade", currency:"starLight", cost:0})}>Gaze at the night sky</button><br/><br/></>} */}
                     <h2>Star Constellations</h2>
                     {state.constellationCount < 12 ? <>Fill the entire night sky with Starlight to complete Star Constellations.<br/></> : <>All Star Constellations are complete. Congratulations!<br/></>}
                     Each Constellation halves the prices of Starlight Upgrades and increases the Starlight cap.<br/>
@@ -58,4 +91,16 @@ export default function DestinyWelcomeTab({state, popup, updateState}) {
                 </>}
             </>}
         </div>)
+}
+
+function DestinyStarlightButton({state, updateState, upgrade}) {
+    const buyLight = (currency,cost)=>{
+        if (state.starLight < cost)
+            return
+        updateState({name:"buyLightUpgrade", currency:currency, cost:cost})
+    }
+    const buttonStyle = {width: "200px", backgroundColor: "#ffffff", fontWeight: "bolder"}
+    const actualCost = Math.floor(upgrade.costBase*Math.pow(upgrade.costMultiplier, state[upgrade.currency]) * Math.pow(0.5, state.constellationCount))
+    return <><button className={upgrade.className} title={upgrade.description} style={buttonStyle} onClick={()=>buyLight(upgrade.currency, actualCost)} disabled={state[upgrade.currency] >= upgrade.maxAmount || state.starLight < actualCost}>{upgrade.title}{!upgrade.hideAmount && <>&nbsp;({state[upgrade.currency]})</>}</button>{state[upgrade.currency] < 1000 && actualCost > 0 && <>&nbsp;&nbsp;Cost: &lambda;={formatNumber(actualCost,state.settings.numberFormat)}</>}<br/></>
+                    
 }

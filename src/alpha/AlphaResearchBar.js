@@ -22,9 +22,8 @@ export default function AlphaResearchBar({state, research, updateState}) {
     const progressBarWidth = isDone ? "100%" : Math.min(100 * percentage,99).toFixed(2) + "%"
     
     const clickResearchBar = ()=>{
-      console.log(reverseGeometric(1.05,5))
       if (isDone)
-        updateState({name: "startResearch", research: research, bulkAmount: bulkAmount})
+        updateState({name: "startResearch", research: research, bulkAmount: Math.max(bulkAmount, 1)})
     }
 
     if (!researchLevel && !research.checkUnlock(state))

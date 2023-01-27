@@ -29,7 +29,8 @@ export const applyFormulaToState = (state, formula, forceApply, silent, multiApp
     const actuallyApply = () => {
         const deductCost = applyCost > 0 && !state.alphaUpgrades.FREF && state.xValue[formula.targetLevel] !== newValue
         const maxApplyTimes = deductCost ? state.xValue[0] / applyCost : Infinity 
-        const applyTimes = multiApply && !formula.isStatic ? Math.floor(Math.min(getGlobalMultiplier(state), maxApplyTimes)) : 1
+        const limitActive = state.activeChallenges.LIMITED || state.activeChallenges.SINGLEUSE
+        const applyTimes = multiApply && !formula.isStatic && !limitActive ? Math.floor(Math.min(getGlobalMultiplier(state), maxApplyTimes)) : 1
         const efficiency = state.formulaEfficiency[formula.targetLevel] * applyTimes
         state.xValue[formula.targetLevel] = formula.applyFormula(efficiency, state.xValue, state)
         if (state.activeChallenges.RESETOTHER) {
