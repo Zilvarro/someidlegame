@@ -1,5 +1,5 @@
 import {destinyMileStoneList, milestoneList} from './AchievementScreen' 
-import {getRewardInterval, notify,secondsToHms} from './utilities'
+import {getRewardInterval, notify, formatNumber, secondsToHms} from './utilities'
 import formulaList from './formulas/FormulaDictionary'
 import {shopFormulas} from './formulas/FormulaScreen'
 import {isLockedByChallenge} from './formulas/FormulaButton'
@@ -7,7 +7,7 @@ import {calcStoneResultForX} from './alpha/AlphaStonesTab'
 import {startingStones, stoneTable, stoneList} from './alpha/AlphaStoneDictionary'
 import * as progresscalculation from './progresscalculation'
 
-export const version = "0.34"
+export const version = "0.35"
 export const newSave = {
     version: version,
     progressionLayer: 0,
@@ -457,7 +457,7 @@ export const saveReducer = (state, action)=>{
             const factor = state.xValue[0] / xBefore
             if (state.settings.offlineProgressPopup === "ON" || (state.settings.offlineProgressPopup === "LAUNCH" && state.justLaunched)){
                 if (factor && factor !== Infinity && factor > 1.01 ){
-                    popup.alert("You were away for " + secondsToHms(Math.floor(deltaMilliSeconds / 1000)) + ".\nYour x increased by a factor of " + factor.toFixed(2))
+                    popup.alert("You were away for " + secondsToHms(Math.floor(deltaMilliSeconds / 1000)) + ".\nYour x increased by a factor of " + formatNumber(factor,state.settings.numberFormat,2,true))
                 } else {
                     popup.alert("You were away for " + secondsToHms(Math.floor(deltaMilliSeconds / 1000)) + ".")
                 }
@@ -848,7 +848,7 @@ export const saveReducer = (state, action)=>{
         break;
     case "performDestinyReset":
         state.destinyStars += 1
-        state = {...structuredClone(newSave), calcTimeStamp: Date.now(), saveTimeStamp: Date.now(), settings:state.settings, mileStoneCount:state.mileStoneCount,
+        state = {...structuredClone(newSave), calcTimeStamp: Date.now(), saveTimeStamp: Date.now(), settings:state.settings, mileStoneCount:state.mileStoneCount, destinyMileStoneCount:state.destinyMileStoneCount, allTimeEndings:state.allTimeEndings,
             destinyStars:state.destinyStars, starLight:state.starLight, lightAdder:state.lightAdder, lightDoubler:state.lightDoubler, lightRaiser:state.lightRaiser, starConstellations:state.starConstellations, constellationCount:state.constellationCount};
         break;
     case "buyLightUpgrade":

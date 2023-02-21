@@ -62,4 +62,4 @@ export const starConstellations = {
 }
 
 export const constellationList = ["aries", "taurus", "gemini", "cancer", "leo", "virgo", "libra", "scorpius", "sagittarius", "capricornus", "aquarius", "pisces"]
-export const constellationPrices = [5e4,5e8,5e12,5e13,5e14,5e15,5e16,5e17,5e18,5e20,5e22,5e24,Infinity]
+export const constellationPrices = [5e9,5e10,5e11,5e12,5e13,5e14,5e15,5e16,5e17,5e18,5e19,5e20,Infinity]

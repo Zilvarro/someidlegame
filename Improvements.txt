@@ -2,6 +2,7 @@
 
 Buttons should be readable when disabled (black Text)
 Numbers should be formatted correctly
+Format Offline Progress Popup
 Reclicking Main Tab cycles through sub-tabs
 
 
@@ -33,10 +34,12 @@ Abort the current challenge Popup Text
 Maxxed Research Multiplier on top of page
 Research Offline Progress cannot be disabled
 Timewall Alpha Requirement not formatted
+Better Formula for Research Bulking
 
 ~~~~~~~~~~DESTINY~~~~~~~~~~
 
 Make buttons holdable
+Alpha Subtabs should be locked again after Destiny Reset
 
 ~~~~~~~~~~~MAILS~~~~~~~~~~~
 

@@ -31,7 +31,7 @@ const starlightDictionary = {
         title: "Shooting Star",
         description: "Each Shooting Star doubles Starlight gained from Astral Glances",
         currency: "lightDoubler",
-        costBase: 1000,
+        costBase: 10000,
         costMultiplier: 8,
         maxAmount: 1000,
         className: "fbutton",
@@ -41,7 +41,7 @@ const starlightDictionary = {
         title: "Luminous Moon",
         description: "Each Luminous Moon multiplies Starlight gain by the number of Destiny Stars",
         currency: "lightRaiser",
-        costBase: 10000,
+        costBase: 1000000,
         costMultiplier: 1000,
         maxAmount: 1000,
         className: "fbutton",
@@ -61,6 +61,12 @@ export default function DestinyWelcomeTab({state, popup, updateState}) {
 
     // const passTime = (time)=>{
     //     updateState({name:"passTime", time:time*1000})
+    // }
+
+    // const buyLight = (currency,cost)=>{
+    //     if (state.starLight < cost)
+    //         return
+    //     updateState({name:"buyLightUpgrade", currency:currency, cost:cost})
     // }
 
     return (
@@ -87,7 +93,7 @@ export default function DestinyWelcomeTab({state, popup, updateState}) {
                     {/* {getStarLightRate(state) < 20 && <><button onClick={()=>updateState({name:"buyLightUpgrade", currency:"starLight", cost:0})}>Gaze at the night sky</button><br/><br/></>} */}
                     <h2>Star Constellations</h2>
                     {state.constellationCount < 12 ? <>Fill the entire night sky with Starlight to complete Star Constellations.<br/></> : <>All Star Constellations are complete. Congratulations!<br/></>}
-                    Each Constellation halves the prices of Starlight Upgrades and increases the Starlight cap.<br/>
+                    Each Constellation halves the prices of Starlight Upgrades and increases the Starlight cap tenfold.<br/>
                     {constellationList.map((id)=><DestinyConstellationButton key={id} popup={popup} constellation={starConstellations[id]} state={state} updateState={updateState}/>)}<br/><br/>
                 </>}
             </>}
