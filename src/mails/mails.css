@@ -1,0 +1,11 @@
+details {
+user-select: none;
+}
+
+summary {
+cursor: pointer;
+}
+
+summary::-webkit-details-marker {
+display: none;
+}

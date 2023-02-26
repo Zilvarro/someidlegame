@@ -4,7 +4,7 @@ import {formatNumber} from '../utilities'
 const researchDictonary = {
     "x": {
         id: "x",
-        durationStart: differentialTargets[0] * 10,
+        durationStart: differentialTargets[0] * 5,
         minimumDuration: 1000,
         durationBase: 1.05,
         rewardBase: 1.01,
@@ -19,7 +19,7 @@ const researchDictonary = {
     },
     "x'": {
         id: "x'",
-        durationStart: differentialTargets[1] * 10,
+        durationStart: differentialTargets[1] * 5,
         minimumDuration: 1000,
         durationBase: 1.05,
         rewardBase: 1.01,
@@ -34,7 +34,7 @@ const researchDictonary = {
     },
     "x''": {
         id: "x''",
-        durationStart: differentialTargets[2] * 10,
+        durationStart: differentialTargets[2] * 5,
         minimumDuration: 1000,
         durationBase: 1.05,
         rewardBase: 1.01,
@@ -49,7 +49,7 @@ const researchDictonary = {
     },
     "x'''": {
         id: "x'''",
-        durationStart: alphaTarget * 10,
+        durationStart: alphaTarget * 5,
         minimumDuration: 1000,
         durationBase: 1.05,
         rewardBase: 1.01,

@@ -7,7 +7,7 @@ import {calcStoneResultForX} from './alpha/AlphaStonesTab'
 import {startingStones, stoneTable, stoneList} from './alpha/AlphaStoneDictionary'
 import * as progresscalculation from './progresscalculation'
 
-export const version = "0.35"
+export const version = "0.36"
 export const newSave = {
     version: version,
     progressionLayer: 0,

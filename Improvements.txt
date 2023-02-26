@@ -5,7 +5,6 @@ Numbers should be formatted correctly
 Format Offline Progress Popup
 Reclicking Main Tab cycles through sub-tabs
 
-
 ~~~~~~~~~~FORMULAS~~~~~~~~~~
 
 Absolute x in offline progress popup, if less than x2 and higher than 0
@@ -21,12 +20,14 @@ Basic Formulas should work while in Negative Space
 Highest x Tier messed up in Shop :-/
 Discover the World Formula an bessere Stelle
 Move Resetter Toggles to top of this page
+Wrong Formulas appear in Stage 1 Shop
 
 ~~~~~~~~~~~ALPHA~~~~~~~~~~~
 
 Alpha in offline progress popup
 Back button to quit endings early
 Make Master of Idle Alpha "gain" clearer
+Master of Idle tokens updated outside of Challenge (Fully Idle Run)
 Starting Stones show calculation
 Notification for new highscores
 World Ending First Label not shown
@@ -47,16 +48,15 @@ Mailbox
 Event System
 Shop Favorites
 x per Second
-Research Introduction
-Challenge Introduction
-Starting Stones Introduction
-World Formula Lore
-Suspicious Mail
-Maths Coaching
-Market Research
-x-Mail Prime Advertisement
+*Research Introduction
+*Challenge Introduction
+*Starting Stones Introduction
+*World Formula Lore
+*Suspicious Mail
+*Maths Coaching
+*Market Research
+*x-Mail Prime Advertisement
 Chapter Completion Stats
-
 
 ~~~~~~~~~~OPTIONS~~~~~~~~~~
 

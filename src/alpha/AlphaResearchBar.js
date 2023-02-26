@@ -27,19 +27,19 @@ export default function AlphaResearchBar({state, research, updateState}) {
     }
 
     if (!researchLevel && !research.checkUnlock(state))
-      return <div style={{position: "relative", color:"#000000", backgroundColor:"#ffffff", border:"2px solid", height:"20px",width:"80%", maxWidth:"320px"}}>
+      return <div style={{position: "relative", color:"#000000", backgroundColor:"#ffffff", border:"2px solid", height:"25px",width:"80%", maxWidth:"320px"}}>
         <div style={{userSelect:"none",whiteSpace:"nowrap",position:"absolute", left:"50%", transform:"translateX(-50%)"}}><b>{research.lockText}</b>
       </div></div>
     else if (!researchLevel) 
-    return <div onClick={clickResearchBar} style={{position: "relative", color:"#000000", backgroundColor:"#ffffff", border:"2px solid", height:"20px",width:"80%", maxWidth:"320px"}}>
+    return <div onClick={clickResearchBar} style={{position: "relative", color:"#000000", backgroundColor:"#ffffff", border:"2px solid", height:"25px",width:"80%", maxWidth:"320px"}}>
       <div style={{userSelect:"none",whiteSpace:"nowrap",position:"absolute", left:"50%", transform:"translateX(-50%)"}}><b>CLICK TO UNLOCK</b>
     </div></div>
 
     if (researchLevel >= 2500) {
       return (
         <>
-        <div style={{position: "relative", color:"#000000", backgroundColor:"#ff6666", border:"2px solid", height:"20px",width:"80%", maxWidth:"320px"}}>
-          <div style={{backgroundColor:"#ff6666", border:"0px", height:"20px", width:"100%"}}>
+        <div style={{position: "relative", color:"#000000", backgroundColor:"#ff6666", border:"2px solid", height:"25px",width:"80%", maxWidth:"320px"}}>
+          <div style={{backgroundColor:"#ff6666", border:"0px", height:"25px", width:"100%"}}>
             <div style={{userSelect:"none",whiteSpace:"nowrap",position:"absolute", left:"50%", transform:"translateX(-50%)"}}><b>MAXXED</b></div>
           </div>
         </div>

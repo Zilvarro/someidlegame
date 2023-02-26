@@ -9,7 +9,7 @@ import OptionScreen from './OptionScreen'
 import AchievementScreen from './AchievementScreen'
 import AlphaScreen from './alpha/AlphaScreen'
 import DestinyScreen from './destiny/DestinyScreen'
-import LetterScreen from './letters/LetterScreen'
+import MailScreen from './mails/MailScreen'
 import MainEndingTab from './endings/EndingBarScreen'
 import AutoSave from './AutoSave'
 import {PopupDialog, makeShowPopup} from './PopupDialog'
@@ -82,7 +82,7 @@ function App() {
       <AlphaScreen tabKey="AlphaScreen" popup={popup} state={state} updateState={updateState} setTotalClicks={setTotalClicks}/>
       <DestinyScreen tabKey="DestinyScreen" popup={popup} state={state} updateState={updateState} setTotalClicks={setTotalClicks}/>
       <AchievementScreen tabKey="AchievementScreen" state={state}/>
-      <LetterScreen tabKey="LetterScreen" state={state}/>
+      <MailScreen tabKey="MailScreen" state={state}/>
       <OptionScreen tabKey="OptionScreen" popup={popup} state={state} updateState={updateState} setTotalClicks={setTotalClicks}/>
     </TabContent>
     <p>&nbsp;</p>
@@ -97,7 +97,7 @@ function App() {
     </span>
     <span style={{display:"inline-block"}}>
       <button style={{margin:"5px"}} onClick={()=>selectTab("AchievementScreen")}>Milestones</button>
-      {/* <button style={{margin:"5px"}} onClick={()=>selectTab("LetterScreen")}>Mails</button> */}
+      <button style={{margin:"5px"}} onClick={()=>selectTab("MailScreen")}>Mails</button>
       <button style={{margin:"5px"}} onClick={()=>selectTab("OptionScreen")}>Options</button>
     </span>
     </footer>
