@@ -32,7 +32,7 @@ export default function AlphaResearchBar({state, research, updateState}) {
       </div></div>
     else if (!researchLevel) 
     return <div onClick={clickResearchBar} style={{position: "relative", color:"#000000", backgroundColor:"#ffffff", border:"2px solid", height:"25px",width:"80%", maxWidth:"320px"}}>
-      <div style={{userSelect:"none",whiteSpace:"nowrap",position:"absolute", left:"50%", transform:"translateX(-50%)"}}><b>CLICK TO UNLOCK</b>
+      <div style={{userSelect:"none",whiteSpace:"nowrap",lineHeight:"25px",position:"absolute", left:"50%", transform:"translateX(-50%)"}}><b>CLICK TO UNLOCK</b>
     </div></div>
 
     if (researchLevel >= 2500) {
@@ -40,7 +40,7 @@ export default function AlphaResearchBar({state, research, updateState}) {
         <>
         <div style={{position: "relative", color:"#000000", backgroundColor:"#ff6666", border:"2px solid", height:"25px",width:"80%", maxWidth:"320px"}}>
           <div style={{backgroundColor:"#ff6666", border:"0px", height:"25px", width:"100%"}}>
-            <div style={{userSelect:"none",whiteSpace:"nowrap",position:"absolute", left:"50%", transform:"translateX(-50%)"}}><b>MAXXED</b></div>
+            <div style={{userSelect:"none",whiteSpace:"nowrap" ,lineHeight:"25px",position:"absolute", left:"50%", transform:"translateX(-50%)"}}><b>MAXXED</b></div>
           </div>
         </div>
         <div>Level: {researchLevel}</div>

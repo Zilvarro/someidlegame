@@ -1,0 +1,24 @@
+~~~~~~~~~~GENERAL~~~~~~~~~~
+
+~~~~~~~~~~FORMULAS~~~~~~~~~~
+
+Resetters should work properly while on other tabs
+Wrong Formulas appear in Stage 1 Shop
+Equip stays after Alpha Reset (after Ending?)
+
+~~~~~~~~~~~ALPHA~~~~~~~~~~~
+
+Master of Idle tokens updated outside of Challenge (Fully Idle Run)
+Starting Stones show calculation
+Better Formula for Research Bulking
+
+~~~~~~~~~~DESTINY~~~~~~~~~~
+
+Alpha Subtabs should be locked again after Destiny Reset
+
+~~~~~~~~~~~MAILS~~~~~~~~~~~
+
+Mailbox
+Event System
+
+~~~~~~~~~~OPTIONS~~~~~~~~~~
