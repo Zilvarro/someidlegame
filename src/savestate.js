@@ -5,6 +5,7 @@ import {shopFormulas} from './formulas/FormulaScreen'
 import {isLockedByChallenge} from './formulas/FormulaButton'
 import {calcStoneResultForX} from './alpha/AlphaStonesTab'
 import {startingStones, stoneTable, stoneList} from './alpha/AlphaStoneDictionary'
+import * as eventsystem from './mails/MailEventSystem'
 import * as progresscalculation from './progresscalculation'
 
 export const version = "0.36"
@@ -83,6 +84,10 @@ export const newSave = {
     allTimeEndings: {},
     badEndingCount: 0,
     passedTime: 0, //For Debugging
+    mailsForCheck: ["Warning"],
+    mailsUnread: {},
+    mailsReceived: {},
+    mailsCompleted: {},
     settings: {
         valueReduction: "CONFIRM",
         offlineProgress: "ON",
@@ -538,6 +543,11 @@ export const saveReducer = (state, action)=>{
             }
         });
 
+        //Check for new Mails
+        if (eventsystem.checkNewMails(state)) {
+            notify.warning("New Mail Received")
+        }
+
         //Kick out formulas that do not exist anymore (due to update etc)
         if (state.justLaunched) {
             state.myFormulas = state.myFormulas.filter(formulaName => formulaList[formulaName]);
@@ -868,6 +878,12 @@ export const saveReducer = (state, action)=>{
     case "passTime":
         state.passedTime += action.time
         progresscalculation.generateStarLight(state,action.time)
+        break;
+    case "markAsRead":
+        eventsystem.markAsRead(state, action.mailid)
+        break;
+    case "completeMail":
+        eventsystem.completeMail(state, action.mailid, action.reply)
         break;
     default:
         console.error("Action " + action.name + " not found.")
