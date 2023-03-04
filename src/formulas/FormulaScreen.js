@@ -194,7 +194,7 @@ export default function FormulaScreen({state, updateState, setTotalClicks, popup
             <p></p>
             {state.progressionLayer === 0 && (state.xValue[0] >= alphaTarget ?
                 <button onClick={performAlphaReset} style={{backgroundColor:"#99FF99", fontWeight:"bold", border:"2px solid", height:"25px", width:"280px"}}>
-                  SEEK THE BEGINNING
+                  JOIN THE ACADEMY
                 </button>
             : 
               <div style={{color:"#000000", backgroundColor:"#ffffff", border:"2px solid", height:"25px",width:"280px"}}>

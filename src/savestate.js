@@ -8,7 +8,8 @@ import {startingStones, stoneTable, stoneList} from './alpha/AlphaStoneDictionar
 import * as eventsystem from './mails/MailEventSystem'
 import * as progresscalculation from './progresscalculation'
 
-export const version = "0.36"
+const version = "0.37"
+
 export const newSave = {
     version: version,
     progressionLayer: 0,
@@ -84,7 +85,9 @@ export const newSave = {
     allTimeEndings: {},
     badEndingCount: 0,
     passedTime: 0, //For Debugging
-    mailsForCheck: ["Warning"],
+    mailsForCheck: ["Warning", "Favorites"],
+    mailsPending: [],
+    mailsList: [],
     mailsUnread: {},
     mailsReceived: {},
     mailsCompleted: {},
@@ -265,6 +268,7 @@ const giveAlphaRewards = (state)=>{
     if (state.progressionLayer <= 0) {
         state.alpha = 1
         state.progressionLayer = 1
+        state.mailsForCheck.push("Welcome")
         notify.success("ALPHA", "New Layer Unlocked!")
         return state
     }
@@ -543,8 +547,9 @@ export const saveReducer = (state, action)=>{
             }
         });
 
-        //Check for new Mails
-        if (eventsystem.checkNewMails(state)) {
+        //Check and receive new Mails
+        eventsystem.checkNewMails(state)
+        if (eventsystem.updatePendingMails(state)) {
             notify.warning("New Mail Received")
         }
 
@@ -702,8 +707,8 @@ export const saveReducer = (state, action)=>{
         }
         break;
     case "cheat":
-        state.alpha = 0
-        state.passiveAlphaInterval = state.bestAlphaTime
+        state.mailsForCheck.push("Warning")
+        state.mailsForCheck.push("Welcome")
         break;
     case "chapterJump":
         switch (action.password) {

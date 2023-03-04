@@ -7,8 +7,9 @@ export const mailDictionary = {
         content: <>You are searching for it as well, aren't you? Please, stop before it is too late! The pursuit will rob you off your sleep, even once you know it is futile. For me it is too late to turn back, to give up. But I believe you can still be saved.</>,
         responses: [<>What are you talking about?</>, <>Who are you?</>],
         sender: "Y",
-        check: (state)=>(true),
-        afterComplete: [["What"],["Who"]],
+        check: (state)=>(state.xValue[0] > 200e6 && state.highestXTier >= 1),
+        delay: 20,
+        afterComplete: [["What"],["Who"],["Prince"]],
     },
     "What":{
         id: "What",
@@ -16,40 +17,63 @@ export const mailDictionary = {
         content: <>I noticed how obsessed you were lately with researching formulas and large numbers, so I was sure you must have heard about it. About the mythical formula that is said to transcend maths itself. I've spent years following traces, not even sure why it is important or what my ultimate goal is. My curiousity led me deeper and deeper into the rabbit hole, but it was all in vain. Save yourself the trouble and stop digging deeper.</>,
         responses: [<>What did you find out so far?</>, <>Yeah, I'd rather not get involved in this.</>],
         sender: "Y",
-        check: (state)=>(true),
+        check: (state)=>(state.xValue[0] > 520e6 && state.highestXTier >= 1),
+        delay: 500,
         afterComplete: [["Formula"],["Still"]],
     },
     "Who":{
         id: "Who",
         title: "Re: Who are you?",
-        content: <>You may call me "Y". A few years ago, I first heard the rumors about <i>that</i> formula from a work colleague, and ever since I devoted my life to finding it. I remember that, back when I started, I was just like you, always on the look for more and more powerful formulas. But it's a slippery slope! For your sanity, I hope you can resist. But at the same time, I am wondering how far you could get if, just like me, you put all of your heart, and also your sanity, into this...</>,
+        content: <>You may call me "Y", my real name is a secret. A few years ago, I first heard the rumors about <i>that</i> formula from a work colleague, and ever since I devoted my life to finding it. I remember that, back when I started, I was just like you, always on the look for more and more powerful formulas. But it's a slippery slope! For your sanity, I hope you can resist. But at the same time, I am wondering how far you could get if, just like me, you put all of your heart, and also your sanity, into this...</>,
         responses: [<>What did all your research amount to?</>, <>I am nothing like you, you are creeping me out!</>],
         sender: "Y",
-        check: (state)=>(true),
-        afterComplete: [["Formula"],["Still"]],
+        check: (state)=>(state.xValue[0] > 520e6 && state.highestXTier >= 1),
+        delay: 500,
+        afterComplete: [["Amount"],["Still"]],
+    },
+    "Amount":{
+        id: "Amount",
+        title: "My Research",
+        content: <>Haha, I knew you would be curious about it. I will tell you more about the findings of my research when the time is right.</>,
+        sender: "Y",
+        check: (state)=>(state.xValue[0] > 5e9 && state.highestXTier >=2),
+        delay: 100,
+        afterRead: ["Formula", "Prime"],
     },
     "Still":{
         id: "Still",
         title: "Still here?",
         content: <>I see you are still working on those formulas, despite my warnings. Maybe I'll share some of my most recent findings with you...</>,
         sender: "Y",
-        check: (state)=>(true),
-        afterRead: ["Formula"],
+        check: (state)=>(state.xValue[0] > 5e9 && state.highestXTier >=2),
+        delay: 100,
+        afterRead: ["Formula", "Prime"],
     },
     "Formula":{
         id: "Formula",
-        title: "What I know",
-        content: <>It is said there is a formula so powerful, that it can be used to alter the laws of reality. Some have dubbed it the "Origin Formula", others the "God Formula" but the name that resonates most with me is "World Formula". It seems that the World Formula is not something tangible: It's neither an object you can find, nor a formula you can just write down. Much rather, it appears to be a state of mind, some kind of enlightenment. A stream of conciousness that lets you unleash your full potential and ultimately allows you to go way beyond!</>,
+        title: "My Findings",
+        content: <>It is said there is a formula so powerful, that it can be used to alter the laws of reality. Some have dubbed it the "Origin Formula", others call it the "God Formula" but the name that resonates most with me is "World Formula". It seems that the World Formula is not something tangible: It's neither an object you can find, nor a formula you can just write down. Much rather, it appears to be a state of mind, some kind of enlightenment. A stream of conciousness that lets you unleash your full potential and ultimately allows you to go way beyond!</>,
         sender: "Y",
-        check: (state)=>(true),
+        check: (state)=>(state.xValue[0] > 234e21 && state.highestXTier >=3),
+        delay: 30,
+        afterRead: ["Joined"],
+    },
+    "Joined":{
+        id: "Joined",
+        title: "About the Academy",
+        content: <>So you've joined the Academy to aid your goals? They can be very helpful and you will need all help you can get. But be careful, you must not let them know you are looking for the world formula. We don't want the Academy to steal the fruits of our endeavors.</>,
+        sender: "Y",
+        check: (state)=>(state.xValue[0] > 300e6 && state.highestXTier >=3),
+        delay: 30,
         afterRead: ["How"],
     },
     "How":{
         id: "How",
         title: "But how???",
-        content: <>You may be wondering how to achieve such a state, how to <i>discover</i> the World Formula for yourself. One must break out of the prison imposed by ones formulas. Find unlimited growth. Yearn for <b>Infinity</b>. Yet one must not just invent new formulas, instead one must <b>exploit the core of mathematics</b> to break free of the bounds which constrain ones conciousness.</>,
+        content: <>Hearing about the world formula, you may be wondering how to achieve such a state of mind, how to <i>discover</i> the World Formula for yourself. One must break out of the prison imposed by ones formulas. Find unlimited growth. Yearn for <b>Infinity</b>. Yet one must not just invent new formulas, instead one must <b>exploit the core of mathematics</b> to break free of the bounds which constrain ones conciousness.</>,
         sender: "Y",
-        check: (state)=>(true),
+        check: (state)=>(state.alpha >= 42),
+        delay: 500,
         afterRead: ["Dangerous"],
     },
     "Dangerous":{
@@ -57,7 +81,8 @@ export const mailDictionary = {
         title: "Be careful!",
         content: <>The World Formula can be very dangerous in the wrong hands! It can manifest all sorts of energies. If you ever happen to find it, I trust that you will make the right choice.</>,
         sender: "Y",
-        check: (state)=>(true),
+        check: (state)=>(state.alpha >= 400),
+        delay: 80,
         afterRead: ["After"],
     },
     "After":{
@@ -66,7 +91,8 @@ export const mailDictionary = {
         content: <>Hey, I haven't heard back from you in a while. How are you? How is your research going?</>,
         responses: [<>I found the World Formula</>, <>Not much going on lately</>],
         sender: "Y",
-        check: (state)=>(true),
+        check: (state)=>(state.startingStoneTurned["WorldFormula"]),
+        delay: 7700,
         afterComplete: [["Found"],["Nothing"]],
     },
     "Found":{
@@ -75,7 +101,7 @@ export const mailDictionary = {
         content: <>Haha, you got me for a moment. You got to be kidding, there is no way you could just find it <i>that quickly</i> while I have put in years with nothing to show. But to be honest, you seem to be in a better place now, sorry for bothering you. Maybe it is finally the right time for me to give up and move on as well.</>,
         sender: "Y",
         check: (state)=>(true),
-        afterRead: ["Homework"],
+        delay: 4600,
     },
     "Nothing":{
         id: "Nothing",
@@ -83,7 +109,7 @@ export const mailDictionary = {
         content: <>Yeah I know that feeling. Sometimes it is best to just put your mind to something different. I'm also feeling my passion for the World Formula fading away slowly. I am happy that we could be a part of each other's journey!</>,
         sender: "Y",
         check: (state)=>(true),
-        afterRead: ["Homework"],
+        delay: 4600,
     },
 
     
@@ -94,7 +120,8 @@ export const mailDictionary = {
         content: <>Hey, you are good with numbers aren't you? Can you help my sons with his maths homework?</>,
         responses: [<>Sure, maybe I can learn a thing too!</>, <>Sorry I have more important things to do.</>],
         sender: "Karen",
-        check: (state)=>(true),
+        check: (state)=>(state.alpha > 1),
+        delay: 3000,
         afterComplete: [["Learn"],["Important"]],
     },
     "Learn":{
@@ -103,7 +130,8 @@ export const mailDictionary = {
         content: <>Exactly, the teacher learns more than the student! That's why you are going to pay me some Alpha Tokens for the privilege of helping my boys!</>,
         responses: [<>Deal!</>, <>Wait, what?</>],
         sender: "Karen",
-        check: (state)=>(true),
+        check: (state)=>(state.alpha > 3),
+        delay: 3000,
         afterComplete: [["Klausi"],["Klausi"]],
     },
     "Important":{
@@ -112,7 +140,8 @@ export const mailDictionary = {
         content: <>Nothing is more important than my little boys! But well I'll let you farm some of those important Alpha Tokens for me while you are helping them.</>,
         responses: [<>Yes, ma'am!</>, <>Can I say no?</>],
         sender: "Karen",
-        check: (state)=>(true),
+        check: (state)=>(state.alpha >= 3),
+        delay: 3000,
         afterComplete: [["Klausi"],["Refuse"]],
     },
     "Refuse":{
@@ -121,18 +150,21 @@ export const mailDictionary = {
         content: <>No.</>,
         sender: "Karen",
         check: (state)=>(true),
+        delay: 8,
         afterRead: ["Klausi"],
     },
     "Klausi":{
         id: "Klausi",
         title: "Klausi's Homework",
         content: <>Hi I'm Klausi. My homework is about eights and zeroes or something. Here are the exercises for you: </>,
-        exercises: [{question:<>8 + 0 = ?</>, answers:["0","8", "80", "NaN"], correct: 1},
-        {question:<>8 - 0 = ?</>, answers:["0","8", "80", "NaN"], correct: 1},
-        {question:<>8 * 0 = ?</>, answers:["0","8", "80", "NaN"], correct: 0},
-        {question:<>8 / 0 = ?</>, answers:["0","8", "80", "NaN"], correct: 3},],
+        exercises: [{question:<>8 + 0 = ?</>, answers:["0","8", "80", "Not defined"], correct: 1},
+        {question:<>8 - 0 = ?</>, answers:["0","8", "80", "Not defined"], correct: 1},
+        {question:<>8 * 0 = ?</>, answers:["0","8", "80", "Not defined"], correct: 0},
+        {question:<>8 / 0 = ?</>, answers:["0","8", "80", "Not defined"], correct: 3},],
         sender: "Klausi",
         check: (state)=>(true),
+        delay: 1000,
+        alphacost: 2,
         afterRead: ["Henry"],
     },
     "Henry":{
@@ -145,6 +177,8 @@ export const mailDictionary = {
         {question:<b>2 - (-5)<sup>2</sup> = ?</b>, answers:["3","7", "-3", "-7"], correct: 1},],
         sender: "Henry",
         check: (state)=>(true),
+        delay: 2000,
+        alphacost: 20,
         afterRead: ["Powerful"],
     },
     "Powerful":{
@@ -153,42 +187,49 @@ export const mailDictionary = {
         content: <>Hi this is Henry again, thanks to you I learned that squaring a number is very powerful, the square increases really fast when the number increases. From now on I will use the square whenever I want to make big numbers!!! </>,
         sender: "Henry",
         check: (state)=>(true),
+        delay: 1300,
         afterRead: ["Tommy"],
     },
     "Tommy":{
         id: "Tommy",
         title: "Tommy's Homework",
         content: <>Hi I'm Tommy, Henry's older brother. My homework is about logarithms or something. Here are the exercises for you: </>,
-        exercises: [{question:<>log<sub>2</sub>(4) = ?</>, answers:["2","-2", "1", "NaN"], correct: 0},
-                    {question:<>log<sub>2</sub>(-4) = ?</>, answers:["2","-2", "1", "NaN"], correct: 3},
-                    {question:<b>log<sub>2</sub>(1/4) = ?</b>, answers:["2","-2", "1", "NaN"], correct: 1},
-                    {question:<>log<sub>2</sub>(0) = ?</>, answers:["2","-2", "1", "NaN"], correct: 3},],
+        exercises: [{question:<>log<sub>2</sub>(4) = ?</>, answers:["2","-2", "1", "Not defined"], correct: 0},
+                    {question:<>log<sub>2</sub>(-4) = ?</>, answers:["2","-2", "1", "Not defined"], correct: 3},
+                    {question:<b>log<sub>2</sub>(1/4) = ?</b>, answers:["2","-2", "1", "Not defined"], correct: 1},
+                    {question:<>log<sub>2</sub>(0) = ?</>, answers:["2","-2", "1", "Not defined"], correct: 3},],
         sender: "Tommy",
         check: (state)=>(true),
+        delay: 3000,
+        alphacost: 60000,
         afterRead: ["Jimmy"],
     },
     "Jimmy":{
         id: "Jimmy",
         title: "Jimmy's Homework",
-        content: <>Hi I'm Jimmy, Tommy's older stepbrother. My homework is about logarithms or something. Here are the exercises for you: </>,
-        exercises: [{question:<>log<sub>2</sub>(4) = ?</>, answers:["2","-2", "1", "NaN"], correct: 0},
-                    {question:<>log<sub>2</sub>(-4) = ?</>, answers:["2","-2", "1", "NaN"], correct: 3},
-                    {question:<b>log<sub>2</sub>(1/4) = ?</b>, answers:["2","-2", "1", "NaN"], correct: 1},
-                    {question:<>log<sub>2</sub>(0) = ?</>, answers:["2","-2", "1", "NaN"], correct: 3},],
+        content: <>Hi I'm Jimmy, Tommy's older stepbrother. My homework is about square roots and cubic roots or something. Here are the exercises for you: </>,
+        exercises: [{question:<>sqrt(9) = ?</>, answers:["3","-3", "3i", "Infinity"], correct: 0},
+                    {question:<>sqrt(-9) = ?</>, answers:["3","-3", "3i", "Infinity"], correct: 2},
+                    {question:<>cbrt(-27) = ?</>, answers:["3","-3", "3i", "Infinity"], correct: 3},
+                    {question:<b>sqrt(Infinity) = ?</b>, answers:["3","-3", "3i", "Infinity"], correct: 3},],
         sender: "Jimmy",
         check: (state)=>(true),
+        delay: 4000,
+        alphacost: 3e6,
         afterRead: ["Gary"],
     },
     "Gary":{
         id: "Gary",
         title: "Gary's Homework",
-        content: <>Hi I'm Gary, the oldest brother. My homework is about square roots and infinities or something. Here are the exercises for you: </>,
-        exercises: [{question:<>sqrt(-9) = ?</>, answers:["3","-3", "3i", "Infinity"], correct: 2},
-                    {question:<b>sqrt(Infinity) = ?</b>, answers:["3","-3", "3i", "Infinity"], correct: 3},
-                    {question:<b>log<sub>2</sub>(Infinity) = ?</b>, answers:["0","Infinity", "-Infinity", "NaN"], correct: 1},
-                    {question:<>Infinity - Infinity = ?</>, answers:["0","Infinity", "-Infinity", "NaN"], correct: 3},],
+        content: <>Hi I'm Gary, the oldest brother. My homework is about infinities or something. Here are the exercises for you: </>,
+        exercises: [{question:<>5 - Infinity = ?</>, answers:["0","Infinity", "-Infinity", "No limit"], correct: 2},
+                    {question:<b>log<sub>2</sub>(Infinity) = ?</b>, answers:["0","Infinity", "-Infinity", "No limit"], correct: 1},
+                    {question:<>Infinity + Infinity = ?</>, answers:["0","Infinity", "-Infinity", "No limit"], correct: 1},
+                    {question:<>Infinity - Infinity = ?</>, answers:["0","Infinity", "-Infinity", "No limit"], correct: 3},],
         sender: "Gary",
         check: (state)=>(true),
+        delay: 5000,
+        alphacost: 1e8,
         afterRead: ["Thx"],
     },
     "Thx":{
@@ -197,6 +238,7 @@ export const mailDictionary = {
         content: <>Thx for the help. But my sons still failed class because you just gave the answers instead of teaching them properly. So <i>you</i> were the only one who profited from this.</>,
         responses: [<>So how exactly did I profit?</>, <>I did not profit, I was just trying to help</>],
         sender: "Karen",
+        delay: 6000,
         check: (state)=>(true),
         afterComplete: [["Profit"],["Profit"]],
     },
@@ -206,6 +248,7 @@ export const mailDictionary = {
         content: <>Well now you know that <b>logarithms of fractions can produce negative results</b>, those negative numbers can become <b>positive by squaring</b> them, <b>subtracting negative numbers</b> makes things bigger, and that square roots and logarithms <b>go towards Infinity</b> if you put in bigger and bigger numbers. Seems like a lot to me.</>,
         responses: [<>I knew that before!</>, <>Thx, I guess?!?</>, <>Oooh, that might actually help me.</>],
         sender: "Karen",
+        delay: 7000,
         check: (state)=>(true),
         afterComplete: [["Children"],["Children"],["Children"]],
     },
@@ -214,8 +257,8 @@ export const mailDictionary = {
         title: "Get out of my mails",
         content: <>Yeah, good for you. Now stop abusing me and my children for your stupid research. Stop wasting my time and instead <b>find that powerful formula</b> or whatever you were looking for!</>,
         sender: "Karen",
+        delay: 8000,
         check: (state)=>(true),
-        afterRead: ["Welcome"],
     },
 
     //Storyline: Academy
@@ -224,7 +267,8 @@ export const mailDictionary = {
         title: "Welcome to the Academy",
         content: <>Due to your outstanding research in the field of x differentials and formulas, the Academy decided to support you on your journey as one of our members. You should already have received your very first Alpha Token. Your Alpha Tokens can be traded with us for various upgrades. You can obtain additional Alpha Tokens by getting the three differentials and then performing an Alpha Reset. If you manage to Alpha Reset with a very high x, we will award you with multiple Alpha Tokens at once!</>,
         sender: "Academy",
-        check: (state)=>(true),
+        check: (state)=>(state.progressionLayer >= 1),
+        delay: 7,
         afterRead: ["Research","Stones"],
     },
     "Research":{
@@ -232,15 +276,17 @@ export const mailDictionary = {
         title: "Research",
         content: <>As a part of our Academy, you may now use our institutions for Research. You find Research on the Alpha tab. For Research it is important to not do your x-Resets immediately, but instead aim for a better highscore. The speed of your research is directly proportional to your highscores. If a highscore gets very much ahead of a Research level, you can even claim multiple levels at once! Research may not seem to help much when you first start, but its benefits grow exponentially, and they will soon speed up your daily work greatly.</>,
         sender: "Academy",
-        check: (state)=>(true),
-        afterRead: ["Challenges","Maxxed"],
+        check: (state)=>(state.alphaUpgrades.SLOT || state.alphaUpgrades.AAPP || state.alphaUpgrades.AUNL),
+        delay: 48,
+        afterRead: ["Challenges","Maxxed","Homework","Survey"],
     },
     "Challenges":{
         id: "Challenges",
         title: "Academy Projects",
         content: <>We are very happy with the results of your Research so far. As such we would like to invite you to participate in more complex projects. Sometimes true wisdom can only be achieved by restricting ones options, forcing one to assume new perspectives. On the Alpha tab you can find our projects under Challenges. Every Challenge and Challenge segment you clear will allow us to make your formulas more efficient. And once you have proven yourself, there will be special rewards if you can help with the toughest Challenges our Academy faces right now.</>,
         sender: "Academy",
-        check: (state)=>(true),
+        check: (state)=>(state.researchLevel["x"] >= 100 && state.researchLevel["x'"] >= 100 && state.researchLevel["x''"] >= 100 && state.researchLevel["x'''"] >= 100),
+        delay: 128,
         afterRead: ["Idle","God"],
     },
     "Stones":{
@@ -248,7 +294,8 @@ export const mailDictionary = {
         title: "Stones",
         content: <>I heard you found a rare stone? I do not know what it is and what to do with it. But you can find your stones on the Alpha tab. Feel free to experiment with them, though I am not sure if they will turn out to be useful for anything.</>,
         sender: "Academy",
-        check: (state)=>(true),
+        check: (state)=>(Object.keys(state.startingStoneTurned).length > 0),
+        delay: 380,
         afterRead: ["MaxStones"],
     },
     "Maxxed":{
@@ -256,21 +303,24 @@ export const mailDictionary = {
         title: "Maxxed Research",
         content: <>The Academy impressed with your Research. For every field of research that you fully complete, we will double your Formula Efficiency. Keep up the good work!</>,
         sender: "Academy",
-        check: (state)=>(true),
+        check: (state)=>(state.researchLevel["x"] >= 2500 || state.researchLevel["x'"] >= 2500 || state.researchLevel["x''"] >= 2500 || state.researchLevel["x'''"] >= 2500),
+        delay: 26,
     },
     "Idle":{
         id: "Idle",
         title: "Master of Idle",
         content: <>Congratulations on finishing the Master of Idle Challenge. We improved your Passive Alpha gain, from now on you will get Alpha based on your best fully idle Alpha run. You can check it on the Alpha upgrades tab.</>,
         sender: "Academy",
-        check: (state)=>(true),
+        check: (state)=>(state.clearedChallenges["FULLYIDLE"]),
+        delay: 90,
     },
     "God":{
         id: "God",
         title: "Formula God",
         content: <>Thank you for attempting the Formula God Challenge. That one is truly giving us nightmares. However, we are able to support you by boosting your Research speed proportional to your best scores in the Formula God Challenge. You can check this special boost on the Research tab. Keep trying and improving!</>,
         sender: "Academy",
-        check: (state)=>(true),
+        check: (state)=>(state.formulaGodScores[0] > 1),
+        delay: 45
     },
     "MaxStones":{
         id: "MaxStones",
@@ -278,7 +328,8 @@ export const mailDictionary = {
         content: <>Congratulations! You got all Starting Stones and managed to max out their bonus to your starting x. As to what the point of that is, we are not sure, but we will sure try to find out. Or maybe you will figure it out before we do, let's see.</>,
         sender: "Academy",
         responses: [<>I could use some help.</>, <>I don't need your help.</>],
-        check: (state)=>(true),
+        check: (state)=>(state.startingStoneX >= 3e9),
+        delay: 380,
         afterComplete: [["Hint"], []],
     },
     "Hint":{
@@ -287,6 +338,7 @@ export const mailDictionary = {
         content: <>We'll do our best. It may take some time though.</>,
         sender: "Academy",
         check: (state)=>(true),
+        delay: 1300,
         afterRead: ["TrueHint"],
     },
     "TrueHint":{
@@ -294,8 +346,8 @@ export const mailDictionary = {
         title: "We have an idea for those Stones.",
         content: <>Sorry for taking so long, we went down the wrong path for a while: Your starting x now allows you to get the three differentials without using any formulas. But that does not really seem to help you do anything new. Then, upon closer inspection we noticed that with your Starting X it should now be possible to use x''' &#10141; x''' + log<sub>2</sub>(x)<sup>2</sup> as your first formula. Curiously, if one was to apply that formula while x=Infinity, then one could also reach x'''=Infinity.</>,
         check: (state)=>(true),
+        delay: 40000,
         sender: "Academy",
-        afterRead: ["Prince"],
     },
 
     //Sidestory: Prince
@@ -305,7 +357,8 @@ export const mailDictionary = {
         content: <>Hello, I am rich prince. Inheritance is good! I can make x very big. But need money for that. Give me. You be make happy then!</>,
         responses: [<>How can I give you?</>, <>No</>],
         sender: "Prince",
-        check: (state)=>(true),
+        check: (state)=>(state.xValue[0] > 7e12 && state.highestXTier >= 2),
+        delay: 222,
         afterComplete: [["Transfer"], ["Failed"]],
     },
     "Transfer":{ //Transfer minigame
@@ -315,6 +368,7 @@ export const mailDictionary = {
         responses: [<>Transfer a dollar</>, <>No way, this is a scam</>],
         sender: "Prince",
         check: (state)=>(true),
+        delay: 1700,
         afterComplete: [["Sent"], ["Failed"]],
     },
     "Failed":{
@@ -324,6 +378,7 @@ export const mailDictionary = {
         responses: [<>Open Attachment: familypicture.exe</>],
         sender: "Prince",
         check: (state)=>(true),
+        delay: 10000,
         afterComplete: [["Virus"]],
     },
     "Virus":{
@@ -332,6 +387,7 @@ export const mailDictionary = {
         content: <>Haha! You open my Virus! Now no x production for next 20 minutes! Now you got rekt!</>,
         sender: "Prince",
         check: (state)=>(true),
+        delay: 5,
     },
     "Sent":{
         id: "Sent",
@@ -340,6 +396,7 @@ export const mailDictionary = {
         responses: [<>Open Attachment: xdoubler.exe</>],
         sender: "Prince",
         check: (state)=>(true),
+        delay: 10000,
         afterComplete: [["Survey"]],
     },
     "Rich":{
@@ -349,16 +406,26 @@ export const mailDictionary = {
         responses: [<>Open Attachment: xtripler.exe</>],
         sender: "Prince",
         check: (state)=>(true),
+        delay: 10000,
         afterComplete: [["Survey"]],
     },
 
-    //Sidestory: Market Research
+    //Sidestory: Just Developer Things
+    "Favorites":{
+        id: "Favorites",
+        title: "Highlight your favorite formulas!",
+        content: <>Hey, there are a lot of formulas in the shop now, and it will be getting even more with the next x-Reset. And many of the lower differential formulas seem pretty useless by now. But no worries, I have a solution: You can now highlight and filter your favorite formulas. Go, try it out!<br/><br/>P.S.: I lied, this quality of life feature is not yet developed.</>,
+        sender: "Dev",
+        check: (state)=>(state.xValue[0] > 200e9 && state.highestXTier >= 2),
+        delay: 60
+    },
     "Survey":{ //Star Survey Minigame
         id: "Survey",
         title: "Survey",
         content: <>Hi, I hope you are enjoying this game! Please take a moment and rate your experience on a scale of 0 to 5 stars.</>,
         sender: "Dev",
         check: (state)=>(true),
+        delay: 80000,
         afterRead: ["Submitted"],
     },
     "Submitted":{
@@ -368,6 +435,7 @@ export const mailDictionary = {
         responses: [<>Yes, please!</>, <>No, thank you!</>],
         sender: "Dev",
         check: (state)=>(true),
+        delay: 20,
         afterComplete: [["Results"],[]],
     },
     "Results":{ //Make result vary by User Input
@@ -376,17 +444,18 @@ export const mailDictionary = {
         content: <>Here are the latest results of the survey: There were a total of 28 submissions, with an average rating of 6.7 out of 5 stars. Thank you for your participation.</>,
         sender: "Dev",
         check: (state)=>(true),
-        afterRead: ["Prime"],
+        delay: 160000,
     },
 
     //Sidestory: x-Mail
-    "Prime":{ //Make result vary by User Input
+    "Prime":{
         id: "Prime",
         title: "x-Mail Prime",
         content: <>Hello! Thank you for using x-Mail as your eMail client. To get the most out of your experience with x-Mail, upgrade now to an x-Mail Prime Membership!</>,
         responses: [<>What's included in the membership?</>, <>Stop annoying me with these stupid ads</>],
         sender: "x-Mail",
-        check: (state)=>(true),
+        check: (state)=>(state.xValue[0] > 10e18 && state.highestXTier >= 3),
+        delay: 420,
         afterComplete: [["Advantages"],["Premium"]],
     },
 
@@ -396,7 +465,8 @@ export const mailDictionary = {
         content: <>Hello again! x-Mail Prime includes unlimited access to: x-Books, our extensive e-Book library; x-Music, the only place where you can find the Idle Formulas Official Soundtrack; x-Games, our quadruple A gaming portal and x-Videos, our streaming service with only the best movies.</>,
         responses: [<>I think I'll pass</>],
         sender: "x-Mail",
-        check: (state)=>(true),
+        check: (state)=>(state.xValue[0] > 200e24 && state.highestXTier >= 3),
+        delay: 10000,
     },
 
     "Premium":{
@@ -405,16 +475,17 @@ export const mailDictionary = {
         content: <>Hello again! If you are annoyed by our ads, you will be happy to hear that you can use x-Mail free of advertisements starting today, by upgrading to our new x-Mail Premium plan.</>,
         responses: [<>Ugh</>],
         sender: "x-Mail",
-        check: (state)=>(true),
+        check: (state)=>(state.xValue[0] > 200e24 && state.highestXTier >= 3),
+        delay: 10000,
     },
 }
 
-const worldformula = ["Warning", "What", "Who", "Still", "Formula", "How", "Dangerous", "After", "Found", "Nothing"]
-const academy = ["Welcome", "Research", "Challenges", "Stones", "Maxxed", "Idle", "God", "MaxStones", "Hint", "TrueHint"]
-const homework = ["Homework", "Learn", "Important", "Refuse", "Klausi", "Henry", "Powerful", "Tommy", "Jimmy", "Gary", "Thx", "Profit", "Children"]
+const worldformula = ["Warning", "What", "Who", "Still", "Formula", "Joined", "How", "Dangerous", "After", "Found", "Nothing"] //Formula Layer + Alpha Layer
+const academy = ["Welcome", "Research", "Challenges", "Stones", "Maxxed", "Idle", "God", "MaxStones", "Hint", "TrueHint"] //Alpha Layer
+const homework = ["Homework", "Learn", "Important", "Refuse", "Klausi", "Henry", "Powerful", "Tommy", "Jimmy", "Gary", "Thx", "Profit", "Children"] //Alpha Layer
 
-const prince = ["Prince", "Transfer", "Failed", "Virus", "Sent", "Rich"]
-const marketresearch = ["Survey", "Submitted", "Results"]
-const xmail = ["Prime", "Advantages", "Premium"]
+const prince = ["Prince", "Transfer", "Failed", "Virus", "Sent", "Rich"] //Formula Layer
+const xmail = ["Prime", "Advantages", "Premium"] //Formula Layer
+const marketresearch = ["Survey", "Submitted", "Results"] //Alpha Layer
 
 export const mailList = Array.prototype.concat.apply([], [worldformula, academy, homework, prince, marketresearch, xmail])

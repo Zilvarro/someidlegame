@@ -5,6 +5,8 @@
 Resetters should work properly while on other tabs
 Wrong Formulas appear in Stage 1 Shop
 Equip stays after Alpha Reset (after Ending?)
+Filling green bar without 3rd differential
+Mobile defaults to Shop Formulas On
 
 ~~~~~~~~~~~ALPHA~~~~~~~~~~~
 
@@ -18,7 +20,6 @@ Alpha Subtabs should be locked again after Destiny Reset
 
 ~~~~~~~~~~~MAILS~~~~~~~~~~~
 
-Mailbox
-Event System
+Mail Minigames (Prince, Survey, Exercises)
 
 ~~~~~~~~~~OPTIONS~~~~~~~~~~

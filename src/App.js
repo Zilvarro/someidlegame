@@ -73,6 +73,8 @@ function App() {
     return <MainEndingTab state={state} updateState={updateState}/>
   }
 
+  const hasNewMail = Object.keys(state.mailsUnread).length > 0
+
   return (<>
     <AutoSave saveState={state}/>
     <PopupDialog popupState={popupState} setPopupState={setPopupState}/>
@@ -97,7 +99,7 @@ function App() {
     </span>
     <span style={{display:"inline-block"}}>
       <button style={{margin:"5px"}} onClick={()=>selectTab("AchievementScreen")}>Milestones</button>
-      <button style={{margin:"5px"}} onClick={()=>selectTab("MailScreen")}>Mails</button>
+      {state.mailsList.length > 0 && <button style={{margin:"5px", fontWeight: hasNewMail ? "700" : undefined, background: hasNewMail ? "#FFAA66" : undefined}} onClick={()=>selectTab("MailScreen")}>Mails</button>}
       <button style={{margin:"5px"}} onClick={()=>selectTab("OptionScreen")}>Options</button>
     </span>
     </footer>

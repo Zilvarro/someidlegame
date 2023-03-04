@@ -264,15 +264,15 @@ const formulaList = {
     "x+50P": {
         formulaName: "x+50P",
         descriptions: {
-            "LETTER": <>x &#10141; x + 50P</>,
-            "SCIENTIFIC": <>x &#10141; x + 5e19</>,
-            "AMBIGUOUS": <>x &#10141; x + 50?</>,
+            "LETTER": <>x &#10141; x + 20P</>,
+            "SCIENTIFIC": <>x &#10141; x + 2e19</>,
+            "AMBIGUOUS": <>x &#10141; x + 20?</>,
         },
         unlockCost: 4e17, //*48
         applyCost: 0, 
         applyNeed: 100e6,
         targetLevel: 0,
-        applyFormula: (eff, x)=>(x[0]+50e18 * eff),
+        applyFormula: (eff, x)=>(x[0]+20e18 * eff),
     },
 
     //Tier 4 Formulas
@@ -319,7 +319,7 @@ const formulaList = {
         targetLevel: 3,
         isStatic: true,
         applyFormula: (eff, x,state)=>(state.xResetCount <= 0 ? {error:"logarithm"} : Math.floor(2 * Math.pow(Math.log2(state.xResetCount),2) * eff)),
-        explanation: "Boosted by number of Basic Resets (since x-Reset). log2 is the base 2 logarithm",
+        explanation: "Boosted by number of Basic Resets (since x-Reset).",
         complex: true,
     },
     "x'+x''+x'''": {
@@ -393,7 +393,6 @@ const formulaList = {
         applyNeed: 0,
         targetLevel: 3,
         applyFormula: (eff, x)=>(x[0] <= 0 ? {error:"logarithm"} : x[3] + Math.pow(Math.log2(x[0]),2) * eff),
-        explanation: "log2 is the base 2 logarithm",
         complex: true,
     },
     "x'''+log2(#F/#E)^13": {
@@ -445,7 +444,6 @@ const formulaList = {
         applyNeed: 0,
         targetLevel: 3,
         applyFormula: (eff, x)=>((300e21 - x[3] / eff)<0 ? {error:"imaginary"} : Math.floor(x[3]*Math.sqrt(300e21 - x[3] / eff) / 500e9)),
-        explanation: "sqrt is the square root.",
         complex: true,
         isStatic: true, //counts as static because too complicated
         offlineDisabled: true,

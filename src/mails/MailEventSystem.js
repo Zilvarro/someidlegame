@@ -1,17 +1,44 @@
+import { getGlobalMultiplier } from '../savestate';
 import { mailDictionary } from './MailDictionary';
 
+//Mail Status:
+//ForCheck: Will be sent out once certain criteria are met
+//Pending: Mail is sent out and will be received after a delay
+//Received: Every mail that has been received
+//Unread: Mail is received but not yet read
+//Completed: Mail is responded by user
+//Status changes are able to set follow up mails into ForCheck status
+
 export const checkNewMails = (state)=>{
-    let gotNewMail = false
     for (let i = state.mailsForCheck.length - 1; i >= 0; i--) {
         const mailid = state.mailsForCheck[i]
         const mail = mailDictionary[mailid]
         if (!mail.check || mail.check(state)) {
+            state.mailsPending.push({mailid:mailid, sentTime:Date.now()})
+            state.mailsForCheck.splice(i, 1)
+            if (mail.afterCheck)
+                state.mailsForCheck = state.mailsForCheck.concat(mail.afterCheck)
+        }
+    }
+}
+
+export const updatePendingMails = (state)=>{
+    let gotNewMail = false
+    for (let i = state.mailsPending.length - 1; i >= 0; i--) {
+        const mailid = state.mailsPending[i].mailid
+        const mail = mailDictionary[mailid]
+        if (!mail.delay || Date.now() - state.mailsPending[i].sentTime > 1000 * mail.delay / getGlobalMultiplier(state)) {
+            if (state.mailsReceived[mailid]) { //Safety Check to prevent duplicate Mails
+                state.mailsPending.splice(i, 1)
+                continue
+            }
             gotNewMail = true
             state.mailsUnread[mailid] = true
             state.mailsReceived[mailid] = true
-            state.mailsForCheck.splice(i, 1)
-            if (mail.afterCheck)
-            state.mailsForCheck = state.mailsForCheck.concat(mail.afterCheck)
+            state.mailsList.unshift(mailid)
+            state.mailsPending.splice(i, 1)
+            if (mail.afterReceive)
+                state.mailsForCheck = state.mailsForCheck.concat(mail.afterReceive)
         }
     }
     return gotNewMail

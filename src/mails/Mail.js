@@ -15,14 +15,19 @@ export default function Mail({state, mail, popup, updateState, mailid}) {
     }
 
     const completeMail = (reply)=>{
-        if (!state.mailsCompleted[mailid])
+        if (state.mailsCompleted[mailid] === undefined)
             updateState({name: "completeMail", mailid: mailid, reply})
     }
 
+    let displayColor = undefined //white
+    if (state.mailsCompleted[mailid] !== undefined || !mail.afterComplete)
+        displayColor = "#666666" //grey
+    if (isUnread) displayColor = "#FFAA66" //orange
+
     return (
-        <details style={{paddingTop: "10px", color: isUnread ? "#FFAA66" : undefined}}>
+        <details style={{paddingTop: "10px", color: displayColor}}>
             <summary onClick={markAsRead}>
-                {mail.title}
+                [{mail.sender}]&nbsp;{mail.title}
             </summary>
             <p style={{paddingLeft: "30px"}}>
                 {mail.content}
