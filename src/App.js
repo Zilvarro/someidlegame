@@ -84,7 +84,7 @@ function App() {
       <AlphaScreen tabKey="AlphaScreen" popup={popup} state={state} updateState={updateState} setTotalClicks={setTotalClicks}/>
       <DestinyScreen tabKey="DestinyScreen" popup={popup} state={state} updateState={updateState} setTotalClicks={setTotalClicks}/>
       <AchievementScreen tabKey="AchievementScreen" state={state}/>
-      <MailScreen tabKey="MailScreen" state={state} updateState={updateState}/>
+      <MailScreen tabKey="MailScreen" popup={popup} state={state} updateState={updateState}/>
       <OptionScreen tabKey="OptionScreen" popup={popup} state={state} updateState={updateState} setTotalClicks={setTotalClicks}/>
     </TabContent>
     <p>&nbsp;</p>

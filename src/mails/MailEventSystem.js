@@ -27,7 +27,7 @@ export const updatePendingMails = (state)=>{
     for (let i = state.mailsPending.length - 1; i >= 0; i--) {
         const mailid = state.mailsPending[i].mailid
         const mail = mailDictionary[mailid]
-        if (!mail.delay || Date.now() - state.mailsPending[i].sentTime > 1000 * mail.delay / getGlobalMultiplier(state)) {
+        if (true || !mail.delay || Date.now() - state.mailsPending[i].sentTime > 1000 * mail.delay / getGlobalMultiplier(state)) {
             if (state.mailsReceived[mailid]) { //Safety Check to prevent duplicate Mails
                 state.mailsPending.splice(i, 1)
                 continue
@@ -39,6 +39,8 @@ export const updatePendingMails = (state)=>{
             state.mailsPending.splice(i, 1)
             if (mail.afterReceive)
                 state.mailsForCheck = state.mailsForCheck.concat(mail.afterReceive)
+            if (mail.getProgress)
+                state.mailsProgress[mailid] = mail.getProgress()
         }
     }
     return gotNewMail
@@ -50,7 +52,19 @@ export const markAsRead = (state, mailid)=>{
         debugger
     if (mail.afterRead)
         state.mailsForCheck = state.mailsForCheck.concat(mail.afterRead)
+    if (mail.afterReadConditional)
+        state.mailsForCheck.concat(mail.afterReadConditional(state))
     delete state.mailsUnread[mailid]
+}
+
+export const progressMail = (state, mailid, path, subpath, value)=>{
+    if (subpath !== undefined)
+        state.mailsProgress[mailid][path][subpath] = value
+    else if (path !== undefined)
+        state.mailsProgress[mailid][path] = value
+    else
+        state.mailsProgress[mailid] = value
+
 }
 
 export const completeMail = (state, mailid, reply)=>{

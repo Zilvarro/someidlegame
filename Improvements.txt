@@ -2,7 +2,6 @@
 
 Buttons should be readable when disabled (black Text)
 Numbers should be formatted correctly
-Format Offline Progress Popup
 Reclicking Main Tab cycles through sub-tabs
 
 ~~~~~~~~~~FORMULAS~~~~~~~~~~
@@ -40,22 +39,10 @@ Better Formula for Research Bulking
 ~~~~~~~~~~DESTINY~~~~~~~~~~
 
 Make buttons holdable
-Alpha Subtabs should be locked again after Destiny Reset
 
 ~~~~~~~~~~~MAILS~~~~~~~~~~~
 
-Mailbox
-Event System
 Shop Favorites
-x per Second
-*Research Introduction
-*Challenge Introduction
-*Starting Stones Introduction
-*World Formula Lore
-*Suspicious Mail
-*Maths Coaching
-*Market Research
-*x-Mail Prime Advertisement
 Chapter Completion Stats
 
 ~~~~~~~~~~OPTIONS~~~~~~~~~~

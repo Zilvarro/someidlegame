@@ -11,15 +11,16 @@ Mobile defaults to Shop Formulas On
 ~~~~~~~~~~~ALPHA~~~~~~~~~~~
 
 Master of Idle tokens updated outside of Challenge (Fully Idle Run)
+Passive Alpha during Challenge
 Starting Stones show calculation
 Better Formula for Research Bulking
 
 ~~~~~~~~~~DESTINY~~~~~~~~~~
 
-Alpha Subtabs should be locked again after Destiny Reset
-
 ~~~~~~~~~~~MAILS~~~~~~~~~~~
 
-Mail Minigames (Prince, Survey, Exercises)
+Prince Transfer
+Survey rating
+Exercises Alpha Unlock Cost
 
 ~~~~~~~~~~OPTIONS~~~~~~~~~~

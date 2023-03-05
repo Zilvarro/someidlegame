@@ -8,7 +8,7 @@ import {startingStones, stoneTable, stoneList} from './alpha/AlphaStoneDictionar
 import * as eventsystem from './mails/MailEventSystem'
 import * as progresscalculation from './progresscalculation'
 
-const version = "0.37"
+const version = "0.38"
 
 export const newSave = {
     version: version,
@@ -85,12 +85,13 @@ export const newSave = {
     allTimeEndings: {},
     badEndingCount: 0,
     passedTime: 0, //For Debugging
-    mailsForCheck: ["Warning", "Favorites"],
+    mailsForCheck: ["Warning"],
     mailsPending: [],
     mailsList: [],
     mailsUnread: {},
     mailsReceived: {},
     mailsCompleted: {},
+    mailsProgress: {},
     settings: {
         valueReduction: "CONFIRM",
         offlineProgress: "ON",
@@ -707,6 +708,13 @@ export const saveReducer = (state, action)=>{
         }
         break;
     case "cheat":
+        state.mailsForCheck = []
+        state.mailsPending = []
+        state.mailsList = []
+        state.mailsProgress = {}
+        state.mailsCompleted = {}
+        state.mailsReceived = {}
+        state.mailUnread = {}
         state.mailsForCheck.push("Warning")
         state.mailsForCheck.push("Welcome")
         break;
@@ -886,6 +894,9 @@ export const saveReducer = (state, action)=>{
         break;
     case "markAsRead":
         eventsystem.markAsRead(state, action.mailid)
+        break;
+    case "progressMail":
+        eventsystem.progressMail(state, action.mailid, action.path, action.subpath, action.value)
         break;
     case "completeMail":
         eventsystem.completeMail(state, action.mailid, action.reply)

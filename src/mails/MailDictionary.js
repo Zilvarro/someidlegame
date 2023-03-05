@@ -1,3 +1,6 @@
+const getHomeworkProgress = ()=>[[false,false,false,false],[false,false,false,false],[false,false,false,false],[false,false,false,false]]
+const homeworkResponses = [<>Flawless! You sent back the correct answers with explanations.</>, <>Well done! You sent back the correct answers.</>,<>You sent back mostly correct answers.</>,<>Terrible! You sent back random answers that are most likely wrong.</>]
+
 export const mailDictionary = {
 
     //Storyline World Formula
@@ -130,7 +133,7 @@ export const mailDictionary = {
         content: <>Exactly, the teacher learns more than the student! That's why you are going to pay me some Alpha Tokens for the privilege of helping my boys!</>,
         responses: [<>Deal!</>, <>Wait, what?</>],
         sender: "Karen",
-        check: (state)=>(state.alpha > 3),
+        check: (state)=>(state.alpha >= 4),
         delay: 3000,
         afterComplete: [["Klausi"],["Klausi"]],
     },
@@ -140,7 +143,7 @@ export const mailDictionary = {
         content: <>Nothing is more important than my little boys! But well I'll let you farm some of those important Alpha Tokens for me while you are helping them.</>,
         responses: [<>Yes, ma'am!</>, <>Can I say no?</>],
         sender: "Karen",
-        check: (state)=>(state.alpha >= 3),
+        check: (state)=>(state.alpha >= 4),
         delay: 3000,
         afterComplete: [["Klausi"],["Refuse"]],
     },
@@ -157,34 +160,38 @@ export const mailDictionary = {
         id: "Klausi",
         title: "Klausi's Homework",
         content: <>Hi I'm Klausi. My homework is about eights and zeroes or something. Here are the exercises for you: </>,
-        exercises: [{question:<>8 + 0 = ?</>, answers:["0","8", "80", "Not defined"], correct: 1},
-        {question:<>8 - 0 = ?</>, answers:["0","8", "80", "Not defined"], correct: 1},
-        {question:<>8 * 0 = ?</>, answers:["0","8", "80", "Not defined"], correct: 0},
-        {question:<>8 / 0 = ?</>, answers:["0","8", "80", "Not defined"], correct: 3},],
+        responses: homeworkResponses,
+        getProgress: getHomeworkProgress,
+        exercises: [{question:<>8 + 0</>, answers:["0","8", "80", "Not defined"], correct: 1},
+        {question:<>8 - 0</>, answers:["0","8", "80", "Not defined"], correct: 1},
+        {question:<>8 * 0</>, answers:["0","8", "80", "Not defined"], correct: 0},
+        {question:<>8 / 0</>, answers:["0","8", "80", "Not defined"], correct: 3},],
         sender: "Klausi",
         check: (state)=>(true),
         delay: 1000,
         alphacost: 2,
-        afterRead: ["Henry"],
+        afterComplete: [["Henry"],["Henry"],["Henry"],["Henry"]],
     },
     "Henry":{
         id: "Henry",
         title: "Henry's Homework",
-        content: <>Hi I'm Henry,  Klausi's older brother. My homework is about squares and negative numbers or something. Here are the exercises for you: </>,
-        exercises: [{question:<>2 - 5 = ?</>, answers:["3","7", "-3", "-7"], correct: 2},
-        {question:<>8<sup>2</sup> = ?</>, answers:["16","64", "-16", "-64"], correct: 1},
-        {question:<b>(-8)<sup>2</sup> = ?</b>, answers:["16","64", "-16", "-64"], correct: 1},
-        {question:<b>2 - (-5)<sup>2</sup> = ?</b>, answers:["3","7", "-3", "-7"], correct: 1},],
+        content: <>Hi I'm Henry,  Klausi's older brother. My homework is about squares and negative numbers. The teacher said the insights from the bold questions could become very important for <i>something</i>. Here are the exercises for you: </>,
+        responses: homeworkResponses,
+        getProgress: getHomeworkProgress,
+        exercises: [{question:<>2 - 5</>, answers:["3","7", "-3", "-7"], correct: 2},
+        {question:<>8<sup>2</sup></>, answers:["16","64", "-16", "-64"], correct: 1},
+        {question:<>(-8)<sup>2</sup></>, answers:["16","64", "-16", "-64"], correct: 1, important:true},
+        {question:<>2 - (-5)<sup>2</sup></>, answers:["3","7", "-3", "-7"], correct: 1, important:true},],
         sender: "Henry",
         check: (state)=>(true),
         delay: 2000,
         alphacost: 20,
-        afterRead: ["Powerful"],
+        afterComplete: [["Powerful"],["Powerful"],["Powerful"],["Tommy"]],
     },
     "Powerful":{
         id: "Powerful",
         title: "I love Squaring now",
-        content: <>Hi this is Henry again, thanks to you I learned that squaring a number is very powerful, the square increases really fast when the number increases. From now on I will use the square whenever I want to make big numbers!!! </>,
+        content: <>Hi this is Henry again, thanks to you I learned that squaring a number is very powerful, the square increases really fast when the number increases. And it can even make negative numbers positive, how crazy is that? From now on I will use the square whenever I want to make big numbers!!! </>,
         sender: "Henry",
         check: (state)=>(true),
         delay: 1300,
@@ -194,72 +201,128 @@ export const mailDictionary = {
         id: "Tommy",
         title: "Tommy's Homework",
         content: <>Hi I'm Tommy, Henry's older brother. My homework is about logarithms or something. Here are the exercises for you: </>,
-        exercises: [{question:<>log<sub>2</sub>(4) = ?</>, answers:["2","-2", "1", "Not defined"], correct: 0},
-                    {question:<>log<sub>2</sub>(-4) = ?</>, answers:["2","-2", "1", "Not defined"], correct: 3},
-                    {question:<b>log<sub>2</sub>(1/4) = ?</b>, answers:["2","-2", "1", "Not defined"], correct: 1},
-                    {question:<>log<sub>2</sub>(0) = ?</>, answers:["2","-2", "1", "Not defined"], correct: 3},],
+        responses: homeworkResponses,
+        getProgress: getHomeworkProgress,
+        exercises: [{question:<>log<sub>2</sub>(4)</>, answers:["2","-2", "1", "Not defined"], correct: 0},
+                    {question:<>log<sub>2</sub>(-4)</>, answers:["2","-2", "1", "Not defined"], correct: 3},
+                    {question:<>log<sub>2</sub>(1/4)</>, answers:["2","-2", "1", "Not defined"], correct: 1, important:true},
+                    {question:<>log<sub>2</sub>(0)</>, answers:["2","-2", "1", "Not defined"], correct: 3},],
         sender: "Tommy",
         check: (state)=>(true),
         delay: 3000,
         alphacost: 60000,
-        afterRead: ["Jimmy"],
+        afterComplete: [["Jimmy"],["Jimmy"],["Jimmy"],["Jimmy"]],
     },
     "Jimmy":{
         id: "Jimmy",
         title: "Jimmy's Homework",
         content: <>Hi I'm Jimmy, Tommy's older stepbrother. My homework is about square roots and cubic roots or something. Here are the exercises for you: </>,
-        exercises: [{question:<>sqrt(9) = ?</>, answers:["3","-3", "3i", "Infinity"], correct: 0},
-                    {question:<>sqrt(-9) = ?</>, answers:["3","-3", "3i", "Infinity"], correct: 2},
-                    {question:<>cbrt(-27) = ?</>, answers:["3","-3", "3i", "Infinity"], correct: 3},
-                    {question:<b>sqrt(Infinity) = ?</b>, answers:["3","-3", "3i", "Infinity"], correct: 3},],
+        responses: homeworkResponses,
+        getProgress: getHomeworkProgress,
+        exercises: [{question:<>sqrt(9)</>, answers:["3","-3", "3i", "Infinity"], correct: 0},
+                    {question:<>sqrt(-9)</>, answers:["3","-3", "3i", "Infinity"], correct: 2},
+                    {question:<>cbrt(-27)</>, answers:["3","-3", "3i", "Infinity"], correct: 3},
+                    {question:<b>sqrt(Infinity)</b>, answers:["3","-3", "3i", "Infinity"], correct: 3, important:true},],
         sender: "Jimmy",
         check: (state)=>(true),
         delay: 4000,
         alphacost: 3e6,
-        afterRead: ["Gary"],
+        afterComplete: [["Gary"],["Gary"],["Gary"],["Gary"]],
     },
     "Gary":{
         id: "Gary",
         title: "Gary's Homework",
         content: <>Hi I'm Gary, the oldest brother. My homework is about infinities or something. Here are the exercises for you: </>,
-        exercises: [{question:<>5 - Infinity = ?</>, answers:["0","Infinity", "-Infinity", "No limit"], correct: 2},
-                    {question:<b>log<sub>2</sub>(Infinity) = ?</b>, answers:["0","Infinity", "-Infinity", "No limit"], correct: 1},
-                    {question:<>Infinity + Infinity = ?</>, answers:["0","Infinity", "-Infinity", "No limit"], correct: 1},
-                    {question:<>Infinity - Infinity = ?</>, answers:["0","Infinity", "-Infinity", "No limit"], correct: 3},],
+        responses: homeworkResponses,
+        getProgress: getHomeworkProgress,
+        exercises: [{question:<>5 - Infinity</>, answers:["0","Infinity", "-Infinity", "No limit"], correct: 2},
+                    {question:<>log<sub>2</sub>(Infinity)</>, answers:["0","Infinity", "-Infinity", "No limit"], correct: 1, important:true},
+                    {question:<>Infinity + Infinity</>, answers:["0","Infinity", "-Infinity", "No limit"], correct: 1},
+                    {question:<>Infinity - Infinity</>, answers:["0","Infinity", "-Infinity", "No limit"], correct: 3},],
         sender: "Gary",
         check: (state)=>(true),
         delay: 5000,
         alphacost: 1e8,
-        afterRead: ["Thx"],
+        afterComplete: [["Done"],["Done"],["Done"],["Done"]],
     },
-    "Thx":{
-        id: "Thx",
-        title: "Thx",
-        content: <>Thx for the help. But my sons still failed class because you just gave the answers instead of teaching them properly. So <i>you</i> were the only one who profited from this.</>,
+    "Done":{
+        id: "Done",
+        title: "Homework is done",
+        content: <>That's all their homework done. Let's see how my boys do in the upcoming tests. Or if <i>you</i> were the only one to profit from this.</>,
         responses: [<>So how exactly did I profit?</>, <>I did not profit, I was just trying to help</>],
         sender: "Karen",
-        delay: 6000,
+        delay: 100,
         check: (state)=>(true),
         afterComplete: [["Profit"],["Profit"]],
     },
+
     "Profit":{
         id: "Profit",
         title: "Your Profit",
         content: <>Well now you know that <b>logarithms of fractions can produce negative results</b>, those negative numbers can become <b>positive by squaring</b> them, <b>subtracting negative numbers</b> makes things bigger, and that square roots and logarithms <b>go towards Infinity</b> if you put in bigger and bigger numbers. Seems like a lot to me.</>,
         responses: [<>I knew that before!</>, <>Thx, I guess?!?</>, <>Oooh, that might actually help me.</>],
         sender: "Karen",
-        delay: 7000,
+        delay: 700,
         check: (state)=>(true),
         afterComplete: [["Children"],["Children"],["Children"]],
     },
+
     "Children":{
         id: "Children",
-        title: "Get out of my mails",
+        title: "Bye",
         content: <>Yeah, good for you. Now stop abusing me and my children for your stupid research. Stop wasting my time and instead <b>find that powerful formula</b> or whatever you were looking for!</>,
         sender: "Karen",
-        delay: 8000,
+        delay: 2000,
+        check: (state)=>(true),
+        afterReadConditional: (state)=>{
+            const score = state.mailsComplete["Klausi"] + state.mailsComplete["Henry"] + state.mailsComplete["Tommy"] + state.mailsComplete["Jimmy"] + state.mailsComplete["Gary"]
+            if (score === 0)
+                return ["Perfect"]
+            else if (score <= 4 )
+                return ["Good"]
+            else if (score === 15)
+                return ["Terrible"]
+            else
+                return ["Thx"]
+        },
+    },
+
+    "Perfect":{
+        id: "Perfect",
+        title: "Thank you so much",
+        content: <>Hi this is Karen again. My sons got top scores on the test thanks to your help. I was a little harsh with you and wanted to apologize for that. Thank you so much for teaching my kids!</>,
+        sender: "Karen",
+        delay: 60000,
         check: (state)=>(true),
     },
+
+    "Good":{
+        id: "Good",
+        title: "Thank you",
+        content: <>Hi this is Karen again. My sons got good grades. Maybe your help had something to do with that, so thank you, I guess.</>,
+        sender: "Karen",
+        delay: 60000,
+        check: (state)=>(true),
+    },
+
+    "Thx":{
+        id: "Thx",
+        title: "Thx",
+        content: <>Hi this is Karen again. My sons barely passed their tests because you just gave them answers instead of teaching them properly. But maybe that still helped. So thx.</>,
+        sender: "Karen",
+        delay: 60000,
+        check: (state)=>(true),
+    },
+
+    "Terrible":{
+        id: "Terrible",
+        title: "F*** YOU!",
+        content: <>Hi Karen here. My sons got LITERALLY everything wrong on their tests. I don't know what you taught them, but even if they just guessed randomly they would have gotten more points than with your "help". You measly lowlife are going to regret this, I tell you!!!</>,
+        sender: "Karen",
+        delay: 60000,
+        check: (state)=>(true),
+    },
+
 
     //Storyline: Academy
     "Welcome":{
@@ -411,7 +474,7 @@ export const mailDictionary = {
     },
 
     //Sidestory: Just Developer Things
-    "Favorites":{
+    "Favorites":{ //Not yet included
         id: "Favorites",
         title: "Highlight your favorite formulas!",
         content: <>Hey, there are a lot of formulas in the shop now, and it will be getting even more with the next x-Reset. And many of the lower differential formulas seem pretty useless by now. But no worries, I have a solution: You can now highlight and filter your favorite formulas. Go, try it out!<br/><br/>P.S.: I lied, this quality of life feature is not yet developed.</>,
