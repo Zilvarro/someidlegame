@@ -427,27 +427,57 @@ export const mailDictionary = {
     "Transfer":{ //Transfer minigame
         id: "Transfer",
         title: "Re: How can I give you?",
-        content: <>Transfer money. 200$! But must not be suspicious. Must transfer only one dollar at a time!</>,
-        responses: [<>Transfer a dollar</>, <>No way, this is a scam</>],
+        content: <>Transfer money. 150$! Have only one day. But must not be suspicious. Must transfer only one dollar at a time!</>,
+        getProgress: ()=>0,
+        responses: [<>Transferred nothing</>, <>Transferred too little</>, <>Transferred enough</>, <>Transferred waaay too much</>],
         sender: "Prince",
         check: (state)=>(true),
         delay: 1700,
-        afterComplete: [["Sent"], ["Failed"]],
+        getTimeoutReply: (state)=>{
+            const score = state.mailsProgress["Transfer"]
+            if (score === 0)
+                return 0
+            else if (score < 150)
+                return 1
+            else if (score >= 1150)
+                return 3
+            else
+                return 2
+        },
+        afterComplete: [["Zero"], ["Failed"], ["Sent"], ["Rich"]],
+        transfer: true,
+        timeout: 86400,
+    },
+    "Zero":{
+        id: "Zero",
+        title: "You very bad person",
+        content: <>You not helped me! You no sent any money! Now prince can not feed family. We poor. Why you no heart? See picture of family!</>,
+        responses: [<>Open Attachment: familypicture.exe</>,<>Attachment removed by Virus detection</>],
+        hiddenResponses: 1,
+        sender: "Prince",
+        check: (state)=>(true),
+        delay: 3000,
+        afterComplete: [["Virus"],[]],
+        timeout: 86400,
+        getTimeoutReply: ()=>1
     },
     "Failed":{
         id: "Failed",
         title: "You bad person",
-        content: <>You not helped me! Now prince cannot feed family. We poor. Why you no heart? See picture of them!</>,
-        responses: [<>Open Attachment: familypicture.exe</>],
+        content: <>You no sent enough! Now prince struggle with feed family. We poor. Why you heart so little? See picture of family!</>,
+        responses: [<>Open Attachment: familypicture.exe</>,<>Attachment removed by Virus detection</>],
+        hiddenResponses: 1,
         sender: "Prince",
         check: (state)=>(true),
-        delay: 10000,
-        afterComplete: [["Virus"]],
+        delay: 3000,
+        afterComplete: [["Virus"],[]],
+        timeout: 10,
+        getTimeoutReply: ()=>1
     },
     "Virus":{
         id: "Virus",
         title: "YOU FOOL",
-        content: <>Haha! You open my Virus! Now no x production for next 20 minutes! Now you got rekt!</>,
+        content: <>Haha! You open my Virus! Now no x production for next 20 minutes! Now you get rekt!</>,
         sender: "Prince",
         check: (state)=>(true),
         delay: 5,
@@ -459,7 +489,7 @@ export const mailDictionary = {
         responses: [<>Open Attachment: xdoubler.exe</>],
         sender: "Prince",
         check: (state)=>(true),
-        delay: 10000,
+        delay: 3000,
         afterComplete: [["Survey"]],
     },
     "Rich":{
@@ -469,7 +499,7 @@ export const mailDictionary = {
         responses: [<>Open Attachment: xtripler.exe</>],
         sender: "Prince",
         check: (state)=>(true),
-        delay: 10000,
+        delay: 3000,
         afterComplete: [["Survey"]],
     },
 
@@ -485,11 +515,14 @@ export const mailDictionary = {
     "Survey":{ //Star Survey Minigame
         id: "Survey",
         title: "Survey",
-        content: <>Hi, I hope you are enjoying this game! Please take a moment and rate your experience on a scale of 0 to 5 stars.</>,
+        getProgress:()=>3,
+        responses: [<>Rating submitted</>],
+        content: <>Hi, I hope you are enjoying this game! Please take a moment and rate your experience on a scale of 1 to 5 stars.</>,
         sender: "Dev",
         check: (state)=>(true),
         delay: 80000,
-        afterRead: ["Submitted"],
+        afterComplete: [["Submitted"]],
+        rating: true,
     },
     "Submitted":{
         id: "Submitted",
@@ -499,15 +532,25 @@ export const mailDictionary = {
         sender: "Dev",
         check: (state)=>(true),
         delay: 20,
-        afterComplete: [["Results"],[]],
+        afterComplete: [["Interest"],[]],
+    },
+    "Interest":{
+        id: "Interest",
+        title: "Thanks for your Interest!",
+        content: <>I will get back to you with the survey results in a day or two.</>,
+        afterRead: ["Results"],
+        sender: "Dev",
+        check: (state)=>(true),
+        delay: 20,
     },
     "Results":{ //Make result vary by User Input
         id: "Results",
         title: "Survey Results",
-        content: <>Here are the latest results of the survey: There were a total of 28 submissions, with an average rating of 6.7 out of 5 stars. Thank you for your participation.</>,
+        content: <>Here are the latest results of the survey:</>,
         sender: "Dev",
         check: (state)=>(true),
-        delay: 160000,
+        delay: 120000,
+        surveyresult: true,
     },
 
     //Sidestory: x-Mail

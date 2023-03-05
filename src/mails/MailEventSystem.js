@@ -7,6 +7,7 @@ import { mailDictionary } from './MailDictionary';
 //Received: Every mail that has been received
 //Unread: Mail is received but not yet read
 //Completed: Mail is responded by user
+//Timeout: Some mails trigger complete automatically after a certain time
 //Status changes are able to set follow up mails into ForCheck status
 
 export const checkNewMails = (state)=>{
@@ -27,7 +28,7 @@ export const updatePendingMails = (state)=>{
     for (let i = state.mailsPending.length - 1; i >= 0; i--) {
         const mailid = state.mailsPending[i].mailid
         const mail = mailDictionary[mailid]
-        if (true || !mail.delay || Date.now() - state.mailsPending[i].sentTime > 1000 * mail.delay / getGlobalMultiplier(state)) {
+        if (!mail.delay || Date.now() - state.mailsPending[i].sentTime > 1000 * mail.delay / getGlobalMultiplier(state)) {
             if (state.mailsReceived[mailid]) { //Safety Check to prevent duplicate Mails
                 state.mailsPending.splice(i, 1)
                 continue
@@ -54,6 +55,8 @@ export const markAsRead = (state, mailid)=>{
         state.mailsForCheck = state.mailsForCheck.concat(mail.afterRead)
     if (mail.afterReadConditional)
         state.mailsForCheck.concat(mail.afterReadConditional(state))
+    if (mail.timeout)
+        state.mailsForTimeout.push({mailid: mail.id, timestamp: Date.now()})
     delete state.mailsUnread[mailid]
 }
 
@@ -77,4 +80,17 @@ export const completeMail = (state, mailid, reply)=>{
     }
     state.mailsCompleted[mailid] = reply === undefined ? true : reply
     delete state.mailsUnread[mailid]
+}
+
+export const checkTimeouts = (state)=>{
+    for (let i = state.mailsForTimeout.length - 1; i >= 0; i--) {
+        const mailid = state.mailsForTimeout[i].mailid
+        const timestamp = state.mailsForTimeout[i].timestamp
+        const mail = mailDictionary[mailid]
+        if (timestamp + mail.timeout * 1000 < Date.now()) {
+            state.mailsForTimeout.splice(i, 1)
+            if (!state.mailsCompleted[mailid])
+                completeMail(state, mailid, mail.getTimeoutReply(state))
+        }
+    }
 }

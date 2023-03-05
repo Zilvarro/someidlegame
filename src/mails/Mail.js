@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { getGlobalMultiplier } from '../savestate'
 
 export default function Mail({state, mail, popup, updateState, mailid}) {
 
@@ -55,6 +56,23 @@ export default function Mail({state, mail, popup, updateState, mailid}) {
         }
     }
 
+    const changeRating = (delta)=>{
+        const playerrating = state.mailsProgress[mailid]
+        const newrating = playerrating + delta * getGlobalMultiplier(state)
+        updateState({name: "progressMail", mailid, value: newrating})
+    }
+
+    const submitRating = ()=>{
+        debugger
+        updateState({name: "completeMail", mailid, reply: 0})
+    }
+
+    const getAverageRating = ()=>{
+        const playerrating = state.mailsProgress["Survey"]
+        const aggregated = (183 + playerrating)/28
+        return aggregated
+    }
+
     let displayColor = undefined //white
     if (state.mailsCompleted[mailid] !== undefined || !mail.afterComplete)
         displayColor = "#666666" //grey
@@ -69,6 +87,32 @@ export default function Mail({state, mail, popup, updateState, mailid}) {
                 {mail.content}
             </p>
 
+            {mail.rating && (state.mailsCompleted["Survey"] !== undefined? 
+                <p style={{paddingLeft: "50px", fontWeight: 900 }}>
+                    {state.mailsProgress[mailid]} / 5 Stars
+                </p> 
+            : 
+                <p style={{paddingLeft: "50px", fontWeight: 900 }}>
+                    <button onClick={()=>changeRating(-1)}>&#8211;</button>&nbsp;
+                    {state.mailsProgress[mailid]} / 5 Stars
+                    &nbsp;<button onClick={()=>changeRating(1)}>+</button><br/><br/>
+                    <button onClick={submitRating} style={{marginLeft: "60px"}}>Submit</button>
+                </p> 
+            )}
+
+            {mail.surveyresult &&
+                <p style={{paddingLeft: "50px"}}>
+                    Total submissions: 28<br/>
+                    Your rating: {state.mailsProgress["Survey"].toFixed(0)} / 5 stars.<br/>
+                    Average rating: {getAverageRating().toFixed(2)} / 5 stars.<br/><br/>
+                    {getAverageRating() >= 10 && <>This gotta be the best game of the world!<br/></>}
+                    {getAverageRating() >= 4 && <>I am very happy with that!<br/></>}
+                    {getAverageRating() > 1 && getAverageRating() < 4 && <>I was hoping it would score a little better!<br/></>}
+                    {getAverageRating() <= 1 && <>Oh no, my game is horrible!<br/></>}
+                    Thank you for your participation.
+                </p>
+            }
+
             {mail.exercises &&
                 mail.exercises.map((exercise, eindex)=><p style={{paddingLeft: "50px", fontWeight: exercise.important ? 900 : undefined}} key={eindex}>
                     {exercise.question}&nbsp;=&nbsp;{state.mailsProgress[mailid][eindex][exercise.correct] ? exercise.answers[exercise.correct] : "?"}&nbsp;
@@ -78,16 +122,26 @@ export default function Mail({state, mail, popup, updateState, mailid}) {
                 </p>)
             }
 
+            {mail.transfer && (state.mailsCompleted["Transfer"] === undefined? 
+                <p style={{paddingLeft: "50px", fontWeight: 900 }}>
+                    <button onClick={()=>changeRating(+1)}>Transfer 1$</button>
+                    {state.mailsProgress["Transfer"] > 0 && <><br/><br/>{state.mailsProgress["Transfer"]}$ Transferred</>}
+                </p> 
+            : 
+                <p style={{paddingLeft: "50px", fontWeight: 900 }}>
+                    {state.mailsProgress["Transfer"] > 0 && <>{state.mailsProgress["Transfer"]}$ Transferred</>}
+                </p> 
+            )}
+
             {state.mailsCompleted[mailid] === undefined ?
                 !mail.getProgress && <p style={{paddingLeft: "30px"}}>
-                    {mail.responses?.map((response, index)=><button key={index} onClick={()=>completeMail(index)} style={{marginRight:"20px"}}>{response}</button>)}
+                    {mail.responses?.slice(0, mail.responses.length - (mail.hiddenResponses || 0)).map((response, index)=><button key={index} onClick={()=>completeMail(index)} style={{marginRight:"20px"}}>{response}</button>)}
                 </p>
             :
                 <p style={{paddingLeft: "30px"}}>
                     &raquo;&nbsp;{mail.responses[state.mailsCompleted[mailid]]}
                 </p>
             }
-            
         </details>
     )
 }

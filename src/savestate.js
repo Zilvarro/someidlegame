@@ -8,7 +8,7 @@ import {startingStones, stoneTable, stoneList} from './alpha/AlphaStoneDictionar
 import * as eventsystem from './mails/MailEventSystem'
 import * as progresscalculation from './progresscalculation'
 
-const version = "0.38"
+const version = "0.39"
 
 export const newSave = {
     version: version,
@@ -88,6 +88,7 @@ export const newSave = {
     mailsForCheck: ["Warning"],
     mailsPending: [],
     mailsList: [],
+    mailsForTimeout: [],
     mailsUnread: {},
     mailsReceived: {},
     mailsCompleted: {},
@@ -553,6 +554,7 @@ export const saveReducer = (state, action)=>{
         if (eventsystem.updatePendingMails(state)) {
             notify.warning("New Mail Received")
         }
+        eventsystem.checkTimeouts(state)
 
         //Kick out formulas that do not exist anymore (due to update etc)
         if (state.justLaunched) {
@@ -711,6 +713,7 @@ export const saveReducer = (state, action)=>{
         state.mailsForCheck = []
         state.mailsPending = []
         state.mailsList = []
+        state.mailsForTimeout = []
         state.mailsProgress = {}
         state.mailsCompleted = {}
         state.mailsReceived = {}
