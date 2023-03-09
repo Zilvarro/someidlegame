@@ -1,13 +1,13 @@
 {
   "files": {
     "main.css": "/someidlegame/static/css/main.a236132c.css",
-    "main.js": "/someidlegame/static/js/main.f2cbb1b6.js",
+    "main.js": "/someidlegame/static/js/main.228d937a.js",
     "index.html": "/someidlegame/index.html",
     "main.a236132c.css.map": "/someidlegame/static/css/main.a236132c.css.map",
-    "main.f2cbb1b6.js.map": "/someidlegame/static/js/main.f2cbb1b6.js.map"
+    "main.228d937a.js.map": "/someidlegame/static/js/main.228d937a.js.map"
   },
   "entrypoints": [
     "static/css/main.a236132c.css",
-    "static/js/main.f2cbb1b6.js"
+    "static/js/main.228d937a.js"
   ]
 }
