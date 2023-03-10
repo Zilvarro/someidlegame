@@ -24,8 +24,8 @@ export default function Mail({state, mail, popup, updateState, mailid}) {
         if (mail.exercises[eindex].correct === aindex) {
             updateState({name: "progressMail", mailid, path: eindex, subpath:aindex, value: true})
             //Check if mail is completed
-            let correctCount = 0
-            let totalCount = 0
+            let correctCount = 1 //correctCount + 1 since state is not updated yet
+            let totalCount = 1
             let sheetCount = 0
             for(let i = 0; i < mail.exercises.length; i++) {
                 let exercise = mail.exercises[i]
@@ -39,7 +39,7 @@ export default function Mail({state, mail, popup, updateState, mailid}) {
                     }
                 }
             }
-            if (correctCount + 1 === mail.exercises.length) { //correctCount + 1 since state is not updated yet
+            if (correctCount === mail.exercises.length) { 
                 const mistakes = totalCount - correctCount
                 if (mistakes === 0)
                     updateState({name: "completeMail", mailid, reply: 0}) //Flawless
@@ -63,8 +63,11 @@ export default function Mail({state, mail, popup, updateState, mailid}) {
     }
 
     const submitRating = ()=>{
-        debugger
         updateState({name: "completeMail", mailid, reply: 0})
+    }
+
+    const unlockMail = ()=>{
+        updateState({name: "unlockMail", mailid})
     }
 
     const getAverageRating = ()=>{
@@ -74,9 +77,20 @@ export default function Mail({state, mail, popup, updateState, mailid}) {
     }
 
     let displayColor = undefined //white
-    if (state.mailsCompleted[mailid] !== undefined || !mail.afterComplete)
+    if (state.mailsCompleted[mailid] !== undefined || (!mail.afterComplete && !mail.responses))
         displayColor = "#666666" //grey
     if (isUnread) displayColor = "#FFAA66" //orange
+
+    if (mail.alphaCost > 0 && !state.mailsUnlocked[mailid]) return (
+        <details style={{paddingTop: "10px", color: displayColor}}>
+            <summary onClick={markAsRead}>
+                [{mail.sender}]&nbsp;{mail.title}
+            </summary>
+            <p style={{paddingLeft: "30px"}}>
+                <button disabled={state.alpha < mail.alphaCost} onClick={unlockMail}>UNLOCK MAIL CONTENT</button>&nbsp;&nbsp;Cost: &alpha; = {mail.alphaCost}
+            </p>
+        </details>
+    )
 
     return (
         <details style={{paddingTop: "10px", color: displayColor}}>

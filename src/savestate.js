@@ -8,7 +8,7 @@ import {startingStones, stoneTable, stoneList} from './alpha/AlphaStoneDictionar
 import * as eventsystem from './mails/MailEventSystem'
 import * as progresscalculation from './progresscalculation'
 
-const version = "0.39"
+const version = "0.40"
 
 export const newSave = {
     version: version,
@@ -85,6 +85,7 @@ export const newSave = {
     allTimeEndings: {},
     badEndingCount: 0,
     passedTime: 0, //For Debugging
+    noProdTime: 0, //For Prince Mail
     mailsForCheck: ["Warning"],
     mailsPending: [],
     mailsList: [],
@@ -417,6 +418,13 @@ export const saveReducer = (state, action)=>{
 
         state.lastPlayTime = action.playTime
         const timeStamp = Date.now()
+        let deltaMilliSeconds = (timeStamp - state.calcTimeStamp)
+
+        if (state.noProdTime > 0) {
+            state.noProdTime -= deltaMilliSeconds * getGlobalMultiplier(state)
+            deltaMilliSeconds = 0
+        }
+
         if (state.xValue.includes(-Infinity)) {
             state.currentEnding = "negative"
             performXReset(state)
@@ -424,8 +432,6 @@ export const saveReducer = (state, action)=>{
             state.inNegativeSpace = true
         }
         
-        let deltaMilliSeconds = (timeStamp - state.calcTimeStamp)
-
         if (deltaMilliSeconds < 120000) { //Quick Computation
             if (state.insideChallenge || state.anyFormulaUsed || state.xResetCount || state.highestXTier > 0)
                 state.currentAlphaTime += deltaMilliSeconds
@@ -717,9 +723,11 @@ export const saveReducer = (state, action)=>{
         state.mailsProgress = {}
         state.mailsCompleted = {}
         state.mailsReceived = {}
+        state.mailsUnlocked = {}
         state.mailUnread = {}
-        state.mailsForCheck.push("Warning")
-        state.mailsForCheck.push("Welcome")
+        state.destinyStars = 100
+        state.alpha = 10
+        state.mailsForCheck.push("Zero")
         break;
     case "chapterJump":
         switch (action.password) {
@@ -745,6 +753,7 @@ export const saveReducer = (state, action)=>{
                 state.alpha = 1
                 state.mileStoneCount = 6
                 state.progressionLayer = 1
+                state.mailsForCheck = ["Welcome"]
                 notify.success("CHAPTER 5: ALPHA")
                 break;
             case "D3571NY574R":
@@ -903,6 +912,9 @@ export const saveReducer = (state, action)=>{
         break;
     case "completeMail":
         eventsystem.completeMail(state, action.mailid, action.reply)
+        break;
+    case "unlockMail":
+        eventsystem.unlockMail(state, action.mailid)
         break;
     default:
         console.error("Action " + action.name + " not found.")

@@ -102,7 +102,7 @@ export default function OptionScreen({state, popup, updateState, setTotalClicks}
       <p>
         {spaces()}<button onClick={resetSave}>Hard Reset</button>
       </p>
-      {true && <p>
+      {false && <p>
         {spaces()}<button onClick={cheat}>Cheat</button>
       </p>}
       {state.xValue[0] === 0 && state.mileStoneCount === 0 && <p>

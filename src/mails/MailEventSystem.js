@@ -54,7 +54,7 @@ export const markAsRead = (state, mailid)=>{
     if (mail.afterRead)
         state.mailsForCheck = state.mailsForCheck.concat(mail.afterRead)
     if (mail.afterReadConditional)
-        state.mailsForCheck.concat(mail.afterReadConditional(state))
+        state.mailsForCheck = state.mailsForCheck.concat(mail.afterReadConditional(state))
     if (mail.timeout)
         state.mailsForTimeout.push({mailid: mail.id, timestamp: Date.now()})
     delete state.mailsUnread[mailid]
@@ -71,6 +71,9 @@ export const progressMail = (state, mailid, path, subpath, value)=>{
 }
 
 export const completeMail = (state, mailid, reply)=>{
+    if (state.mailsCompleted[mailid])
+        return
+
     const mail = mailDictionary[mailid]
     if (mail.afterComplete) {
         if (reply !== undefined)
@@ -79,7 +82,20 @@ export const completeMail = (state, mailid, reply)=>{
             state.mailsForCheck = state.mailsForCheck.concat(mail.afterComplete)
     }
     state.mailsCompleted[mailid] = reply === undefined ? true : reply
+
     delete state.mailsUnread[mailid]
+
+    if (mail.effects && mail.effects[reply])
+        mail.effects[reply](state)
+}
+
+export const unlockMail = (state, mailid)=>{
+    const mail = mailDictionary[mailid]
+    if (state.alpha < mail.alphaCost) 
+        return
+
+    state.alpha -= mail.alphaCost
+    state.mailsUnlocked[mailid] = true
 }
 
 export const checkTimeouts = (state)=>{
@@ -87,7 +103,7 @@ export const checkTimeouts = (state)=>{
         const mailid = state.mailsForTimeout[i].mailid
         const timestamp = state.mailsForTimeout[i].timestamp
         const mail = mailDictionary[mailid]
-        if (timestamp + mail.timeout * 1000 < Date.now()) {
+        if (Date.now() - timestamp >= mail.timeout * 1000 / getGlobalMultiplier(state)) {
             state.mailsForTimeout.splice(i, 1)
             if (!state.mailsCompleted[mailid])
                 completeMail(state, mailid, mail.getTimeoutReply(state))

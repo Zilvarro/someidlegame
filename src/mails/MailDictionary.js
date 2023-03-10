@@ -12,7 +12,7 @@ export const mailDictionary = {
         sender: "Y",
         check: (state)=>(state.xValue[0] > 200e6 && state.highestXTier >= 1),
         delay: 20,
-        afterComplete: [["What"],["Who"],["Prince"]],
+        afterComplete: [["What", "Prince"],["Who", "Prince"]],
     },
     "What":{
         id: "What",
@@ -66,7 +66,7 @@ export const mailDictionary = {
         title: "About the Academy",
         content: <>So you've joined the Academy to aid your goals? They can be very helpful and you will need all help you can get. But be careful, you must not let them know you are looking for the world formula. We don't want the Academy to steal the fruits of our endeavors.</>,
         sender: "Y",
-        check: (state)=>(state.xValue[0] > 300e6 && state.highestXTier >=3),
+        check: (state)=>(state.progressionLayer >= 1 && state.xValue[0] > 300e6 && state.highestXTier >=3),
         delay: 30,
         afterRead: ["How"],
     },
@@ -169,7 +169,7 @@ export const mailDictionary = {
         sender: "Klausi",
         check: (state)=>(true),
         delay: 1000,
-        alphacost: 2,
+        alphaCost: 2,
         afterComplete: [["Henry"],["Henry"],["Henry"],["Henry"]],
     },
     "Henry":{
@@ -181,11 +181,11 @@ export const mailDictionary = {
         exercises: [{question:<>2 - 5</>, answers:["3","7", "-3", "-7"], correct: 2},
         {question:<>8<sup>2</sup></>, answers:["16","64", "-16", "-64"], correct: 1},
         {question:<>(-8)<sup>2</sup></>, answers:["16","64", "-16", "-64"], correct: 1, important:true},
-        {question:<>2 - (-5)<sup>2</sup></>, answers:["3","7", "-3", "-7"], correct: 1, important:true},],
+        {question:<>2 - (-5)</>, answers:["3","7", "-3", "-7"], correct: 1, important:true},],
         sender: "Henry",
         check: (state)=>(true),
         delay: 2000,
-        alphacost: 20,
+        alphaCost: 20,
         afterComplete: [["Powerful"],["Powerful"],["Powerful"],["Tommy"]],
     },
     "Powerful":{
@@ -210,7 +210,7 @@ export const mailDictionary = {
         sender: "Tommy",
         check: (state)=>(true),
         delay: 3000,
-        alphacost: 60000,
+        alphaCost: 60000,
         afterComplete: [["Jimmy"],["Jimmy"],["Jimmy"],["Jimmy"]],
     },
     "Jimmy":{
@@ -221,12 +221,12 @@ export const mailDictionary = {
         getProgress: getHomeworkProgress,
         exercises: [{question:<>sqrt(9)</>, answers:["3","-3", "3i", "Infinity"], correct: 0},
                     {question:<>sqrt(-9)</>, answers:["3","-3", "3i", "Infinity"], correct: 2},
-                    {question:<>cbrt(-27)</>, answers:["3","-3", "3i", "Infinity"], correct: 3},
+                    {question:<>cbrt(-27)</>, answers:["3","-3", "3i", "Infinity"], correct: 1},
                     {question:<b>sqrt(Infinity)</b>, answers:["3","-3", "3i", "Infinity"], correct: 3, important:true},],
         sender: "Jimmy",
         check: (state)=>(true),
         delay: 4000,
-        alphacost: 3e6,
+        alphaCost: 3e6,
         afterComplete: [["Gary"],["Gary"],["Gary"],["Gary"]],
     },
     "Gary":{
@@ -242,7 +242,7 @@ export const mailDictionary = {
         sender: "Gary",
         check: (state)=>(true),
         delay: 5000,
-        alphacost: 1e8,
+        alphaCost: 1e8,
         afterComplete: [["Done"],["Done"],["Done"],["Done"]],
     },
     "Done":{
@@ -275,7 +275,8 @@ export const mailDictionary = {
         delay: 2000,
         check: (state)=>(true),
         afterReadConditional: (state)=>{
-            const score = state.mailsComplete["Klausi"] + state.mailsComplete["Henry"] + state.mailsComplete["Tommy"] + state.mailsComplete["Jimmy"] + state.mailsComplete["Gary"]
+            debugger
+            const score = state.mailsCompleted["Klausi"] + state.mailsCompleted["Henry"] + state.mailsCompleted["Tommy"] + state.mailsCompleted["Jimmy"] + state.mailsCompleted["Gary"]
             if (score === 0)
                 return ["Perfect"]
             else if (score <= 4 )
@@ -364,10 +365,10 @@ export const mailDictionary = {
     "Maxxed":{
         id: "Maxxed",
         title: "Maxxed Research",
-        content: <>The Academy impressed with your Research. For every field of research that you fully complete, we will double your Formula Efficiency. Keep up the good work!</>,
+        content: <>The Academy committee is very impressed with your Research. For every field of research that you fully complete, we will double your Formula Efficiency. Keep up the good work!</>,
         sender: "Academy",
         check: (state)=>(state.researchLevel["x"] >= 2500 || state.researchLevel["x'"] >= 2500 || state.researchLevel["x''"] >= 2500 || state.researchLevel["x'''"] >= 2500),
-        delay: 26,
+        delay: 260,
     },
     "Idle":{
         id: "Idle",
@@ -407,9 +408,9 @@ export const mailDictionary = {
     "TrueHint":{
         id: "TrueHint",
         title: "We have an idea for those Stones.",
-        content: <>Sorry for taking so long, we went down the wrong path for a while: Your starting x now allows you to get the three differentials without using any formulas. But that does not really seem to help you do anything new. Then, upon closer inspection we noticed that with your Starting X it should now be possible to use x''' &#10141; x''' + log<sub>2</sub>(x)<sup>2</sup> as your first formula. Curiously, if one was to apply that formula while x=Infinity, then one could also reach x'''=Infinity.</>,
+        content: <>Sorry for taking so long, we went down the wrong path for a while: Your starting x now allows you to get the three differentials without using any formulas. But that does not really seem to help you do anything new. Then, upon closer inspection we noticed that with your Starting X it should now be possible to use x''' &#10141; x''' + log<sub>2</sub>(x)<sup>2</sup> as your first formula. Curiously, if one was to apply that formula while x = Infinity, then one could also reach x''' = Infinity.</>,
         check: (state)=>(true),
-        delay: 40000,
+        delay: 30000,
         sender: "Academy",
     },
 
@@ -453,6 +454,7 @@ export const mailDictionary = {
         title: "You very bad person",
         content: <>You not helped me! You no sent any money! Now prince can not feed family. We poor. Why you no heart? See picture of family!</>,
         responses: [<>Open Attachment: familypicture.exe</>,<>Attachment removed by Virus detection</>],
+        effects: [(state)=>{state.noProdTime = 20 * 60000},null],
         hiddenResponses: 1,
         sender: "Prince",
         check: (state)=>(true),
@@ -466,6 +468,7 @@ export const mailDictionary = {
         title: "You bad person",
         content: <>You no sent enough! Now prince struggle with feed family. We poor. Why you heart so little? See picture of family!</>,
         responses: [<>Open Attachment: familypicture.exe</>,<>Attachment removed by Virus detection</>],
+        effects: [(state)=>{state.noProdTime = 20 * 60000},null],
         hiddenResponses: 1,
         sender: "Prince",
         check: (state)=>(true),
@@ -487,20 +490,20 @@ export const mailDictionary = {
         title: "Thank you",
         content: <>Now prince can feed family. We poor. You have big heart. Attachment will double your x! But can only use once!</>,
         responses: [<>Open Attachment: xdoubler.exe</>],
+        effects: [(state)=>{state.xValue[0] *= 2}],
         sender: "Prince",
         check: (state)=>(true),
         delay: 3000,
-        afterComplete: [["Survey"]],
     },
     "Rich":{
         id: "Rich",
         title: "Thank you so much!!!",
         content: <>Not only did you help me to feed my family, I was even able to hire someone to fix my bad grammar and wording for this email! It really means a lot to us, and we send you much love! Sadly, I cannot properly repay you, but the attachment can triple the value of your x. It can only be used once though, so be careful. Best regards, the prince and his family.</>,
         responses: [<>Open Attachment: xtripler.exe</>],
+        effects: [(state)=>{state.xValue[0] *= 3}],
         sender: "Prince",
         check: (state)=>(true),
         delay: 3000,
-        afterComplete: [["Survey"]],
     },
 
     //Sidestory: Just Developer Things
