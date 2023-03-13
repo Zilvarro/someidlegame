@@ -421,7 +421,7 @@ export const saveReducer = (state, action)=>{
         let deltaMilliSeconds = (timeStamp - state.calcTimeStamp)
 
         if (state.noProdTime > 0) {
-            state.noProdTime -= deltaMilliSeconds * getGlobalMultiplier(state)
+            state.noProdTime -= deltaMilliSeconds
             deltaMilliSeconds = 0
         }
 
@@ -725,9 +725,9 @@ export const saveReducer = (state, action)=>{
         state.mailsReceived = {}
         state.mailsUnlocked = {}
         state.mailUnread = {}
-        state.destinyStars = 100
+        state.destinyStars = 1000
         state.alpha = 10
-        state.mailsForCheck.push("Zero")
+        state.mailsForCheck.push("Transfer")
         break;
     case "chapterJump":
         switch (action.password) {

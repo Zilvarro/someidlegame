@@ -317,8 +317,8 @@ export const mailDictionary = {
 
     "Terrible":{
         id: "Terrible",
-        title: "F*** YOU!",
-        content: <>Hi Karen here. My sons got LITERALLY everything wrong on their tests. I don't know what you taught them, but even if they just guessed randomly they would have gotten more points than with your "help". You measly lowlife are going to regret this, I tell you!!!</>,
+        title: "FUCK YOU!!!!",
+        content: <>Karen here. My sons got LITERALLY everything wrong on their tests. I don't know what you taught them, but even if they just guessed randomly they would have gotten more points than with your "help". You measly lowlife are going to regret this, I tell you!!!</>,
         sender: "Karen",
         delay: 60000,
         check: (state)=>(true),

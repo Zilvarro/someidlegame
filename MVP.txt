@@ -5,6 +5,7 @@ VERYHIGH: Equip stays after Alpha Reset (after Ending?)
 VERYHIGH: Holding Formula with Destiny keeps applying after letting go
 VERYHIGH: Resetters should work properly while on other tabs
 VERYHIGH: Infinite Problems
+VERYHIGH: Apply Cost allows accidental dive into Negative Space
 
 VERYHIGH: Master of Idle tokens updated outside of Challenge (Fully Idle Run)
 VERYHIGH: Starting Stones show calculation
