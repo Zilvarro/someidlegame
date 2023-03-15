@@ -147,7 +147,7 @@ export default function FormulaScreen({state, updateState, setTotalClicks, popup
             {(state.mileStoneCount >= 2 || state.formulaUnlockCount >= 4) &&
               <>{spaces()}<button onClick={resetXValues} disabled={state.activeChallenges.FULLYIDLE || state.activeChallenges.ONESHOT || !state.anyFormulaUsed}>Basic Reset</button>{state.mileStoneCount === 1 && <>{spaces()}&larr; Reset x, but you can adapt your equipped formulas.</>}</>
             }
-            {(state.mileStoneCount >= 3 || (state.mileStoneCount === 2 && state.xValue[0] >= differentialTarget)) && state.highestXTier < 3 && state.xValue[0] > alphaTarget &&
+            {(state.mileStoneCount >= 3 || (state.mileStoneCount === 2 && state.xValue[0] >= differentialTarget)) && state.highestXTier < 3 &&
               <>{spaces()}<button disabled={state.inNegativeSpace || state.activeChallenges.FULLYIDLE || state.xValue[0] < differentialTarget} onClick={resetShop}>{sResetName}-Reset</button>{state.mileStoneCount === 2 && <>{spaces()}&larr; Reset the shop for a new differential</>}</>
             }
             {state.mileStoneCount >= 6 && !state.insideChallenge && state.highestXTier === 3 && state.xValue[0] >= alphaTarget &&
