@@ -1,22 +1,15 @@
 ~~~~~~~~~~VERYHIGH~~~~~~~~~~
 
 VERYHIGH: Wrong Formulas appear in Stage 1 Shop. Highest x Tier messed up in Shop :-/
-VERYHIGH: Equip stays after Alpha Reset (after Ending?)
-VERYHIGH: Holding Formula with Destiny keeps applying after letting go
 VERYHIGH: Resetters should work properly while on other tabs
-VERYHIGH: Infinite Problems
-VERYHIGH: Apply Cost allows accidental dive into Negative Space
 
 VERYHIGH: Master of Idle tokens updated outside of Challenge (Fully Idle Run)
 VERYHIGH: Starting Stones show calculation
-VERYHIGH: Better Formula for Research Bulking
 
 ~~~~~~~~~~HIGH~~~~~~~~~~
 
-HIGH: Passive Alpha during Challenge
 HIGH: Buttons should be readable when disabled (black Text)
 
-HIGH: Maxxed Research Multiplier on top of page
 HIGH: x per second
 HIGH: Hotkeys
 HIGH: Show # Variables (& Remove from Shop Labels)
@@ -24,15 +17,9 @@ HIGH: Configuration for confirmation popups
 
 ~~~~~~~~~~MEDIUM~~~~~~~~~~
 
-MEDIUM: Basic Formulas should work while in Negative Space
-MEDIUM: Filling green bar without 3rd differential
-MEDIUM: Abort the current challenge Popup Text
-MEDIUM: Deal with improper Offline Progress (hide Option?)
-
-MEDIUM: Discover the World Formula an bessere Stelle
-MEDIUM: Move Resetter Toggles to top of formula page
 MEDIUM: Mobile defaults to Shop Formulas On
-MEDIUM: Alpha in offline progress popup
+
+MEDIUM: Explain Starlight Upgrades for Mobile Users
 
 ----> Cut for MVP <----
 
@@ -41,8 +28,7 @@ MEDIUM: Formula darker green when > +5%
 
 ~~~~~~~~~~~LOW~~~~~~~~~~~
 
-LOW: Prevent Enter Trick for Prince / Rating
-LOW: Absolute x in offline progress popup, if less than x2 and higher than 0
+LOW: Prevent Enter Trick for Prince / Rating (Button -> Styled div)
 LOW: Initial Basic Reset should be required in Destiny runs
 
 LOW: Dynamic header bar (x, alpha, stars)
@@ -51,6 +37,5 @@ LOW: Notification for new highscores
 
 ~~~~~~~~~~VERYLOW~~~~~~~~~~
 
-VERYLOW: Research Offline Progress cannot be disabled
 VERYLOW: Back button to quit endings early
 VERYLOW: Negative Space Rounding

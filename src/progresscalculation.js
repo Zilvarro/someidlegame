@@ -17,7 +17,7 @@ export const applyFormulaToState = (state, formula, forceApply, silent, multiApp
     }
 
     //Can't afford or not yet unlocked
-    if (state.xValue[0] < applyCost || state.xValue[0] < applyNeed || !state.formulaUnlocked[formula.formulaName])
+    if ((!formula.isBasic && (state.xValue[0] < applyCost || state.xValue[0] < applyNeed)) || !state.formulaUnlocked[formula.formulaName])
         return false
 
     //Apply Limit reached
@@ -30,7 +30,7 @@ export const applyFormulaToState = (state, formula, forceApply, silent, multiApp
         const deductCost = applyCost > 0 && !state.alphaUpgrades.FREF && state.xValue[formula.targetLevel] !== newValue
         const maxApplyTimes = deductCost ? state.xValue[0] / applyCost : Infinity 
         const limitActive = state.activeChallenges.LIMITED || state.activeChallenges.SINGLEUSE
-        const applyTimes = multiApply && !formula.isStatic && !limitActive ? Math.floor(Math.min(getGlobalMultiplier(state), maxApplyTimes)) : 1
+        const applyTimes = (multiApply && !formula.isStatic && !limitActive) ? Math.floor(Math.min(getGlobalMultiplier(state), maxApplyTimes)) : 1
         const efficiency = state.formulaEfficiency[formula.targetLevel] * applyTimes
         state.xValue[formula.targetLevel] = formula.applyFormula(efficiency, state.xValue, state)
         if (state.activeChallenges.RESETOTHER) {
@@ -39,8 +39,8 @@ export const applyFormulaToState = (state, formula, forceApply, silent, multiApp
         state.formulaUsed[formula.formulaName] = true
         state.anyFormulaUsed = true
         state.formulaApplyCount++
-        if (deductCost) { //Cost only deducted if value changes
-            state.xValue[0] -= applyCost * applyTimes
+        if (deductCost) { //Cost only deducted if value changes, cost should not push beneath zero
+            state.xValue[0] = Math.max(state.xValue[0] - applyCost * applyTimes, 0)
         }
     }
 
@@ -89,7 +89,7 @@ export const applyFormulaToState = (state, formula, forceApply, silent, multiApp
         }
     }
     actuallyApply()
-    return true
+    return state.xValue[0] >= applyCost && state.xValue[0] >= applyNeed
 }
 
 export const applyIdleProgress = (state, deltaMilliSeconds) => {

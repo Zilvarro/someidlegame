@@ -126,3 +126,19 @@ export const getRewardInterval = (amount, milliSeconds, globalMultiplier)=>{
     else
         return milliSeconds / (amount * Math.pow(globalMultiplier, 1.1 - milliSeconds / 10000))
 }
+
+export const getOfflinePopupLine = (label, before, after, numberFormat)=>{
+    const factor = after / before
+    if (after <= before)
+        return <></>
+    else if (before <= 0 || factor >= 1e6)
+        return <>Your {label} is now {formatNumber(after, numberFormat, 3)}.</>
+    else if (factor < 1.01)
+        return <><br/>Your {label} increased by {formatNumber(after - before, numberFormat, 3)}</>
+    else if (factor < 2)
+        return <><br/>Your {label} increased by +{Math.floor(factor * 100 - 100)}%</>
+    else if (factor < 100)
+        return <><br/>Your {label} increased by a factor of {factor.toFixed(2)}x</>
+    else
+        return <><br/>Your {label} increased by a factor of {Math.floor(factor)}x</>
+}

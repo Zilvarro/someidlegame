@@ -1,5 +1,5 @@
 import {destinyMileStoneList, milestoneList} from './AchievementScreen' 
-import {getRewardInterval, notify, formatNumber, secondsToHms} from './utilities'
+import {getRewardInterval, notify, secondsToHms, getOfflinePopupLine} from './utilities'
 import formulaList from './formulas/FormulaDictionary'
 import {shopFormulas} from './formulas/FormulaScreen'
 import {isLockedByChallenge} from './formulas/FormulaButton'
@@ -8,7 +8,7 @@ import {startingStones, stoneTable, stoneList} from './alpha/AlphaStoneDictionar
 import * as eventsystem from './mails/MailEventSystem'
 import * as progresscalculation from './progresscalculation'
 
-const version = "0.40"
+const version = "0.41"
 
 export const newSave = {
     version: version,
@@ -94,6 +94,7 @@ export const newSave = {
     mailsReceived: {},
     mailsCompleted: {},
     mailsProgress: {},
+    mailsUnlocked: {},
     settings: {
         valueReduction: "CONFIRM",
         offlineProgress: "ON",
@@ -418,17 +419,21 @@ export const saveReducer = (state, action)=>{
 
         state.lastPlayTime = action.playTime
         const timeStamp = Date.now()
-        let deltaMilliSeconds = (timeStamp - state.calcTimeStamp)
+        let deltaMilliSeconds = Math.max(timeStamp - state.calcTimeStamp, 0)
+
+        const xBefore = state.xValue[0]
+        const aBefore = state.alpha
+        const sBefore = state.starLight
 
         if (state.noProdTime > 0) {
             state.noProdTime -= deltaMilliSeconds
             deltaMilliSeconds = 0
         }
 
-        if (state.xValue.includes(-Infinity)) {
+        if (state.xValue[0] === -Infinity) {
             state.currentEnding = "negative"
             performXReset(state)
-        } else if (state.xValue[0]<0||state.xValue[1]<0||state.xValue[2]<0||state.xValue[3]<0) {
+        } else if (state.xValue[0]<=-1||state.xValue[1]<=-1||state.xValue[2]<=-1||state.xValue[3]<=-1) {
             state.inNegativeSpace = true
         }
         
@@ -469,18 +474,8 @@ export const saveReducer = (state, action)=>{
             if (state.anyFormulaUsed || state.highestXTier > 0 || state.xResetCount)
                 state.currentAlphaTime += deltaMilliSeconds
             state.currentChallengeTime += deltaMilliSeconds
-            const xBefore = state.xValue[0]
             state = progresscalculation.applyIdleProgress(state, deltaMilliSeconds)
-            const factor = state.xValue[0] / xBefore
-            if (state.settings.offlineProgressPopup === "ON" || (state.settings.offlineProgressPopup === "LAUNCH" && state.justLaunched)){
-                if (factor && factor !== Infinity && factor > 1.01 ){
-                    popup.alert("You were away for " + secondsToHms(Math.floor(deltaMilliSeconds / 1000)) + ".\nYour x increased by a factor of " + formatNumber(factor,state.settings.numberFormat,2,true))
-                } else {
-                    popup.alert("You were away for " + secondsToHms(Math.floor(deltaMilliSeconds / 1000)) + ".")
-                }
-            }
         } else if (state.settings.offlineProgressPopup === "ON" || (state.settings.offlineProgressPopup === "LAUNCH" && state.justLaunched)){
-            popup.alert("You were away for " + secondsToHms(Math.floor(deltaMilliSeconds / 1000)) + ".")
             deltaMilliSeconds = 0 //prevents further progress
         }
 
@@ -627,6 +622,15 @@ export const saveReducer = (state, action)=>{
 
         //Generate Starlight for Destiny Layer
         progresscalculation.generateStarLight(state, deltaMilliSeconds)
+
+        //Offline Progress Popup
+        if (deltaMilliSeconds > 120000 && (state.settings.offlineProgressPopup === "ON" || (state.settings.offlineProgressPopup === "LAUNCH" && state.justLaunched))){
+            const timeText = <>You were away for {secondsToHms(Math.floor(deltaMilliSeconds / 1000))}.</>
+            const xText = getOfflinePopupLine(<>x</>, xBefore, state.xValue[0], state.numberFormat)
+            const aText = getOfflinePopupLine(<>&alpha;</>, aBefore, state.alpha, state.numberFormat)
+            const sText = getOfflinePopupLine(<>&lambda;</>, sBefore, state.starLight, state.numberFormat)
+            popup.alert(<>{timeText}{xText}{aText}{sText}</>)
+        }
 
         //Autosave
         const lastSaveMilliseconds = (timeStamp - state.saveTimeStamp)
@@ -870,8 +874,10 @@ export const saveReducer = (state, action)=>{
             state.progressionLayer = 2
             notify.success("DESTINY", "You finished the game!")
             performAlphaReset(state)
+            performShopReset(state)
         } else if (action.endingName === "good" || action.endingName === "evil" || action.endingName === "true" || action.endingName === "skipped" || action.endingName === "world") {
             performAlphaReset(state)
+            performShopReset(state)
         } else { //BadEndings
             if (isNew)
                 state.badEndingCount++

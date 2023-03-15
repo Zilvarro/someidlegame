@@ -70,13 +70,11 @@ return (
     <div>{<>
         <h2>Research</h2>
         Research speed is boosted by your highscores but higher levels take longer.
+        {getMaxxedResearchBonus(state).count > 0 && <><br/>Every maxxed Research Bar doubles your Formula Efficiency (x{getMaxxedResearchBonus(state).bonus}).</>}
         <br/><br/><AlphaResearchBar key="x" research={researchDictonary["x"]} state={state} updateState={updateState}/>
         <br/><br/><AlphaResearchBar key="x'" research={researchDictonary["x'"]} state={state} updateState={updateState}/>
         <br/><br/><AlphaResearchBar key="x''" research={researchDictonary["x''"]} state={state} updateState={updateState}/>
         <br/><br/><AlphaResearchBar key="x'''" research={researchDictonary["x'''"]} state={state} updateState={updateState}/>
-        {getMaxxedResearchBonus(state).count > 0 && <><br/><br/>Every maxxed Research Bar doubles your Formula Efficiency (x{getMaxxedResearchBonus(state).bonus}).</>}
-        {/* {getMaxxedResearchBonus(state).count > 0 && <><br/><br/>Every maxxed Research Bar doubles Formula Efficiency and Production Speed (x{getMaxxedResearchBonus(state).bonus}).
-        <br/>Their individual bonus also gets rounded up generously on the last level.</>} */}
         </>}
     </div>)
 }

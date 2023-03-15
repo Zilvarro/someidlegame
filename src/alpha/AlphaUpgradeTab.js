@@ -1,6 +1,5 @@
 import { spaces, secondsToHms, formatNumber} from '../utilities'
 import AlphaUpgradeButton from './AlphaUpgradeButton'
-import MultiOptionButton from '../MultiOptionButton'
 
 const alphaUpgradeTable = ["SLOT","PALP","SRES","ARES","BR1","AAPP","FREF","SAPP","OAPP","BR2","AUNL","MEEQ","AREM","MEMS"]
 
@@ -115,17 +114,6 @@ const upgradeBaseAlpha = ()=>{
 return (
     <div>{<>
         <h2>Upgrades</h2>
-            {state.alphaUpgrades.SRES && <><MultiOptionButton settingName="autoResetterS" statusList={["ON","OFF"]} state={state} updateState={updateState} setTotalClicks={setTotalClicks}
-              description="X Resetter"/></>}
-            {state.alphaUpgrades.AREM && <>{spaces()}<MultiOptionButton settingName="autoRemembererActive" statusList={["ON","OFF"]} state={state} updateState={updateState} setTotalClicks={setTotalClicks}
-              description="Rememberer"/></>}
-            {(state.alphaUpgrades.SRES || state.alphaUpgrades.AREM) &&<><br/><br/></>}
-            
-            {state.alphaUpgrades.ARES && <><MultiOptionButton settingName="autoResetterA" statusList={["ON","OFF"]} state={state} updateState={updateState} setTotalClicks={setTotalClicks}
-              description="Alpha Resetter"/></>}
-            {state.alphaUpgrades.ARES && <>{spaces()}<MultiOptionButton settingName="alphaThreshold" statusList={["MINIMUM","1e40","1e50","1e60","1e70","1e80","1e90","1e100"]} state={state} updateState={updateState} setTotalClicks={setTotalClicks}
-              description="Alpha Target"/></>}
-            {(state.alphaUpgrades.SRES || state.alphaUpgrades.AREM) && <><br/><br/></>}
         {alphaUpgradeTable.map((upgrade)=><AlphaUpgradeButton key={upgrade} upgrade={alphaUpgradeDictionary[upgrade]} state={state} popup={popup} updateState={updateState}/>)}
         <br/><br/>
         <h2>Info</h2>
@@ -133,7 +121,7 @@ return (
         <p>Time in current Alpha run: {secondsToHms(state.currentAlphaTime / 1000)}</p>
         {state.bestAlphaTime<1e50 && <p>Fastest Alpha run: {secondsToHms(Math.ceil(state.bestAlphaTime / 1000))}</p>}
         {state.clearedChallenges.FULLYIDLE && <>
-            <p>Best Master of Idle: {formatNumber(state.bestIdleTimeAlpha, state.settings.numberFormat, 2)}&alpha; in {secondsToHms(Math.ceil(state.bestIdleTime  / 1000))}</p>
+            <p>Best Fully Idle: {formatNumber(state.bestIdleTimeAlpha, state.settings.numberFormat, 2)}&alpha; in {secondsToHms(Math.ceil(state.bestIdleTime  / 1000))}</p>
         </>}
         {state.alphaUpgrades.PALP && ((state.passiveAlphaInterval <= 1000) ? <p>Passive Alpha Tokens: {formatNumber(Math.floor(1000 / state.passiveAlphaInterval),state.settings.numberFormat,2)}/s</p> :<p>Next Passive Alpha Token: {secondsToHms(Math.max(0,((state.passiveAlphaInterval - state.passiveAlphaTime) / 1000)))}</p>)}
         {state.alphaUpgrades.AAPP && <p>Auto Applier Rate: {state.autoApplyRate}/s{spaces()}{applierLevel<2 && <button disabled={state.alpha < applierCosts[applierLevel + 1]} onClick={upgradeApplierRate}>Upgrade for {applierCosts[applierLevel + 1]} &alpha;</button>}</p>}
