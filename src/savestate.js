@@ -8,7 +8,8 @@ import {startingStones, stoneTable, stoneList} from './alpha/AlphaStoneDictionar
 import * as eventsystem from './mails/MailEventSystem'
 import * as progresscalculation from './progresscalculation'
 
-const version = "0.41"
+export const majorversion = 1
+export const version = "0.43"
 
 export const newSave = {
     version: version,
@@ -128,7 +129,10 @@ const alphaThresholds = {
 }
 
 export const getSaveGame = ()=>{
-    const savedgame = window.localStorage.getItem('idleformulas')
+    const savedversion = window.localStorage.getItem('majorversion')
+    let savedgame
+    if (savedversion)
+        savedgame = window.localStorage.getItem('idleformulas_v' + savedversion)
     if (!savedgame) {
         return ({...structuredClone(newSave), saveTimeStamp: Date.now(), calcTimeStamp: Date.now()})
     }
@@ -153,7 +157,11 @@ export const getSaveGame = ()=>{
 }
 
 export const loadGame = ()=>{
-    const savedgame = window.localStorage.getItem('idleformulas')
+    const savedversion = window.localStorage.getItem('majorversion')
+    let savedgame
+    if (savedversion)
+        savedgame = window.localStorage.getItem('idleformulas_v' + savedversion)
+
     if (!savedgame) {
         notify.error("No savegame found!")
         return undefined
@@ -161,12 +169,6 @@ export const loadGame = ()=>{
     else {
         notify.success("Game Loaded")
         const savedgamejson = JSON.parse(savedgame)
-
-        //*TEMPORARY*
-        // const encodedState = Buffer.from(JSON.stringify(savedgamejson)).toString("base64");
-        // navigator.clipboard.writeText(encodedState);
-        //     notify.success("Copied Old State")
-        // return ({...structuredClone(newSave), saveTimeStamp: Date.now(), calcTimeStamp: Date.now()})
 
         return {...structuredClone(newSave), ...savedgamejson, settings:{...structuredClone(newSave.settings), ...savedgamejson.settings}, saveTimeStamp: Date.now(), currentEnding: newSave.currentEnding, justLaunched: true}
 
@@ -194,7 +196,8 @@ export const save = (state)=>{
     state.version = version
     state.saveTimeStamp = Date.now()
     let currentgame = JSON.stringify({...state, holdAction:null})
-    window.localStorage.setItem('idleformulas', currentgame)
+    window.localStorage.setItem('majorversion', majorversion)
+    window.localStorage.setItem('idleformulas_v' + majorversion, currentgame)
 }
 
 export const getAlphaRewardTier = (value)=>{
@@ -476,6 +479,8 @@ export const saveReducer = (state, action)=>{
             state.currentChallengeTime += deltaMilliSeconds
             state = progresscalculation.applyIdleProgress(state, deltaMilliSeconds)
         } else if (state.settings.offlineProgressPopup === "ON" || (state.settings.offlineProgressPopup === "LAUNCH" && state.justLaunched)){
+            const timeText = <>You were away for {secondsToHms(Math.floor(deltaMilliSeconds / 1000))}.</>
+            popup.alert(timeText)
             deltaMilliSeconds = 0 //prevents further progress
         }
 
@@ -592,7 +597,7 @@ export const saveReducer = (state, action)=>{
         //Passive Alpha from Upgrade
         if (state.alphaUpgrades.PALP) {
             state.passiveAlphaTime += deltaMilliSeconds
-            if (state.passiveAlphaTime >= state.passiveAlphaInterval) {
+            if (state.passiveAlphaTime >= Math.min(state.passiveAlphaInterval, 1000*3600*24)) {
                 state.alpha += Math.floor(state.passiveAlphaTime / state.passiveAlphaInterval)
                 state.passiveAlphaTime %= state.passiveAlphaInterval
             }
@@ -639,7 +644,7 @@ export const saveReducer = (state, action)=>{
         }
 
         //Failsafe NaN
-        if (!state.currentEnding && isNaN(state.xValue[0]))
+        if (!state.currentEnding && (isNaN(state.xValue[0]) || isNaN(state.xValue[1]) || isNaN(state.xValue[2]) || isNaN(state.xValue[3])))
         {
             performXReset(state)
             state.currentEnding = "infinite"
@@ -720,18 +725,7 @@ export const saveReducer = (state, action)=>{
         }
         break;
     case "cheat":
-        state.mailsForCheck = []
-        state.mailsPending = []
-        state.mailsList = []
-        state.mailsForTimeout = []
-        state.mailsProgress = {}
-        state.mailsCompleted = {}
-        state.mailsReceived = {}
-        state.mailsUnlocked = {}
-        state.mailUnread = {}
-        state.destinyStars = 1000
-        state.alpha = 10
-        state.mailsForCheck.push("Transfer")
+        state.currentEnding = "true"
         break;
     case "chapterJump":
         switch (action.password) {
@@ -761,9 +755,9 @@ export const saveReducer = (state, action)=>{
                 notify.success("CHAPTER 5: ALPHA")
                 break;
             case "D3571NY574R":
-                state.destinyStars = 0
+                state.destinyStars = 2
                 state.mileStoneCount = 12
-                state.progressionLayer = 2
+                state.progressionLayer = 0
                 notify.success("POSTGAME: DESTINY")
                 break;
             case "DEVTEST":
@@ -870,7 +864,7 @@ export const saveReducer = (state, action)=>{
         state.completedEndings[action.endingName] = true
         performXReset(state)
         state.currentEnding = ""
-        if (action.endingName === "world" && state.progressionLayer <= 2) {
+        if ((action.endingName === "world" || (action.endingName === "true" && state.destinyStars > 1))&& state.progressionLayer <= 2) {
             state.progressionLayer = 2
             notify.success("DESTINY", "You finished the game!")
             performAlphaReset(state)

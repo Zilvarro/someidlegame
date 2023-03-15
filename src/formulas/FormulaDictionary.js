@@ -443,7 +443,7 @@ const formulaList = {
         applyCost: 1e9,
         applyNeed: 0,
         targetLevel: 3,
-        applyFormula: (eff, x)=>((300e21 - x[3] / eff)<0 ? {error:"imaginary"} : Math.floor(x[3]*Math.sqrt(300e21 - x[3] / eff) / 500e9)),
+        applyFormula: (eff, x)=>((300e21 - x[3])<0 ? {error:"imaginary"} : Math.floor(x[3]*Math.sqrt(300e21 - x[3]) / 500e9)),
         complex: true,
         isStatic: true, //counts as static because too complicated
         offlineDisabled: true,

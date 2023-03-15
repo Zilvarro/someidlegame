@@ -23,7 +23,7 @@ export default function EndingBarScreen({state, popup, updateState}) {
     const deltaMilliSeconds = startTime ? Date.now() - startTime : 0
     const goal = 1000 * currentAction.durationSeconds
     const percentage = getGlobalMultiplier(state) * deltaMilliSeconds / goal
-    const isDone = (percentage >= 1)
+    const isDone = (currentAction.finishOnClick || percentage >= 1)
 
     if (currentAction.final) {
         return <EndingFinalScreen state={state} action={currentAction} updateState={updateState} popup={popup}/>
@@ -38,7 +38,7 @@ export default function EndingBarScreen({state, popup, updateState}) {
         else
             hesitancePercentage = 0.8 + 8*(percentage - 0.975)
     }
-    const progressBarWidth = isDone ? "100%" : Math.min(101 * hesitancePercentage,100).toFixed(2) + "%"
+    const progressBarWidth = isDone ? "100%" : Math.min(101 * hesitancePercentage,100).toFixed() + "%"
     
     const currencyPerSecond = ending.generators ? ending.generators.reduce((a,v)=>(a+(generatorAmounts[v.title]||0) * v.production),0) : 0
     const cpsMultiplier = Math.max(0,Math.min(1, 1.49 - 1.5 * currencyAmount / ending.currencyGoal))

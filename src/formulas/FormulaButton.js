@@ -85,7 +85,7 @@ export default function FormulaButton({state, popup, updateState, setTotalClicks
     }
     var tooltip = applyCost >= applyNeed ? (state.alphaUpgrades.FREF ? "Need":"Cost") + ": x=" + formatNumber(applyCost, state.settings.numberFormat) : "Need: x=" + formatNumber(applyNeed, state.settings.numberFormat)
     const delimiter = state.settings.shopPrices ? " / " : "\n"
-    tooltip += formula && formula.explanation ? delimiter + formula.explanation : ""
+    var tooltipplus = tooltip + (formula && formula.explanation ? delimiter + formula.explanation : "")
 
     const freeFormulas = ["x+1","x'=1","x'=1","x'=1"]
     formula.isFree = formula.formulaName === freeFormulas[state.highestXTier]
@@ -106,6 +106,7 @@ export default function FormulaButton({state, popup, updateState, setTotalClicks
     formula.unlockMultiplier = getUnlockMultiplier(formula,state)
     if (formula.isBasic)
         tooltip = "Basic Formula"
+        tooltipplus = "Basic Formula"
 
     if (formula.numberFormat !== state.settings.numberFormat)
         formula.description =  formula.descriptions?.[state.settings.numberFormat] || formula.description
@@ -139,7 +140,7 @@ export default function FormulaButton({state, popup, updateState, setTotalClicks
         return (
             <tr>{state.alphaUpgrades.AAPP && <td><input onClick={toggleAutoApply} disabled={state.activeChallenges.FULLYIDLE} style={{transform:"scale(1.2)"}} type="checkbox" checked={state.autoApply[myIndex]} readOnly></input></td>}
                 <td align="left" className="block" style={{width:"auto"}}>
-                <button className="fbutton" title={tooltip} style={{backgroundColor: buttonColor}}
+                <button className="fbutton" title={tooltipplus} style={{backgroundColor: buttonColor}}
                     disabled={lockedByChallenge || state.activeChallenges.FULLYIDLE || !state.formulaUnlocked[formulaName] || (applyNeed && state.xValue[0] < applyNeed) || (applyCost && state.xValue[0] < applyCost)}
                     onClick={(evt)=>applyFormula(formula,evt)} onMouseDown={mouseHandler} onMouseUp={mouseHandler} onMouseLeave={mouseHandler} onTouchStart={mouseHandler} onTouchEnd={mouseHandler}>
                     {formula.description}
@@ -175,7 +176,7 @@ export default function FormulaButton({state, popup, updateState, setTotalClicks
     } else if (state.formulaUnlocked[formulaName]) { //GET BUTTON
         return (
             <tr><td align="left" className="block" style={{width:"auto"}}>
-                <button title={tooltip} className="fbutton" style={{backgroundColor: buttonColor, fontWeight: buttonBoldness}}
+                <button title={tooltipplus} className="fbutton" style={{backgroundColor: buttonColor, fontWeight: buttonBoldness}}
                     disabled={state.activeChallenges.FULLYIDLE || state.myFormulas.length >= getInventorySize(state)}
                     onClick={()=>getFormula(formula)}>
                     GET {formula.description}
@@ -192,7 +193,7 @@ export default function FormulaButton({state, popup, updateState, setTotalClicks
         }
         return (
             <tr><td align="left" className="block" style={{"width":"auto"}}>
-                <button className="fbutton" style={{backgroundColor: "#ffffff", fontWeight: buttonBoldness}} title={tooltip}
+                <button className="fbutton" style={{backgroundColor: "#ffffff", fontWeight: buttonBoldness}} title={tooltipplus}
                     disabled={state.activeChallenges.FULLYIDLE || (state.xValue[0] < formula.unlockCost * formula.unlockMultiplier && !formula.isFree)}
                     onClick={()=>unlockFormula(formula)}>
                     UNLOCK {formula.description}

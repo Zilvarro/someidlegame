@@ -131,14 +131,14 @@ export const getOfflinePopupLine = (label, before, after, numberFormat)=>{
     const factor = after / before
     if (after <= before)
         return <></>
-    else if (before <= 0 || factor >= 1e6)
+    else if (before <= 0)
         return <>Your {label} is now {formatNumber(after, numberFormat, 3)}.</>
-    else if (factor < 1.01)
+    else if (factor < 1.01 || before < 1e6)
         return <><br/>Your {label} increased by {formatNumber(after - before, numberFormat, 3)}</>
     else if (factor < 2)
         return <><br/>Your {label} increased by +{Math.floor(factor * 100 - 100)}%</>
     else if (factor < 100)
         return <><br/>Your {label} increased by a factor of {factor.toFixed(2)}x</>
     else
-        return <><br/>Your {label} increased by a factor of {Math.floor(factor)}x</>
+        return <><br/>Your {label} increased by a factor of {formatNumber(factor, numberFormat, 3)}x</>
 }

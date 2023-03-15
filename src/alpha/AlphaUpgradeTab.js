@@ -74,7 +74,7 @@ const alphaUpgradeDictionary = {
         id:"PALP",
         requires: "SLOT",
         title:"Passive Alpha",
-        description:"Gain Alpha Tokens passively in Intervals based on fastest Alpha-Reset.",
+        description:"Gain Alpha Tokens passively in Intervals of the fastest Alpha-Reset (min 1/day). Works offline!",
         cost:2,
     },
     "SRES": {

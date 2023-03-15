@@ -92,8 +92,8 @@ export default function DestinyWelcomeTab({state, popup, updateState}) {
                     {getStarLightRate(state) < 20 && <><DestinyStarlightButton upgrade={starlightDictionary["single"]} state={state} updateState={updateState}/><br/></>}
                     {/* {getStarLightRate(state) < 20 && <><button onClick={()=>updateState({name:"buyLightUpgrade", currency:"starLight", cost:0})}>Gaze at the night sky</button><br/><br/></>} */}
                     <h2>Star Constellations</h2>
-                    {state.constellationCount < 12 ? <>Fill the entire night sky with Starlight to complete Star Constellations.<br/></> : <>All Star Constellations are complete. Congratulations!<br/></>}
-                    Each Constellation halves the prices of Starlight Upgrades and increases the Starlight cap tenfold.<br/>
+                    {state.constellationCount < 12 ? <>Fill the entire night sky with Starlight to complete Star Constellations.<br/>Each Constellation halves the prices of Starlight Upgrades and increases the Starlight cap tenfold.<br/></> : <>All Star Constellations are complete. Congratulations!<br/>The prices of Starlight Upgrades are divided by 5000 and the Starlight cap is removed entirely.<br/></>}
+                    
                     {constellationList.map((id)=><DestinyConstellationButton key={id} popup={popup} constellation={starConstellations[id]} state={state} updateState={updateState}/>)}<br/><br/>
                 </>}
             </>}
@@ -119,7 +119,7 @@ function DestinyStarlightButton({state, updateState, upgrade}) {
         color: "black",
     }
     //const buttonStyle = {width: "200px", backgroundColor: isMaxxed ? "#ffff00" : "#ffffff", fontWeight: "bolder"}
-    const actualCost = Math.floor(upgrade.costBase*Math.pow(upgrade.costMultiplier, state[upgrade.currency]) * Math.pow(0.5, state.constellationCount))
+    const actualCost = Math.floor(upgrade.costBase*Math.pow(upgrade.costMultiplier, state[upgrade.currency]) * (state.constellationCount < 12 ? Math.pow(0.5, state.constellationCount) : 1/5000))
     return <><button title={upgrade.description} style={upgrade.useDefaultStyle ? undefined : buttonStyle} onClick={()=>buyLight(upgrade.currency, actualCost)} disabled={isMaxxed || state.starLight < actualCost}>{upgrade.title}{!upgrade.hideAmount && <>&nbsp;({state[upgrade.currency]})</>}</button>{state[upgrade.currency] < 1000 && actualCost > 0 && <>&nbsp;&nbsp;Cost: &lambda;={formatNumber(actualCost,state.settings.numberFormat)}</>}<br/></>
                     
 }

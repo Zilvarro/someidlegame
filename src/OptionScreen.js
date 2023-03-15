@@ -1,6 +1,6 @@
 import { Buffer } from "buffer";
 
-import {save} from './savestate'
+import {save, version} from './savestate'
 import {spaces, notify} from './utilities'
 import MultiOptionButton from './MultiOptionButton'
 
@@ -109,6 +109,6 @@ export default function OptionScreen({state, popup, updateState, setTotalClicks}
       {state.xValue[0] === 0 && state.mileStoneCount === 0 && <p>
         {spaces()}<button onClick={chapterJump}>Chapter Jump</button>
       </p>}
-      <p>Version {state.version}</p>
+      <p>Version {version}</p>
   </div>)
 }
