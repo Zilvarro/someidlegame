@@ -16,6 +16,6 @@ export default function MultiOptionButton({state, updateState, settingName, disa
         fullToolTip = tooltip
 
     return (
-        <button title={fullToolTip} disabled={disabled} onClick={changeSetting}>{description}: {currentStatus}</button>
+        <button style={{color:"black"}} title={fullToolTip} disabled={disabled} onClick={changeSetting}>{description}: {currentStatus}</button>
     )
 }

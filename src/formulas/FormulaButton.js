@@ -29,7 +29,7 @@ export const getUnlockMultiplier = (formula, state)=>{
 export default function FormulaButton({state, popup, updateState, setTotalClicks, formulaName, context, myIndex}) {
     const applyFormula = (formula,evt)=>{
         if (!state.decreaseCooldown && state.settings.valueReduction === "CONFIRM" && 0.9999 * state.xValue[formula.targetLevel] > formula.applyFormula(state.formulaEfficiency[formula.targetLevel],state.xValue, state)) {
-            popup.confirm("This will lower your X value. Are you sure?\n(If you confirm, this pop-up is disabled until your next Reset. You can also skip this pop-up by using Shift+Click)",()=>{
+            popup.confirm(<>This will lower your X value. Are you sure?<br/>If you confirm, this pop-up gets disabled until your next Reset.</>,()=>{
                 updateState({name: "applyFormula", formula: formula, updateState: updateState, forceApply: true})
                 setTotalClicks((x)=>x+1)
             })
@@ -101,7 +101,11 @@ export default function FormulaButton({state, popup, updateState, setTotalClicks
     }
     if (applyNeed <= state.xValue[0] && applyCost <= state.xValue[0]) {
         buttonColor = "#CCFFCC"
+        if (context === "my" && state.xValue[formula.targetLevel] >= 0 && formula.applyFormula(state.formulaEfficiency[formula.targetLevel], state.xValue, state) > 1.05 * state.xValue[formula.targetLevel]) {
+            buttonColor = "#99FF99" //Dark Green if +5% with one application
+        }
     }
+
 
     formula.unlockMultiplier = getUnlockMultiplier(formula,state)
     if (formula.isBasic)

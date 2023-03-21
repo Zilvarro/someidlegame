@@ -73,7 +73,7 @@ export default function FormulaScreen({state, updateState, setTotalClicks, popup
     }
     
     const performAlphaReset = ()=>{
-      popup.confirm("You lose all your differentials but you gain a powerful Alpha Token.",()=>{
+      popup.confirm("You lose all your differentials but you join the Academy and gain a powerful Alpha Token.",()=>{
         updateState({name: "alphaReset"})
         setTotalClicks((x)=>x+1)
       }, state.progressionLayer >= 1)
@@ -139,25 +139,25 @@ export default function FormulaScreen({state, updateState, setTotalClicks, popup
     return (<div style={{color: "#99FF99"}}>
         <div className="row" style={{marginTop:"0px"}}><div className="column">
         <h2 style={{marginTop:"0px"}}>X Values</h2>
-            <ValueTable values={state.xValue} baseName={"x"} maxTier={state.highestXTier} numberFormat={state.settings.numberFormat}/>
+            <ValueTable values={state.xValue} diffs={state.avgXPerSecond} baseName={"x"} maxTier={state.highestXTier} numberFormat={state.settings.numberFormat}/>
             <br/>
             {!state.insideChallenge && state.xValue[0] >= Infinity &&
               <>{spaces()}<button onClick={getWorldFormula}><b>DISCOVER THE WORLD FORMULA</b></button><br/><br/></>
             }
             {(state.mileStoneCount >= 2 || state.formulaUnlockCount >= 4) &&
-              <>{spaces()}<button onClick={resetXValues} disabled={state.activeChallenges.FULLYIDLE || state.activeChallenges.ONESHOT || !state.anyFormulaUsed}>Basic Reset</button>{state.mileStoneCount === 1 && <>{spaces()}&larr; Reset x, but you can adapt your equipped formulas.</>}</>
+              <>{spaces()}<button style={{color:"black"}} onClick={resetXValues} disabled={state.activeChallenges.FULLYIDLE || state.activeChallenges.ONESHOT || !state.anyFormulaUsed}>Basic Reset</button>{state.mileStoneCount === 1 && <>{spaces()}&larr; Reset x, but you can adapt your equipped formulas.</>}</>
             }
             {(state.mileStoneCount >= 3 || (state.mileStoneCount === 2 && state.xValue[0] >= differentialTarget)) && state.highestXTier < 3 &&
-              <>{spaces()}<button disabled={state.inNegativeSpace || state.activeChallenges.FULLYIDLE || state.xValue[0] < differentialTarget} onClick={resetShop}>{sResetName}-Reset</button>{state.mileStoneCount === 2 && <>{spaces()}&larr; Reset the shop for a new differential</>}</>
+              <>{spaces()}<button style={{color:"black"}} disabled={state.inNegativeSpace || state.activeChallenges.FULLYIDLE || state.xValue[0] < differentialTarget} onClick={resetShop}>{sResetName}-Reset</button>{state.mileStoneCount === 2 && <>{spaces()}&larr; Reset the shop for a new differential</>}</>
             }
-            {state.mileStoneCount >= 6 && !state.insideChallenge && state.highestXTier === 3 && state.xValue[0] >= alphaTarget &&
-              <>{spaces()}<button disabled={state.inNegativeSpace || state.activeChallenges.FULLYIDLE || state.xValue[0] < alphaTarget} onClick={performAlphaReset}>&alpha;-Reset</button>{spaces()}</>
+            {state.progressionLayer >= 1 && !state.insideChallenge && state.highestXTier === 3 && state.xValue[0] >= alphaTarget &&
+              <>{spaces()}<button style={{color:"black"}} disabled={state.inNegativeSpace || state.activeChallenges.FULLYIDLE || state.xValue[0] < alphaTarget} onClick={performAlphaReset}>&alpha;-Reset</button>{spaces()}</>
             }
             {state.insideChallenge && state.highestXTier === 3 && state.xValue[0] >= alphaTarget &&
-              <>{spaces()}<button disabled={state.inNegativeSpace || state.activeChallenges.FULLYIDLE} onClick={completeChallenge}><b>Complete Challenge</b></button></>
+              <>{spaces()}<button style={{color:"black"}} disabled={state.inNegativeSpace || state.activeChallenges.FULLYIDLE} onClick={completeChallenge}><b>Complete Challenge</b></button></>
             }
             {state.progressionLayer >= 1 && (state.xValue[0] < alphaTarget || state.highestXTier < 3) &&
-              <>{spaces()}<button disabled={state.activeChallenges.FULLYIDLE} onClick={abortAlphaReset}>Abort</button></>
+              <>{spaces()}<button style={{color:"black"}} disabled={state.activeChallenges.FULLYIDLE} onClick={abortAlphaReset}>Abort</button></>
             }
           <h2>My Formulas</h2>
           <FormulaTable state={state} updateState={updateState} popup={popup} setTotalClicks={setTotalClicks} formulaNames={inventoryFormulas} context="my"/>
@@ -166,17 +166,17 @@ export default function FormulaScreen({state, updateState, setTotalClicks, popup
           }
           <p>
             {(state.alphaUpgrades.MEEQ) && <>
-              <button onClick={memorize} disabled={state.activeChallenges.FULLYIDLE} title={"Saves equip layout so you can use it again later"}>Memorize</button>
-              {spaces()}<button onClick={remember} disabled={state.activeChallenges.FULLYIDLE || state.anyFormulaUsed} title={"Loads saved equip layout for current x-Reset"}>Remember</button>
-              {spaces()}<button onClick={clearLoadout} disabled={state.activeChallenges.FULLYIDLE} title={"Unequips all unused formulas"}>Unequip</button>
+              <button onClick={memorize} style={{color:"black"}} disabled={state.activeChallenges.FULLYIDLE} title={"Saves equip layout so you can use it again later"}>Memorize</button>
+              {spaces()}<button onClick={remember} style={{color:"black"}}disabled={state.activeChallenges.FULLYIDLE || state.anyFormulaUsed} title={"Loads saved equip layout for current x-Reset"}>Remember</button>
+              {spaces()}<button onClick={clearLoadout} style={{color:"black"}} disabled={state.activeChallenges.FULLYIDLE} title={"Unequips all unused formulas"}>Unequip</button>
             </>}
             {(state.alphaUpgrades.SAPP) && <>
-              {spaces()}<button onClick={toggleAutoApply} disabled={state.activeChallenges.FULLYIDLE} title={"Activate/Deactivate all Auto Appliers"}>Auto</button>
+              {spaces()}<button onClick={toggleAutoApply} style={{color:"black"}}disabled={state.activeChallenges.FULLYIDLE} title={"Activate/Deactivate all Auto Appliers"}>Auto</button>
             </>}
             {(state.alphaUpgrades.MEMS) && <><br/><br/>
-              <button onClick={()=>selectLoadout(0)} disabled={state.activeChallenges.FULLYIDLE} title={"Select Loadout A"}>{state.selectedLayout === 0 ? <div style={{fontWeight:900}}>Loadout A</div> : <>Loadout A</>}</button>
-              {spaces()}<button onClick={()=>selectLoadout(1)} disabled={state.activeChallenges.FULLYIDLE} title={"Select Loadout B"}>{state.selectedLayout === 1 ? <div style={{fontWeight:900}}>Loadout B</div> : <>Loadout B</>}</button>
-              {spaces()}<button onClick={()=>selectLoadout(2)} disabled={state.activeChallenges.FULLYIDLE} title={"Select Loadout C"}>{state.selectedLayout === 2 ? <div style={{fontWeight:900}}>Loadout C</div> : <>Loadout C</>}</button>
+              <button onClick={()=>selectLoadout(0)} style={{color:"black"}} disabled={state.activeChallenges.FULLYIDLE} title={"Select Loadout A"}>{state.selectedLayout === 0 ? <div style={{fontWeight:900}}>Loadout A</div> : <>Loadout A</>}</button>
+              {spaces()}<button onClick={()=>selectLoadout(1)} style={{color:"black"}} disabled={state.activeChallenges.FULLYIDLE} title={"Select Loadout B"}>{state.selectedLayout === 1 ? <div style={{fontWeight:900}}>Loadout B</div> : <>Loadout B</>}</button>
+              {spaces()}<button onClick={()=>selectLoadout(2)} style={{color:"black"}} disabled={state.activeChallenges.FULLYIDLE} title={"Select Loadout C"}>{state.selectedLayout === 2 ? <div style={{fontWeight:900}}>Loadout C</div> : <>Loadout C</>}</button>
             </>}
           </p>
           {state.alphaUpgrades.SRES && <><MultiOptionButton disabled={state.activeChallenges.FULLYIDLE} settingName="autoResetterS" statusList={["ON","OFF"]} state={state} updateState={updateState} setTotalClicks={setTotalClicks}

@@ -9,6 +9,14 @@ export const calcStoneResultForX = (state, grid)=>{
     return startingXBonus
 }
 
+export const getStoneCalculationForX = (state, grid)=>{
+    const stoneLevels = grid.flat().map((id)=>(state.startingStoneLevel[id]||0))
+    const stoneLevelCounts = stoneLevels.reduce((acc, e) => acc.set(e, (acc.get(e) || 0) + 1), new Map())
+    const stoneLevelEntries = [...stoneLevelCounts.entries()]
+    const xPartText = stoneLevelEntries.map(([level,count], index)=>(level > 0 && <span key={index}>{count}<sup>{level}</sup>{index < stoneLevelEntries.length - 1 && <> + </>}</span>))
+    return xPartText
+}
+
 const calcLevelBoundaries = (state, grid)=>{
     const dimX = grid.length
     const dimY = grid[0].length
@@ -84,7 +92,7 @@ export default function AlphaStonesTab({state, popup, updateState}) {
                     <AlphaStartingStone key={stoneId} state={state} stone={startingStones[stoneId]} boundary={boundaries[index][indey]} popup={popup} updateState={updateState}/>
                 )}</div>)}
                 <br/>
-                <div style={{fontSize:"20px",fontWeight:"bold"}}>{spaces()}s<sub>x</sub> = {formatNumber(xBonus, state.settings.numberFormat)}</div><br/>
+                <div style={{fontSize:"20px",fontWeight:"bold"}}>{spaces()}s<sub>x</sub> = {getStoneCalculationForX(state, stoneTable)} = {formatNumber(xBonus, state.settings.numberFormat)}</div><br/>
                 {xBonus > 1 && <div>{spaces()} s<sub>x</sub> multiplies Starting x</div>}
             </>}
         </div>)

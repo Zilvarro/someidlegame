@@ -1,5 +1,5 @@
 import {destinyMileStoneList, milestoneList} from './AchievementScreen' 
-import {getRewardInterval, notify, secondsToHms, getOfflinePopupLine} from './utilities'
+import {getRewardInterval, notify, secondsToHms, getOfflinePopupLine, isMobileDevice} from './utilities'
 import formulaList from './formulas/FormulaDictionary'
 import {shopFormulas} from './formulas/FormulaScreen'
 import {isLockedByChallenge} from './formulas/FormulaButton'
@@ -9,7 +9,7 @@ import * as eventsystem from './mails/MailEventSystem'
 import * as progresscalculation from './progresscalculation'
 
 export const majorversion = 1
-export const version = "0.43"
+export const version = "0.44"
 
 export const newSave = {
     version: version,
@@ -17,6 +17,8 @@ export const newSave = {
     selectedTabKey: "FormulaScreen",
     selectedAlphaTabKey: "AlphaUpgradeTab",
     xValue: [0,0,0,0],
+    avgXPerSecond: [0,0,0,0],
+    xPerSecond: [[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]],
     xHighScores: [20e3,20e9,20e21,20e33],
     formulaGodScores: [1,1,1,1],
     productionBonus: [1,1,1,1],
@@ -62,6 +64,7 @@ export const newSave = {
     justLaunched: true,
     lastPlayTime: 0,
     currentAlphaTime: 0,
+    isFullyIdle: true,
     bestAlphaTime: 1e100,
     bestIdleTime: 1800e3,
     bestIdleTimeAlpha: 1,
@@ -104,7 +107,7 @@ export const newSave = {
         autoSave: "ON",
         autoLoad: "ON",
         numberFormat: "LETTER",
-        shopPrices: "OFF",
+        shopPrices: isMobileDevice() ? "ON" : "OFF",
         showHints: "ON",
         hotKeys: "ON",
         shopScroll: "OFF",
@@ -264,6 +267,7 @@ const performAlphaReset = (state)=>{
     state.currentChallenge = null
     state.currentChallengeName = null
     state.currentChallengeTime = 0
+    state.isFullyIdle = true
     state.activeChallenges = {}
     return state
 }
@@ -283,7 +287,7 @@ const giveAlphaRewards = (state)=>{
     const alphaReward = getAlphaRewardTier(state.xValue[0]).alpha * Math.pow(2,state.baseAlphaLevel)
     if (state.currentChallenge) {
         //Passive Alpha from Master of Idle
-        if (state.currentChallenge === "FULLYIDLE" && state.clearedChallenges[state.currentChallenge]) {
+        if (state.isFullyIdle && !state.insideChallenge) {
             const newRewardInterval = getRewardInterval(alphaReward, state.currentAlphaTime, getGlobalMultiplier(state))
             const oldMOIRewardInterval = getRewardInterval(state.bestIdleTimeAlpha, state.bestIdleTime, getGlobalMultiplier(state))
             if (newRewardInterval < state.passiveAlphaInterval || newRewardInterval < oldMOIRewardInterval) {
@@ -318,6 +322,8 @@ const giveAlphaRewards = (state)=>{
 
 const performXReset = (state)=>{
     state.xValue = [getStartingX(state),0,0,0]
+    state.avgXPerSecond = [0,0,0,0]
+    state.xPerSecond = [[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]]
     state.formulaUsed = {}
     state.autoApply = [false,false,false,false,false]
     state.anyFormulaUsed = false
@@ -328,6 +334,8 @@ const performXReset = (state)=>{
 
 const performShopReset = (state)=>{
     state.xValue = [getStartingX(state),0,0,0]
+    state.avgXPerSecond = [0,0,0,0]
+    state.xPerSecond = [[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]]
     state.millisSinceCountdown = 0
     state.currentChallengeTime = 0
     state.formulaUsed = {}
@@ -423,6 +431,8 @@ export const saveReducer = (state, action)=>{
         state.lastPlayTime = action.playTime
         const timeStamp = Date.now()
         let deltaMilliSeconds = Math.max(timeStamp - state.calcTimeStamp, 0)
+
+        const xValuesBefore = state.xValue.map(x=>x)
 
         const xBefore = state.xValue[0]
         const aBefore = state.alpha
@@ -628,6 +638,24 @@ export const saveReducer = (state, action)=>{
         //Generate Starlight for Destiny Layer
         progresscalculation.generateStarLight(state, deltaMilliSeconds)
 
+        //Estimate x per Second
+        if (state.progressionLayer > 0 || state.destinyStars > 1) {
+            let perSecond = [0,0,0,0]
+            for(let i = 0; i < state.xValue.length; i++) {
+                perSecond[i] = deltaMilliSeconds ? (state.xValue[i] - xValuesBefore[i]) / (deltaMilliSeconds / 1000) : 0
+                // state.xPerSecond[i] = ((state.xPerSecond[i] || 0) + (state.xValue[i] - xValuesBefore[i])) / (1 + deltaMilliSeconds / 1000)
+            }
+            state.xPerSecond.splice(0,1)
+            state.xPerSecond.push(perSecond)
+            for(let i = 0; i < state.xValue.length; i++) {
+                state.avgXPerSecond[i] = (state.xPerSecond[0][i] + state.xPerSecond[1][i] + state.xPerSecond[2][i] + state.xPerSecond[3][i])/4
+                let history = state.xPerSecond.map((elem)=>elem[i])
+                history.sort((a,b)=>(a - b))
+                state.avgXPerSecond[i] = (history[2] + history[3] + history[4] + history[5] + history[6] + history[7]) / 6
+                //state.avgXPerSecond[i] = Math.max(state.xPerSecond[0][i], state.xPerSecond[1][i], state.xPerSecond[2][i], state.xPerSecond[3][i])
+            }
+        }
+
         //Offline Progress Popup
         if (deltaMilliSeconds > 120000 && (state.settings.offlineProgressPopup === "ON" || (state.settings.offlineProgressPopup === "LAUNCH" && state.justLaunched))){
             const timeText = <>You were away for {secondsToHms(Math.floor(deltaMilliSeconds / 1000))}.</>
@@ -667,10 +695,12 @@ export const saveReducer = (state, action)=>{
         state.decreaseCooldown = false
         break;
     case "changeHold":
+        state.isFullyIdle = false
         state.holdAction = action.newValue
         state.isHolding = !!state.holdAction
         break;
     case "swapFormulas":
+        state.isFullyIdle = false
         const startIndex = state.myFormulas.indexOf(action.formulaName)
         let targetIndex
         if (action.partnerFormulaName){
@@ -683,36 +713,44 @@ export const saveReducer = (state, action)=>{
         }
         break;
     case "applyFormula":
+        state.isFullyIdle = false
         if (!state.tickFormula && !state.isHolding) {
             progresscalculation.applyFormulaToState(state, action.formula, action.forceApply)
             state.tickFormula = true
         }
         break;
     case "unlockFormula":
+        state.isFullyIdle = false
         if (!state.alphaUpgrades.AUNL)
             state.xValue[0] -= action.formula.isFree ? 0 : action.formula.unlockCost * action.formula.unlockMultiplier
         state.formulaUnlocked[action.formula.formulaName] = true
         state.formulaUnlockCount++
         break;
     case "getFormula":
+        state.isFullyIdle = false
         state.formulaBought[action.formula.formulaName] = true
         state.myFormulas.push(action.formula.formulaName)
         break;
     case "discardFormula":
+        state.isFullyIdle = false
         state.formulaBought[action.formula.formulaName] = false
         state.myFormulas = state.myFormulas.filter(formulaName => formulaName !== action.formula.formulaName)
         break;
     case "resetXValues":
+        state.isFullyIdle = false
         performXReset(state)
         break;
     case "resetShop":
+        state.isFullyIdle = false
         performShopReset(state)
         rememberLoadout(state)
         break;
     case "upgradeXTier":
+        state.isFullyIdle = false
         upgradeXTier(state)
         break;
     case "alphaReset":
+        state.isFullyIdle = false
         giveAlphaRewards(state)
         performAlphaReset(state)
         performShopReset(state)
@@ -773,21 +811,26 @@ export const saveReducer = (state, action)=>{
         }
         break;
     case "memorize":
+        state.isFullyIdle = false
         state.equipLayouts[state.selectedLayout][state.highestXTier] = structuredClone(state.myFormulas)
         notify.success("Equip Loadout Saved")
         break;
     case "remember":
+        state.isFullyIdle = false
         rememberLoadout(state,true)
         notify.success("Equip Loadout Loaded")
         break;
     case "selectLoadout":
+        state.isFullyIdle = false
         state.selectedLayout = action.index || 0
         break;
     case "clearLoadout":
+        state.isFullyIdle = false
         state.myFormulas = state.myFormulas.filter(formulaName => state.formulaUsed[formulaName])
         state.formulaBought = state.myFormulas.reduce((a,v)=>({...a, [v]:true}),{})
         break;
     case "toggleAutoApply":
+        state.isFullyIdle = false
         if (action.all) {
             //If at least one applier is active deactivate all, otherwise activate all
             if (state.autoApply.some((b,i)=>(b&&i<getInventorySize(state))))

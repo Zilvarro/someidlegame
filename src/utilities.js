@@ -5,8 +5,8 @@ export const spaces = ()=>{
     return (<>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</>)
 }
 
-export const formatNumber = (number, numberFormat, decimals=0, smallfixed=false)=>{
-    if (number < 0) return "-" + formatNumber(-number, numberFormat, decimals, smallfixed)
+export const formatNumber = (number, numberFormat, decimals=0, smallfixed=false, addPadding=false)=>{
+    if (number < 0) return "-" + formatNumber(-number, numberFormat, decimals, smallfixed, addPadding)
     number *= 1.0000000001 //hopefully less Javascript Jank
 
     const sNumberString = Math.floor(number).toExponential(10)
@@ -24,8 +24,10 @@ export const formatNumber = (number, numberFormat, decimals=0, smallfixed=false)
         const iExponent = parseInt(aNumberSplits[1])
         const aSymbols = ["","K","M","B","T","Q","P","S","V","O","N","D"]
         const aExtras = [1,10,100]
+        const aPaddings = ["\u2002\u2002", "\u2002", ""]
         let sSymbol
         let iExtra
+        let sPadding = ""
         switch (numberFormat) {
             case "SCIENTIFIC":
                 sSymbol = "e" + iExponent
@@ -38,6 +40,7 @@ export const formatNumber = (number, numberFormat, decimals=0, smallfixed=false)
                 } else {
                     sSymbol = "?"
                     iExtra = aExtras[iExponent % 3]
+                    sPadding = aPaddings[iExponent % 3]
                 }
                 break;
             default: //includes LETTER
@@ -47,15 +50,16 @@ export const formatNumber = (number, numberFormat, decimals=0, smallfixed=false)
                 } else {
                     sSymbol = aSymbols[Math.floor(iExponent / 2.9999)]
                     iExtra = aExtras[iExponent % 3]
-                    break;
+                    sPadding = aPaddings[iExponent % 3]
                 }
+                break;
         }
         if (!decimals && (fMultiplier * iExtra) % 0.1 > 0.005) {
             decimals = 2
         } else if (!decimals && (fMultiplier * iExtra) % 1 > 0.05) {
             decimals = 1
         }
-        return (fMultiplier * iExtra).toFixed(decimals) + sSymbol
+        return (addPadding ? sPadding : "") + (fMultiplier * iExtra).toFixed(decimals) + sSymbol
     }
 }
 
@@ -141,4 +145,8 @@ export const getOfflinePopupLine = (label, before, after, numberFormat)=>{
         return <><br/>Your {label} increased by a factor of {factor.toFixed(2)}x</>
     else
         return <><br/>Your {label} increased by a factor of {formatNumber(factor, numberFormat, 3)}x</>
+}
+
+export const isMobileDevice = ()=>{
+    return (/Android|webOS|iPhone|iPad|iPod|BlackBerry|BB|PlayBook|IEMobile|Windows Phone|Kindle|Silk|Opera Mini/i.test(navigator.userAgent))
 }

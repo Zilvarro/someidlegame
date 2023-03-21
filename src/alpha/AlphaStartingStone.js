@@ -54,13 +54,6 @@ export default function AlphaStartingStone({state, boundary,stone, popup, update
         verticalAlign: "top",
     }
 
-    //Locked
-    if (stone.requirement) {
-        return (
-            <button disabled={true} style={buttonStyle}>{stone.title}<br/><br/>Complete {stone.requirement} Challenges to Unlock<br/><br/>Locked</button>
-        )
-    }
-
     //Normal
     return (
         <button disabled={disabled} onClick={clickStartingStone} style={buttonStyle}>{stone.title}<br/>{state.startingStoneLevel[stone.id] || <>&nbsp;</>}</button>

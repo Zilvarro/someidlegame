@@ -3,14 +3,8 @@
 VERYHIGH: Wrong Formulas appear in Stage 1 Shop. Highest x Tier messed up in Shop :-/
 VERYHIGH: Resetters should work properly while on other tabs
 
-VERYHIGH: Master of Idle tokens updated outside of Challenge (Fully Idle Run)
-VERYHIGH: Starting Stones show calculation
-
 ~~~~~~~~~~HIGH~~~~~~~~~~
 
-HIGH: Buttons should be readable when disabled (black Text)
-
-HIGH: x per second
 HIGH: Hotkeys
 HIGH: Show # Variables (& Remove from Shop Labels)
 HIGH: Configuration for confirmation popups
@@ -18,22 +12,20 @@ HIGH: Configuration for confirmation popups
 ~~~~~~~~~~MEDIUM~~~~~~~~~~
 
 MEDIUM: Mobile defaults to Shop Formulas On
-
-MEDIUM: Explain Starlight Upgrades for Mobile Users
+MEDIUM: Prevent Enter Trick for Prince / Rating / Gaze (Button -> Styled div)
 
 ----> Cut for MVP <----
 
+MEDIUM: Linebreaks for Formulas (Click to Apply, Unequip)
 MEDIUM: Shop favs and hidden
-MEDIUM: Formula darker green when > +5%
 
 ~~~~~~~~~~~LOW~~~~~~~~~~~
 
-LOW: Prevent Enter Trick for Prince / Rating (Button -> Styled div)
-LOW: Initial Basic Reset should be required in Destiny runs
+LOW: Initial Basic Reset should be required in Destiny runs (Independence of Milestones)
 
 LOW: Dynamic header bar (x, alpha, stars)
 LOW: Reclicking Main Tab cycles through sub-tabs
-LOW: Notification for new highscores
+LOW: Notification / Indication for new highscores
 
 ~~~~~~~~~~VERYLOW~~~~~~~~~~
 
