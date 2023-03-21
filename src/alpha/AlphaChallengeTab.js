@@ -91,7 +91,7 @@ export default function AlphaChallengeTab({state, updateState, popup}) {
 
     const challengeBonus = getChallengeBonus(state)
 
-    return (<div>
+    return (<div style={{marginLeft:"20px"}}>
         <h2>Challenges</h2>
         {challengeBonus.full === 13 ? <>You completed all challenges, boosting your Formula Efficiency by {challengeBonus.bonus.toFixed(2)}.</>: <>Your {challengeBonus.full} challenge completions and {challengeBonus.segment} segment completions boost your Formula Efficiency by {challengeBonus.bonus.toFixed(2)}.</>}
         {state.currentChallenge && <p>You are currently in the "{state.currentChallengeName}" Challenge.</p>}

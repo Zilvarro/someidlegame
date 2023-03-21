@@ -33,7 +33,8 @@ export const updatePendingMails = (state)=>{
                 state.mailsPending.splice(i, 1)
                 continue
             }
-            gotNewMail = true
+            if (!mail.silent)
+                gotNewMail = true
             state.mailsUnread[mailid] = true
             state.mailsReceived[mailid] = true
             state.mailsList.unshift(mailid)

@@ -81,7 +81,7 @@ export default function AlphaStonesTab({state, popup, updateState}) {
     const boundaries = calcLevelBoundaries(state,stoneTable)
 
     return (
-        <div>{<>
+        <div style={{marginLeft:"20px"}}>{<>
             <h2>Starting Stones</h2>
                 <p>(a.k.a. "Why am I even doing these?")</p><br/>
                 &nbsp;<button onClick={()=>changeStoneMode(1)}>{state.startingStoneMode===1?<b>Increment</b>:<>Increment</>}</button>&nbsp;&nbsp;

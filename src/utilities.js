@@ -6,7 +6,9 @@ export const spaces = ()=>{
 }
 
 export const formatNumber = (number, numberFormat, decimals=0, smallfixed=false, addPadding=false)=>{
-    if (number < 0) return "-" + formatNumber(-number, numberFormat, decimals, smallfixed, addPadding)
+    const decimalPadding =  (Math.abs(number) < 1e6) ? 1 : decimals
+    if (addPadding) return formatNumber(number, numberFormat, decimals, smallfixed, false).padStart(5 + decimalPadding,"\u2002")
+    if (number < 0) return "-" + formatNumber(-number, numberFormat, decimals, smallfixed)
     number *= 1.0000000001 //hopefully less Javascript Jank
 
     const sNumberString = Math.floor(number).toExponential(10)
@@ -24,10 +26,8 @@ export const formatNumber = (number, numberFormat, decimals=0, smallfixed=false,
         const iExponent = parseInt(aNumberSplits[1])
         const aSymbols = ["","K","M","B","T","Q","P","S","V","O","N","D"]
         const aExtras = [1,10,100]
-        const aPaddings = ["\u2002\u2002", "\u2002", ""]
         let sSymbol
         let iExtra
-        let sPadding = ""
         switch (numberFormat) {
             case "SCIENTIFIC":
                 sSymbol = "e" + iExponent
@@ -40,7 +40,6 @@ export const formatNumber = (number, numberFormat, decimals=0, smallfixed=false,
                 } else {
                     sSymbol = "?"
                     iExtra = aExtras[iExponent % 3]
-                    sPadding = aPaddings[iExponent % 3]
                 }
                 break;
             default: //includes LETTER
@@ -50,7 +49,6 @@ export const formatNumber = (number, numberFormat, decimals=0, smallfixed=false,
                 } else {
                     sSymbol = aSymbols[Math.floor(iExponent / 2.9999)]
                     iExtra = aExtras[iExponent % 3]
-                    sPadding = aPaddings[iExponent % 3]
                 }
                 break;
         }
@@ -59,7 +57,7 @@ export const formatNumber = (number, numberFormat, decimals=0, smallfixed=false,
         } else if (!decimals && (fMultiplier * iExtra) % 1 > 0.05) {
             decimals = 1
         }
-        return (addPadding ? sPadding : "") + (fMultiplier * iExtra).toFixed(decimals) + sSymbol
+        return (fMultiplier * iExtra).toFixed(decimals) + sSymbol
     }
 }
 
@@ -136,7 +134,7 @@ export const getOfflinePopupLine = (label, before, after, numberFormat)=>{
     if (after <= before)
         return <></>
     else if (before <= 0)
-        return <>Your {label} is now {formatNumber(after, numberFormat, 3)}.</>
+        return <><br/>Your {label} is now {formatNumber(after, numberFormat, 3)}.</>
     else if (factor < 1.01 || before < 1e6)
         return <><br/>Your {label} increased by {formatNumber(after - before, numberFormat, 3)}</>
     else if (factor < 2)

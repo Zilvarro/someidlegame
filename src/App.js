@@ -78,7 +78,7 @@ function App() {
   return (<>
     <AutoSave saveState={state}/>
     <PopupDialog popupState={popupState} setPopupState={setPopupState}/>
-    <h1 style={{fontSize: "40px", marginLeft: "10px", marginBottom: "10px", textAlign:"left"}}>x&nbsp;=&nbsp;{formatNumber(state.xValue[0], state.settings.numberFormat, 6)}</h1>
+    <h1 style={{fontSize: "40px", marginLeft: "20px", marginBottom: "10px", textAlign:"left"}}>x&nbsp;=&nbsp;{formatNumber(state.xValue[0], state.settings.numberFormat, 6, false, false)}</h1>
     <TabContent selectedTabKey={state.selectedTabKey}>
       <FormulaScreen tabKey="FormulaScreen" popup={popup} state={state} updateState={updateState} setTotalClicks={setTotalClicks}/>
       <AlphaScreen tabKey="AlphaScreen" popup={popup} state={state} updateState={updateState} setTotalClicks={setTotalClicks}/>
@@ -93,8 +93,6 @@ function App() {
     <span style={{display:"inline-block"}}>
       <button style={{backgroundColor: "#99FF99", border:"2px solid", padding:"5px", margin:"5px", marginLeft:"10px", fontWeight:"bold"}} onClick={()=>selectTab("FormulaScreen")}>Formulas</button>
       {state.progressionLayer >=1 && <button style={{backgroundColor: "#ff7777", border:"2px solid", padding:"5px", margin:"5px", fontWeight:"bold"}} onClick={()=>selectTab("AlphaScreen")}>Alpha</button>}
-      {/* {state.mileStoneCount >= 1 && <button style={{backgroundColor: "#55ffbb", border:"2px solid", padding:"5px", margin:"5px", fontWeight:"bold"}} onClick={()=>selectTab("WorldScreen")}>World</button>}
-      {state.mileStoneCount >= 1 && <button style={{backgroundColor: "#663366", border:"2px solid", padding:"5px", margin:"5px", fontWeight:"bold"}} onClick={()=>selectTab("VoidScreen")}>Void</button>} */}
       {(state.progressionLayer >=2 || state.destinyStars > 0) && <button style={{backgroundColor: "#ffff88", border:"2px solid", padding:"5px", margin:"5px", fontWeight:"bold"}} onClick={()=>selectTab("DestinyScreen")}>Destiny</button>}
     </span>
     <span style={{display:"inline-block"}}>

@@ -9,7 +9,7 @@ import * as eventsystem from './mails/MailEventSystem'
 import * as progresscalculation from './progresscalculation'
 
 export const majorversion = 1
-export const version = "0.44"
+export const version = "0.45"
 
 export const newSave = {
     version: version,
@@ -648,17 +648,17 @@ export const saveReducer = (state, action)=>{
             state.xPerSecond.splice(0,1)
             state.xPerSecond.push(perSecond)
             for(let i = 0; i < state.xValue.length; i++) {
-                state.avgXPerSecond[i] = (state.xPerSecond[0][i] + state.xPerSecond[1][i] + state.xPerSecond[2][i] + state.xPerSecond[3][i])/4
                 let history = state.xPerSecond.map((elem)=>elem[i])
                 history.sort((a,b)=>(a - b))
-                state.avgXPerSecond[i] = (history[2] + history[3] + history[4] + history[5] + history[6] + history[7]) / 6
+                const newAvg = (history[2] + history[3] + history[4] + history[5] + history[6] + history[7]) / 6
+                state.avgXPerSecond[i] = (newAvg > state.avgXPerSecond[i] || newAvg < 0.9 * state.avgXPerSecond[i]) ? newAvg : state.avgXPerSecond[i]
                 //state.avgXPerSecond[i] = Math.max(state.xPerSecond[0][i], state.xPerSecond[1][i], state.xPerSecond[2][i], state.xPerSecond[3][i])
             }
         }
 
         //Offline Progress Popup
         if (deltaMilliSeconds > 120000 && (state.settings.offlineProgressPopup === "ON" || (state.settings.offlineProgressPopup === "LAUNCH" && state.justLaunched))){
-            const timeText = <>You were away for {secondsToHms(Math.floor(deltaMilliSeconds / 1000))}.</>
+            const timeText = <>You were away for {secondsToHms(Math.floor(deltaMilliSeconds / 1000))}</>
             const xText = getOfflinePopupLine(<>x</>, xBefore, state.xValue[0], state.numberFormat)
             const aText = getOfflinePopupLine(<>&alpha;</>, aBefore, state.alpha, state.numberFormat)
             const sText = getOfflinePopupLine(<>&lambda;</>, sBefore, state.starLight, state.numberFormat)
@@ -667,7 +667,7 @@ export const saveReducer = (state, action)=>{
 
         //Autosave
         const lastSaveMilliseconds = (timeStamp - state.saveTimeStamp)
-        if (state.mileStoneCount > 0 && state.settings.autoSave === "ON" && lastSaveMilliseconds >= 10000) { //TODO
+        if (state.mileStoneCount > 0 && state.settings.autoSave === "ON" && lastSaveMilliseconds >= 10000) {
             save(state)
         }
 
@@ -713,6 +713,7 @@ export const saveReducer = (state, action)=>{
         }
         break;
     case "applyFormula":
+        debugger
         state.isFullyIdle = false
         if (!state.tickFormula && !state.isHolding) {
             progresscalculation.applyFormulaToState(state, action.formula, action.forceApply)
@@ -751,6 +752,11 @@ export const saveReducer = (state, action)=>{
         break;
     case "alphaReset":
         state.isFullyIdle = false
+        if (action.isAbort && !state.insideChallenge) {
+            state.settings.autoResetterS = "OFF"
+            state.settings.autoResetterA = "OFF"
+            state.autoApply = [false,false,false,false,false]
+        }
         giveAlphaRewards(state)
         performAlphaReset(state)
         performShopReset(state)
@@ -796,6 +802,7 @@ export const saveReducer = (state, action)=>{
                 state.destinyStars = 2
                 state.mileStoneCount = 12
                 state.progressionLayer = 0
+                state.mailsForCheck.push("Destiny")
                 notify.success("POSTGAME: DESTINY")
                 break;
             case "DEVTEST":
@@ -909,6 +916,7 @@ export const saveReducer = (state, action)=>{
         state.currentEnding = ""
         if ((action.endingName === "world" || (action.endingName === "true" && state.destinyStars > 1))&& state.progressionLayer <= 2) {
             state.progressionLayer = 2
+            state.mailsForCheck.push("Destiny")
             notify.success("DESTINY", "You finished the game!")
             performAlphaReset(state)
             performShopReset(state)
@@ -928,6 +936,7 @@ export const saveReducer = (state, action)=>{
         state.destinyStars += 1
         state = {...structuredClone(newSave), calcTimeStamp: Date.now(), saveTimeStamp: Date.now(), settings:state.settings, mileStoneCount:state.mileStoneCount, destinyMileStoneCount:state.destinyMileStoneCount, allTimeEndings:state.allTimeEndings,
             destinyStars:state.destinyStars, starLight:state.starLight, lightAdder:state.lightAdder, lightDoubler:state.lightDoubler, lightRaiser:state.lightRaiser, starConstellations:state.starConstellations, constellationCount:state.constellationCount};
+        state.mailsForCheck.push("Destiny")
         break;
     case "buyLightUpgrade":
         state[action.currency] += 1

@@ -11,17 +11,12 @@ HIGH: Configuration for confirmation popups
 
 ~~~~~~~~~~MEDIUM~~~~~~~~~~
 
-MEDIUM: Mobile defaults to Shop Formulas On
-MEDIUM: Prevent Enter Trick for Prince / Rating / Gaze (Button -> Styled div)
-
-----> Cut for MVP <----
-
 MEDIUM: Linebreaks for Formulas (Click to Apply, Unequip)
 MEDIUM: Shop favs and hidden
 
 ~~~~~~~~~~~LOW~~~~~~~~~~~
 
-LOW: Initial Basic Reset should be required in Destiny runs (Independence of Milestones)
+LOW: \n in popup texts
 
 LOW: Dynamic header bar (x, alpha, stars)
 LOW: Reclicking Main Tab cycles through sub-tabs

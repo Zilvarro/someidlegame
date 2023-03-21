@@ -107,10 +107,10 @@ export default function Mail({state, mail, popup, updateState, mailid}) {
                 </p> 
             : 
                 <p style={{paddingLeft: "50px", fontWeight: 900 }}>
-                    <button onClick={()=>changeRating(-1)}>&#8211;</button>&nbsp;
+                    <span className="fbutton" style={{width:"auto", backgroundColor:"#ffffff", paddingLeft:"12px", paddingRight: "12px"}} onClick={()=>changeRating(-1)}>&#8211;</span>&nbsp;&nbsp;
                     {state.mailsProgress[mailid]} / 5 Stars
-                    &nbsp;<button onClick={()=>changeRating(1)}>+</button><br/><br/>
-                    <button onClick={submitRating} style={{marginLeft: "60px"}}>Submit</button>
+                    &nbsp;&nbsp;<span className="fbutton" style={{width:"auto", backgroundColor:"#ffffff", paddingLeft:"12px", paddingRight: "12px"}} onClick={()=>changeRating(1)}>+</span><br/><br/>
+                    <button onClick={submitRating} style={{marginLeft: "100px"}}>Submit</button>
                 </p> 
             )}
 
@@ -136,9 +136,9 @@ export default function Mail({state, mail, popup, updateState, mailid}) {
                 </p>)
             }
 
-            {mail.transfer && (state.mailsCompleted["Transfer"] === undefined? 
+            {mail.transfer && (state.mailsCompleted["Transfer"] === undefined ? 
                 <p style={{paddingLeft: "50px", fontWeight: 900 }}>
-                    <button onClick={()=>changeRating(+1)}>Transfer 1$</button>
+                    <span className="fbutton" style={{width:"auto", backgroundColor:"#ffffff"}} onClick={()=>changeRating(+1)}>Transfer 1$</span>
                     {state.mailsProgress["Transfer"] > 0 && <><br/><br/>{state.mailsProgress["Transfer"]}$ Transferred</>}
                 </p> 
             : 

@@ -11,14 +11,13 @@ const setAlphaTab = (tabKey)=>{
     updateState({name: "selectAlphaTab", tabKey: tabKey})
 }
 
-//TODO Decouple Subtabs from Milestones
 return (
     <div style={{color:"#ff7777"}}>
-        {<h3 style={{fontSize: "32px", marginLeft: "10px", marginTop:"10px", marginBottom:"20px", textAlign:"left"}}>&alpha;&nbsp;=&nbsp;{formatNumber(state.alpha, state.settings.numberFormat,2)}</h3>}
+        {<h3 style={{fontSize: "32px", marginLeft: "20px", marginTop:"10px", marginBottom:"20px", textAlign:"left"}}>&alpha;&nbsp;=&nbsp;{formatNumber(state.alpha, state.settings.numberFormat,2)}</h3>}
         <button onClick={()=>setAlphaTab("AlphaUpgradeTab")}>Upgrades</button>&nbsp;
-        {state.mailsReceived["Research"] && !state.mailsUnread["Research"] && <><button onClick={()=>setAlphaTab("AlphaResearchTab")}>Research</button>&nbsp;</>} 
-        {state.mailsReceived["Challenges"] && !state.mailsUnread["Challenges"] && <><button onClick={()=>setAlphaTab("AlphaChallengeTab")}>Challenges</button>&nbsp;</>}
-        {state.mailsReceived["Stones"] && !state.mailsUnread["Stones"] && <button onClick={()=>setAlphaTab("AlphaStonesTab")}>Stones</button>}
+        {state.mailsCompleted["Research"] !== undefined && <><button onClick={()=>setAlphaTab("AlphaResearchTab")}>Research</button>&nbsp;</>} 
+        {state.mailsCompleted["Challenges"] !== undefined && <><button onClick={()=>setAlphaTab("AlphaChallengeTab")}>Challenges</button>&nbsp;</>}
+        {state.mailsCompleted["Stones"] !== undefined && <button onClick={()=>setAlphaTab("AlphaStonesTab")}>Stones</button>}
         <TabContent selectedTabKey={state.selectedAlphaTabKey}>
             <AlphaUpgradeTab tabKey="AlphaUpgradeTab" popup={popup} state={state} updateState={updateState} setTotalClicks={setTotalClicks}/>
             <AlphaResearchTab tabKey="AlphaResearchTab" popup={popup} state={state} updateState={updateState} setTotalClicks={setTotalClicks}/>

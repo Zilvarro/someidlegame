@@ -81,7 +81,7 @@ export default function FormulaScreen({state, updateState, setTotalClicks, popup
 
     const abortAlphaReset = ()=>{
       popup.confirm(state.insideChallenge ? "Abort run and exit the current Challenge?" : "Abort the current Alpha Run?",()=>{
-        updateState({name: "alphaReset"})
+        updateState({name: "alphaReset", isAbort: true})
         setTotalClicks((x)=>x+1)
       })
     }
@@ -144,11 +144,11 @@ export default function FormulaScreen({state, updateState, setTotalClicks, popup
             {!state.insideChallenge && state.xValue[0] >= Infinity &&
               <>{spaces()}<button onClick={getWorldFormula}><b>DISCOVER THE WORLD FORMULA</b></button><br/><br/></>
             }
-            {(state.mileStoneCount >= 2 || state.formulaUnlockCount >= 4) &&
-              <>{spaces()}<button style={{color:"black"}} onClick={resetXValues} disabled={state.activeChallenges.FULLYIDLE || state.activeChallenges.ONESHOT || !state.anyFormulaUsed}>Basic Reset</button>{state.mileStoneCount === 1 && <>{spaces()}&larr; Reset x, but you can adapt your equipped formulas.</>}</>
+            {(state.progressionLayer > 0 || state.highestXTier > 0 || state.formulaUnlockCount >= 4) &&
+              <>{spaces()}<button style={{color:"black"}} onClick={resetXValues} disabled={state.activeChallenges.FULLYIDLE || state.activeChallenges.ONESHOT || !state.anyFormulaUsed}>Basic Reset</button>{state.progressionLayer === 0 && state.highestXTier === 0 && state.xResetCount === 0 && <>{spaces()}&larr; Reset x, but you can adapt your equipped formulas.</>}</>
             }
-            {(state.mileStoneCount >= 3 || (state.mileStoneCount === 2 && state.xValue[0] >= differentialTarget)) && state.highestXTier < 3 &&
-              <>{spaces()}<button style={{color:"black"}} disabled={state.inNegativeSpace || state.activeChallenges.FULLYIDLE || state.xValue[0] < differentialTarget} onClick={resetShop}>{sResetName}-Reset</button>{state.mileStoneCount === 2 && <>{spaces()}&larr; Reset the shop for a new differential</>}</>
+            {(state.progressionLayer > 0 || (state.xValue[0] >= differentialTarget)) && state.highestXTier < 3 &&
+              <>{spaces()}<button style={{color:"black"}} disabled={state.inNegativeSpace || state.activeChallenges.FULLYIDLE || state.xValue[0] < differentialTarget} onClick={resetShop}>{sResetName}-Reset</button>{state.progressionLayer === 0 && <>{spaces()}&larr; Reset the shop for a new differential</>}</>
             }
             {state.progressionLayer >= 1 && !state.insideChallenge && state.highestXTier === 3 && state.xValue[0] >= alphaTarget &&
               <>{spaces()}<button style={{color:"black"}} disabled={state.inNegativeSpace || state.activeChallenges.FULLYIDLE || state.xValue[0] < alphaTarget} onClick={performAlphaReset}>&alpha;-Reset</button>{spaces()}</>
@@ -161,8 +161,8 @@ export default function FormulaScreen({state, updateState, setTotalClicks, popup
             }
           <h2>My Formulas</h2>
           <FormulaTable state={state} updateState={updateState} popup={popup} setTotalClicks={setTotalClicks} formulaNames={inventoryFormulas} context="my"/>
-          {state.mileStoneCount >= 1 && state.mileStoneCount <=2 && 
-            <p>Hint: You can apply formulas repeatedly by holding the button or using Enter</p>
+          {state.progressionLayer === 0 && state.formulaUnlockCount >= 2 && state.highestXTier === 0 && 
+            <p>Hint: Apply formulas repeatedly by holding the button or using the 1/2/3-Keys.</p>
           }
           <p>
             {(state.alphaUpgrades.MEEQ) && <>
@@ -192,16 +192,16 @@ export default function FormulaScreen({state, updateState, setTotalClicks, popup
           {(state.alphaUpgrades.SRES || state.alphaUpgrades.AREM) && <><br/><br/></>}
 
             {state.inNegativeSpace && <p><b>You are in Negative Space!</b>{spaces()}<button onClick={negativeSpaceInfo}>About Negative Space</button></p>}
-            {state.mileStoneCount === 1 && state.formulaUnlockCount < 4 && <p>Unlock {4 - state.formulaUnlockCount} more formula{state.formulaUnlockCount !== 3 && "s"} to enable Basic Resets</p>}
+            {state.progressionLayer === 0 && state.highestXTier === 0 && state.formulaUnlockCount < 4 && <p>Unlock {4 - state.formulaUnlockCount} more formula{state.formulaUnlockCount !== 3 && "s"} to enable Basic Resets</p>}
             {state.currentChallenge && <p>You are currently in the "{state.currentChallengeName}" Challenge.{state.currentChallengeTime > 600e3 && <> (Time Limit: {secondsToHms(1800-state.currentChallengeTime/1000)})</>}</p>}
             {state.activeChallenges.COUNTDOWN && <p>{Math.floor(30 - state.millisSinceCountdown / 1000)} seconds until X-Values become zero.</p>}
             {state.activeChallenges.LIMITED && <p>You can apply {100 - state.formulaApplyCount} more formulas.</p>}
-            {state.mileStoneCount >= 2 && state.highestXTier < 3 && state.xValue[0] < differentialTarget && <p>Reach x={formatNumber(differentialTarget, state.settings.numberFormat)} for the next x-Reset</p>}
+            {(state.xResetCount > 0 || state.highestXTier > 0 || state.progressionLayer > 0) && state.highestXTier < 3 && state.xValue[0] < differentialTarget && <p>Reach x={formatNumber(differentialTarget, state.settings.numberFormat)} for the next x-Reset</p>}
             {state.progressionLayer >= 1 && state.highestXTier === 3 && state.xValue[0] < alphaTarget && !state.insideChallenge && <p>Reach x={formatNumber(alphaTarget, state.settings.numberFormat)} to perform an &alpha;-Reset</p>}
             {state.highestXTier === 3 && state.xValue[0] < alphaTarget && state.insideChallenge && <p>Reach x={formatNumber(alphaTarget,state.settings.numberFormat)} to complete the challenge</p>}
             {state.progressionLayer >= 1 && state.highestXTier === 3 && !state.inNegativeSpace && !state.insideChallenge && state.xValue[0] >= alphaTarget && <p>Alpha Reset for {alphaRewardTier.alpha * Math.pow(2,state.baseAlphaLevel)} &alpha;.{alphaRewardTier.next && <>&nbsp;(Next: {alphaRewardTier.nextAlpha * Math.pow(2,state.baseAlphaLevel)} &alpha; at x={formatNumber(alphaRewardTier.next)})</>}</p>}
-            {state.mileStoneCount >= 3 && state.autoUnlockIndex < shopFormulas.length && state.xValue[0] < nextUnlockCost && (nextUnlockCost <= alphaTarget || state.progressionLayer > 0) && <p>Next Formula at x={formatNumber(nextUnlockCost, state.settings.numberFormat)}</p>}
-            {state.mileStoneCount >= 3 && state.autoUnlockIndex < shopFormulas.length && state.xValue[0] >= nextUnlockCost && <p>New Formula available</p>}
+            {(state.progressionLayer > 0 || state.highestXTier > 0) && state.autoUnlockIndex < shopFormulas.length && state.xValue[0] < nextUnlockCost && (nextUnlockCost <= alphaTarget || state.progressionLayer > 0) && <p>Next Formula at x={formatNumber(nextUnlockCost, state.settings.numberFormat)}</p>}
+            {(state.progressionLayer > 0 || state.highestXTier > 0) && state.autoUnlockIndex < shopFormulas.length && state.xValue[0] >= nextUnlockCost && <p>New Formula available</p>}
             {state.progressionLayer === 0 && state.autoUnlockIndex < shopFormulas.length && nextUnlockCost > alphaTarget && <p>Almost done! Let's fill this bar!</p>}
             <p></p>
             {state.progressionLayer === 0 && (state.xValue[0] >= alphaTarget ?

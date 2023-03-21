@@ -60,7 +60,7 @@ export default function OptionScreen({state, popup, updateState, setTotalClicks}
     updateState({name: "chapterJump", password: password})
   }
 
-  return (<div style={{padding: "10px"}}>
+  return (<div style={{marginLeft: "20px"}}>
     <h1>Options</h1>
       <p>
         {spaces()}<button onClick={saveGame} disabled={state.mileStoneCount < 1}>Manual Save</button>

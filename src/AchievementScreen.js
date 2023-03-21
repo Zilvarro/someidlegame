@@ -81,8 +81,8 @@ export const milestoneList = [
 export const destinyMileStoneList = [{
     id:"StarLight",
     name:"Light of the Stars",
-    description:<>Get 100 Starlight</>,
-    check: (state)=>(state.starLight >= 100),
+    description:<>Get 1000 Starlight</>,
+    check: (state)=>(state.starLight >= 1000),
     tier: 4,
   },{
     id:"ConstellationsA",
@@ -142,7 +142,7 @@ export const layerList = [
 ]
 
 export default function AchievementScreen({state}) {
-  return (<div style={{padding: "10px"}}>
+  return (<div style={{marginLeft:"20px"}}>
     <h1>Milestones</h1>
       <ol>
         {milestoneList.map((milestone, index)=>

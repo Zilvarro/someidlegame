@@ -112,7 +112,7 @@ const upgradeBaseAlpha = ()=>{
 }
 
 return (
-    <div>{<>
+    <div style={{marginLeft:"20px"}}>{<>
         <h2>Upgrades</h2>
         {alphaUpgradeTable.map((upgrade)=><AlphaUpgradeButton key={upgrade} upgrade={alphaUpgradeDictionary[upgrade]} state={state} popup={popup} updateState={updateState}/>)}
         <br/><br/>

@@ -15,7 +15,7 @@ const researchDictonary = {
         getBoostText2: (state)=>(<>x={formatNumber(state.formulaGodScores[0],state.settings.numberFormat)} during Formula God</>),
         checkUnlock: (state)=>(state.xValue[0] >= 20),
         checkBoost2: (state)=>state.formulaGodScores[0] > 1,
-        lockText: "UNLOCKS AT x=20",
+        lockText: "LOCKED (NEED: x=20)",
     },
     "x'": {
         id: "x'",
@@ -30,7 +30,7 @@ const researchDictonary = {
         getBoostText2: (state)=>(<>x'={formatNumber(state.formulaGodScores[1],state.settings.numberFormat)} during Formula God</>),
         checkUnlock: (state)=>(state.xValue[1] >= 20),
         checkBoost2: (state)=>state.formulaGodScores[1] > 1,
-        lockText: "UNLOCKS AT x'=20",
+        lockText: "LOCKED (NEED: x'=20)",
     },
     "x''": {
         id: "x''",
@@ -45,7 +45,7 @@ const researchDictonary = {
         getBoostText2: (state)=>(<>x''={formatNumber(state.formulaGodScores[2],state.settings.numberFormat)} during Formula God</>),
         checkUnlock: (state)=>(state.xValue[2] >= 20),
         checkBoost2: (state)=>state.formulaGodScores[2] > 1,
-        lockText: "UNLOCKS AT x''=20",
+        lockText: "LOCKED (NEED: x''=20)",
     },
     "x'''": {
         id: "x'''",
@@ -60,14 +60,14 @@ const researchDictonary = {
         getBoostText2: (state)=>(<>x'''={formatNumber(state.formulaGodScores[3],state.settings.numberFormat)} during Formula God</>),
         checkUnlock: (state)=>(state.xValue[3] >= 20),
         checkBoost2: (state)=>state.formulaGodScores[3] > 1,
-        lockText: "UNLOCKS AT x'''=20",
+        lockText: "LOCKED (NEED: x'''=20)",
     },
 
 }
 
 export default function AlphaResearchTab({state, updateState, setTotalClicks}) {
 return (
-    <div>{<>
+    <div style={{marginLeft:"20px"}}>{<>
         <h2>Research</h2>
         Research speed is boosted by your highscores but higher levels take longer.
         {getMaxxedResearchBonus(state).count > 0 && <><br/>Every maxxed Research Bar doubles your Formula Efficiency (x{getMaxxedResearchBonus(state).bonus}).</>}
