@@ -32,7 +32,7 @@ export default function AlphaUpgradeButton({state, popup, upgrade, updateState})
         padding:"0px", 
         fontFamily: "Monaco", 
         fontWeight: "bold",
-        width:"160px", 
+        width:"150px", 
         height:"100px", 
         fontSize:"16px",
         backgroundColor: backgroundColor,

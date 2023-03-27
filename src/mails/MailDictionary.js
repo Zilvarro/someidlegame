@@ -275,7 +275,6 @@ export const mailDictionary = {
         delay: 2000,
         check: (state)=>(true),
         afterReadConditional: (state)=>{
-            debugger
             const score = state.mailsCompleted["Klausi"] + state.mailsCompleted["Henry"] + state.mailsCompleted["Tommy"] + state.mailsCompleted["Jimmy"] + state.mailsCompleted["Gary"]
             if (score === 0)
                 return ["Perfect"]
@@ -483,7 +482,7 @@ export const mailDictionary = {
                 return 0
             else if (score < 150)
                 return 1
-            else if (score >= 1150)
+            else if (score >= 1500)
                 return 3
             else
                 return 2

@@ -109,8 +109,10 @@ export default function FormulaButton({state, popup, updateState, setTotalClicks
 
     formula.unlockMultiplier = getUnlockMultiplier(formula,state)
     if (formula.isBasic)
+    {
         tooltip = "Basic Formula"
         tooltipplus = "Basic Formula"
+    }
 
     if (formula.numberFormat !== state.settings.numberFormat)
         formula.description =  formula.descriptions?.[state.settings.numberFormat] || formula.description
@@ -150,16 +152,16 @@ export default function FormulaButton({state, popup, updateState, setTotalClicks
                     {formula.description}
                 </button>
             </td><td>
-                {!state.formulaUnlocked[formulaName] && lockedByChallenge && <>{spaces()}Locked by Challenge</> }
-                {!state.formulaUnlocked[formulaName] && !lockedByChallenge && <>{spaces()}Unlocks at x={formatNumber(formula.unlockCost * formula.unlockMultiplier, state.settings.numberFormat)}</> }
-                {state.formulaUnlocked[formulaName] && !!applyCost && state.xValue[0] < applyCost && <>{spaces()}{state.alphaUpgrades.FREF ? "Need":"Cost"}: x={formatNumber(applyCost, state.settings.numberFormat)}</> }
-                {state.formulaUnlocked[formulaName] && !!applyNeed && state.xValue[0] < applyNeed && <>{spaces()}Need: x={formatNumber(applyNeed, state.settings.numberFormat)}</>}
-                {state.formulaUnlocked[formulaName] && state.xValue[0] >= applyNeed && state.xValue[0] >= applyCost && !state.formulaUsed[formulaName] && <>{spaces()}Click to apply!</>}
-                {!state.formulaUsed[formulaName] && <span style={{display:"inline-block"}}>{spaces()}<button disabled={state.activeChallenges.FULLYIDLE} 
+                {!state.formulaUnlocked[formulaName] && lockedByChallenge && <>&nbsp;Locked</> }
+                {!state.formulaUnlocked[formulaName] && !lockedByChallenge && <>&nbsp;Unlock: x={formatNumber(formula.unlockCost * formula.unlockMultiplier, state.settings.numberFormat)}</> }
+                {state.formulaUnlocked[formulaName] && !!applyCost && state.xValue[0] < applyCost && <>&nbsp;{state.alphaUpgrades.FREF ? "Need":"Cost"}: x={formatNumber(applyCost, state.settings.numberFormat)}</> }
+                {state.formulaUnlocked[formulaName] && !!applyNeed && state.xValue[0] < applyNeed && <>&nbsp;Need: x={formatNumber(applyNeed, state.settings.numberFormat)}</>}
+                {state.formulaUnlocked[formulaName] && state.xValue[0] >= applyNeed && state.xValue[0] >= applyCost && !state.formulaUsed[formulaName] && <>&nbsp;Click to apply!</>}
+                {!state.formulaUsed[formulaName] && <span style={{display:"inline-block"}}>&nbsp;&nbsp;<button disabled={state.activeChallenges.FULLYIDLE} 
                     onClick={()=>discardFormula(formula)}>
                     Unequip
                 </button>&nbsp;<button onClick={moveFormulaUp} disabled={state.activeChallenges.FULLYIDLE}>&nbsp;&#708;&nbsp;</button>&nbsp;<button onClick={moveFormulaDown} disabled={state.activeChallenges.FULLYIDLE}>&nbsp;&#709;&nbsp;</button></span>}
-            </td><td>
+            {/* </td><td> */}
             </td>
             <td align="left" className="block" style={{width:"auto"}}></td>
             </tr>

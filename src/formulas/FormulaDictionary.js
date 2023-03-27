@@ -195,6 +195,7 @@ const formulaList = {
         applyFormula: (eff, x,state)=>(Math.floor(Math.pow(1.25,state.formulaUnlockCount) * eff)),
         explanation: "Boosted by number of unlocked formulas.",
         isStatic: true,
+        hashtagU: true,
         complex: true,
     },
     "x'=1000*x''": {
@@ -297,6 +298,7 @@ const formulaList = {
         isStatic: true,
         applyFormula: (eff, x,state)=>(Math.floor(Math.pow(state.formulaUnlockCount,2)/12 * eff)),
         explanation: "Boosted by number of unlocked formulas.",
+        hashtagU: true,
         complex: true,
         
     },
@@ -320,6 +322,7 @@ const formulaList = {
         isStatic: true,
         applyFormula: (eff, x,state)=>(state.xResetCount <= 0 ? {error:"logarithm"} : Math.floor(2 * Math.pow(Math.log2(state.xResetCount),2) * eff)),
         explanation: "Boosted by number of Basic Resets (since x-Reset).",
+        hashtagB: true,
         complex: true,
     },
     "x'+x''+x'''": {
@@ -404,6 +407,8 @@ const formulaList = {
         targetLevel: 3,
         applyFormula: (eff, x,state)=>(state.formulaApplyCount <= 0 ? {error:"logarithm"} : x[3] + Math.pow(Math.log2(state.formulaApplyCount / state.myFormulas.length),13) * eff),
         explanation: "Boosted by formula applications (since x-Reset). Diminished by number of equipped formulas.",
+        hashtagU: true,
+        hashtagE: true,
         complex: true,
     },
     "x'+30S": {

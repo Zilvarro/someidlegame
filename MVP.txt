@@ -1,25 +1,19 @@
 ~~~~~~~~~~VERYHIGH~~~~~~~~~~
 
-VERYHIGH: Resetters should work properly while on other tabs
+VERYHIGH: Resetters should work properly while on other tabs (Maybe fixed, observe if still relevant)
 
 ~~~~~~~~~~HIGH~~~~~~~~~~
 
 HIGH: Hotkeys
-HIGH: Show # Variables (& Remove from Shop Labels)
 HIGH: Configuration for confirmation popups
 
 ~~~~~~~~~~MEDIUM~~~~~~~~~~
 
-MEDIUM: Encode Local Storage with base-64
-
-MEDIUM: Linebreaks for Formulas (Click to Apply, Unequip)
 MEDIUM: Shop favs and hidden
 
 ~~~~~~~~~~~LOW~~~~~~~~~~~
 
-LOW: \n in popup texts
-
-LOW: Dynamic header bar (x, alpha, stars)
+LOW: Dynamic header bar (x, alpha, stars, starlight)
 LOW: Reclicking Main Tab cycles through sub-tabs
 LOW: Notification / Indication for new highscores
 
@@ -27,3 +21,43 @@ LOW: Notification / Indication for new highscores
 
 VERYLOW: Back button to quit endings early
 VERYLOW: Negative Space Rounding
+
+
+Popups: 
+Offline Progress
+
+Formula Decrease
+Basic Reset
+X Reset
+
+Alpha Reset
+Abort
+Exit Challenge
+Memorize
+Alpha Upgrade
+
+(Starlight Upgrade)
+(Constellation)
+(Destiny Reset)
+
+
+Hotkeys:
+1/2/3/4 => Apply Formula  (+Hold!)
+Shift + 1/2/3/4 => Research
+B => Basic Reset
+X => X Reset
+A => Alpha Reset
+C => Abort
+S => Memorize
+L => Remember
+U => Unequip
+T => Toggle Auto
+
+
+Shop Favorites
+Default => Except hidden
+Favorites => Only Favorites
+All => Everything
+Edit => Change State
+
+Normal => Favorite (Bold) => Hidden (Underlined/Strikethrough) => Normal

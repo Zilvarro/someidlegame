@@ -50,8 +50,6 @@ export const updatePendingMails = (state)=>{
 
 export const markAsRead = (state, mailid)=>{
     const mail = mailDictionary[mailid]
-    if (!mail)
-        debugger
     if (mail.afterRead)
         state.mailsForCheck = state.mailsForCheck.concat(mail.afterRead)
     if (mail.afterReadConditional)

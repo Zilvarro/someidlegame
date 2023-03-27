@@ -5,6 +5,7 @@ import formulaList from './FormulaDictionary'
 import {spaces,formatNumber, secondsToHms} from '../utilities'
 import {getInventorySize, differentialTargets, alphaTarget, getAlphaRewardTier} from '../savestate'
 import MultiOptionButton from '../MultiOptionButton'
+import DropdownOptionButton from '../DropdownOptionButton'
 
 export const shopFormulas=[
   "x'=1",
@@ -136,6 +137,11 @@ export default function FormulaScreen({state, updateState, setTotalClicks, popup
 
     const nextUnlockCost = state.autoUnlockIndex < shopFormulas.length ? formulaList[shopFormulas[state.autoUnlockIndex]].unlockCost * getUnlockMultiplier(formulaList[shopFormulas[state.autoUnlockIndex]],state) : Infinity
 
+    const hashtagU = state.myFormulas.some((formulaName)=>formulaList[formulaName].hashtagU)
+    const hashtagB = state.myFormulas.some((formulaName)=>formulaList[formulaName].hashtagB)
+    const hashtagF = state.myFormulas.some((formulaName)=>formulaList[formulaName].hashtagF)
+    const hashtagE = state.myFormulas.some((formulaName)=>formulaList[formulaName].hashtagE)
+
     return (<div style={{color: "#99FF99"}}>
         <div className="row" style={{marginTop:"0px"}}><div className="column">
         <h2 style={{marginTop:"0px"}}>X Values</h2>
@@ -150,8 +156,8 @@ export default function FormulaScreen({state, updateState, setTotalClicks, popup
             {(state.progressionLayer > 0 || (state.xValue[0] >= differentialTarget)) && state.highestXTier < 3 &&
               <>{spaces()}<button style={{color:"black"}} disabled={state.inNegativeSpace || state.activeChallenges.FULLYIDLE || state.xValue[0] < differentialTarget} onClick={resetShop}>{sResetName}-Reset</button>{state.progressionLayer === 0 && <>{spaces()}&larr; Reset the shop for a new differential</>}</>
             }
-            {state.progressionLayer >= 1 && !state.insideChallenge && state.highestXTier === 3 && state.xValue[0] >= alphaTarget &&
-              <>{spaces()}<button style={{color:"black"}} disabled={state.inNegativeSpace || state.activeChallenges.FULLYIDLE || state.xValue[0] < alphaTarget} onClick={performAlphaReset}>&alpha;-Reset</button>{spaces()}</>
+            {state.progressionLayer >= 1 && !state.insideChallenge && state.highestXTier === 3 &&
+              <>{spaces()}<button style={{color:"black"}} disabled={state.inNegativeSpace || state.activeChallenges.FULLYIDLE || state.xValue[0] < alphaTarget} onClick={performAlphaReset}>&alpha;-Reset</button></>
             }
             {state.insideChallenge && state.highestXTier === 3 && state.xValue[0] >= alphaTarget &&
               <>{spaces()}<button style={{color:"black"}} disabled={state.inNegativeSpace || state.activeChallenges.FULLYIDLE} onClick={completeChallenge}><b>Complete Challenge</b></button></>
@@ -187,14 +193,14 @@ export default function FormulaScreen({state, updateState, setTotalClicks, popup
           
           {state.alphaUpgrades.ARES && <><MultiOptionButton disabled={state.activeChallenges.FULLYIDLE} settingName="autoResetterA" statusList={["ON","OFF"]} state={state} updateState={updateState} setTotalClicks={setTotalClicks}
             description="Alpha Resetter"/></>}
-          {state.alphaUpgrades.ARES && <>{spaces()}<MultiOptionButton disabled={state.activeChallenges.FULLYIDLE} settingName="alphaThreshold" statusList={["MINIMUM","1e40","1e50","1e60","1e70","1e80","1e90","1e100"]} state={state} updateState={updateState} setTotalClicks={setTotalClicks}
+          {state.alphaUpgrades.ARES && <>{spaces()}<DropdownOptionButton disabled={state.activeChallenges.FULLYIDLE} settingName="alphaThreshold" statusList={["MINIMUM","1e40","1e50","1e60","1e70","1e80","1e90","1e100"]} state={state} updateState={updateState} setTotalClicks={setTotalClicks}
             description="Target"/></>}
           {(state.alphaUpgrades.SRES || state.alphaUpgrades.AREM) && <><br/><br/></>}
 
             {state.inNegativeSpace && <p><b>You are in Negative Space!</b>{spaces()}<button onClick={negativeSpaceInfo}>About Negative Space</button></p>}
             {state.progressionLayer === 0 && state.highestXTier === 0 && state.formulaUnlockCount < 4 && <p>Unlock {4 - state.formulaUnlockCount} more formula{state.formulaUnlockCount !== 3 && "s"} to enable Basic Resets</p>}
             {state.currentChallenge && <p>You are currently in the "{state.currentChallengeName}" Challenge.{state.currentChallengeTime > 600e3 && <> (Time Limit: {secondsToHms(1800-state.currentChallengeTime/1000)})</>}</p>}
-            {state.activeChallenges.COUNTDOWN && <p>{Math.floor(30 - state.millisSinceCountdown / 1000)} seconds until X-Values become zero.</p>}
+            {state.activeChallenges.COUNTDOWN && <p>Countdown: {secondsToHms(30 - state.millisSinceCountdown / 1000)}</p>}
             {state.activeChallenges.LIMITED && <p>You can apply {100 - state.formulaApplyCount} more formulas.</p>}
             {(state.xResetCount > 0 || state.highestXTier > 0 || state.progressionLayer > 0) && state.highestXTier < 3 && state.xValue[0] < differentialTarget && <p>Reach x={formatNumber(differentialTarget, state.settings.numberFormat)} for the next x-Reset</p>}
             {state.progressionLayer >= 1 && state.highestXTier === 3 && state.xValue[0] < alphaTarget && !state.insideChallenge && <p>Reach x={formatNumber(alphaTarget, state.settings.numberFormat)} to perform an &alpha;-Reset</p>}
@@ -213,6 +219,10 @@ export default function FormulaScreen({state, updateState, setTotalClicks, popup
                 <div style={{backgroundColor:"#99FF99", border:"0px", height:"25px", width:progressBarWidth}}></div>
               </div>
             )}
+            {hashtagU && <>#U = {formatNumber(state.formulaUnlockCount, state.settings.numberFormat, 3)}&nbsp;&nbsp;(Unlocked Formulas)<br/></>}
+            {hashtagB && <>#B = {formatNumber(state.xResetCount, state.settings.numberFormat, 3)}&nbsp;&nbsp;(Basic Resets)<br/></>}
+            {hashtagF && <>#F = {formatNumber(state.formulaApplyCount, state.settings.numberFormat, 3)}&nbsp;&nbsp;(Formula Applications)<br/></>}
+            {hashtagE && <>#E = {formatNumber(state.myFormulas.length, state.settings.numberFormat, 3)}&nbsp;&nbsp;(Equipped Formulas)<br/></>}
         </div><div className="column">
         <h2 style={{marginTop:"0px"}}>Shop {state.myFormulas.length >= getInventorySize(state) && <>{spaces()}[FULL INVENTORY]</>}</h2>
           <div style={state.settings.shopScroll === "ON" ? {overflow:"auto", height:"70vh"} : {}}>

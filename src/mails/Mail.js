@@ -5,8 +5,6 @@ export default function Mail({state, mail, popup, updateState, mailid}) {
 
     const [ isUnread ] = useState(state.mailsUnread[mailid] || !state.mailsReceived[mailid])
 
-    if (!mail)
-        debugger
     if (!state.mailsReceived[mailid]) 
         return undefined
 

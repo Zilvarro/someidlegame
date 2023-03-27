@@ -1,15 +1,17 @@
+import { Buffer } from "buffer";
+
 import {destinyMileStoneList, milestoneList} from './AchievementScreen' 
 import {getRewardInterval, notify, secondsToHms, getOfflinePopupLine, isMobileDevice} from './utilities'
 import formulaList from './formulas/FormulaDictionary'
 import {shopFormulas} from './formulas/FormulaScreen'
-import {isLockedByChallenge} from './formulas/FormulaButton'
+import {getUnlockMultiplier, isLockedByChallenge} from './formulas/FormulaButton'
 import {calcStoneResultForX} from './alpha/AlphaStonesTab'
 import {startingStones, stoneTable, stoneList} from './alpha/AlphaStoneDictionary'
 import * as eventsystem from './mails/MailEventSystem'
 import * as progresscalculation from './progresscalculation'
 
 export const majorversion = 1
-export const version = "0.45"
+export const version = "0.46"
 
 export const newSave = {
     version: version,
@@ -134,13 +136,14 @@ const alphaThresholds = {
 export const getSaveGame = ()=>{
     const savedversion = window.localStorage.getItem('majorversion')
     let savedgame
-    if (savedversion)
+    if (savedversion && window.location.href.split("/").pop() !== "?newgame")
         savedgame = window.localStorage.getItem('idleformulas_v' + savedversion)
     if (!savedgame) {
         return ({...structuredClone(newSave), saveTimeStamp: Date.now(), calcTimeStamp: Date.now()})
     }
     else{
-        const savedgamejson = JSON.parse(savedgame)
+        const decodedGame = Buffer.from(savedgame,"base64").toString()
+        const savedgamejson = JSON.parse(decodedGame)
         if (savedgamejson.settings.autoLoad === "OFF") {
             notify.warning("Auto Load disabled")
             let newgame = {...structuredClone(newSave), saveTimeStamp: Date.now(), calcTimeStamp: Date.now()}
@@ -148,12 +151,6 @@ export const getSaveGame = ()=>{
             newgame.settings.autoLoad = "OFF"
             return newgame
         } else {
-            //*TEMPORARY*
-            //const encodedState = Buffer.from(JSON.stringify(state)).toString("base64");
-            // navigator.clipboard.writeText(savedgame);
-            // notify.success("Copied Old State")
-            // return ({...structuredClone(newSave), saveTimeStamp: Date.now(), calcTimeStamp: Date.now()})
-
             return {...structuredClone(newSave), ...savedgamejson, settings:{...structuredClone(newSave.settings), ...savedgamejson.settings}, saveTimeStamp: Date.now(), currentEnding: newSave.currentEnding, justLaunched: true}
         }
     }
@@ -199,8 +196,9 @@ export const save = (state)=>{
     state.version = version
     state.saveTimeStamp = Date.now()
     let currentgame = JSON.stringify({...state, holdAction:null})
+    const encodedGame = Buffer.from(currentgame).toString("base64");
     window.localStorage.setItem('majorversion', majorversion)
-    window.localStorage.setItem('idleformulas_v' + majorversion, currentgame)
+    window.localStorage.setItem('idleformulas_v' + majorversion, encodedGame)
 }
 
 export const getAlphaRewardTier = (value)=>{
@@ -325,6 +323,7 @@ const performXReset = (state)=>{
     state.xValue = [getStartingX(state),0,0,0]
     state.avgXPerSecond = [0,0,0,0]
     state.xPerSecond = [[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]]
+    state.millisSinceCountdown = 0
     state.formulaUsed = {}
     state.autoApply = [false,false,false,false,false]
     state.anyFormulaUsed = false
@@ -542,8 +541,10 @@ export const saveReducer = (state, action)=>{
         //X-Reset from Countdown Challenge
         state.millisSinceCountdown += deltaMilliSeconds
         if (state.activeChallenges.COUNTDOWN && state.millisSinceCountdown >= 30000) {
-            state.millisSinceCountdown = 0
-            state.xValue=[0,0,0,0]
+            state.currentEnding = "timeout"
+            performAlphaReset(state)
+            performShopReset(state)
+            rememberLoadout(state)
         }
 
         //Check if next milestone is reached
@@ -593,7 +594,7 @@ export const saveReducer = (state, action)=>{
                 continue
 
             //Not enough x for unlock (future formulas are even more expensive)
-            if (state.xValue[0] < formula.unlockCost * formula.unlockMultiplier && !formula.isFree)
+            if (state.xValue[0] < formula.unlockCost * getUnlockMultiplier(formula,state) && !formula.isFree)
                 break
 
             //No Auto-Unlock
@@ -714,7 +715,6 @@ export const saveReducer = (state, action)=>{
         }
         break;
     case "applyFormula":
-        debugger
         state.isFullyIdle = false
         if (!state.tickFormula && !state.isHolding) {
             progresscalculation.applyFormulaToState(state, action.formula, action.forceApply)

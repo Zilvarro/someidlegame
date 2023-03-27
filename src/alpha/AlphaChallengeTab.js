@@ -48,7 +48,7 @@ export const alphaChallengeDictionary = {
     "COUNTDOWN": {
         id:"COUNTDOWN",
         title:"Countdown",
-        description:"Every 30 seconds, all X-Values are set to zero.",
+        description:"You must do a reset every 30 seconds.",
     },
     "SINGLEUSE": {
         id:"SINGLEUSE",
