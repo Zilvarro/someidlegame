@@ -1,7 +1,6 @@
 import { getGlobalMultiplier } from '../savestate'
 import {secondsToHms, reverseGeometric} from '../utilities'
 
-//TODO Account for offline progress being disabled
 export default function AlphaResearchBar({state, research, updateState}) {
     const startTime = state.researchStartTime[research.id]
     const researchLevel = state.researchLevel[research.id]
@@ -13,7 +12,7 @@ export default function AlphaResearchBar({state, research, updateState}) {
     const percentage = Math.min(deltaMilliSeconds / research.minimumDuration, progress / goal)
     const isDone = (!researchLevel || percentage >= 1)
     const leftToMaxx = 2500 - (researchLevel||0)
-    const oneSecondBulk = isDone ? reverseGeometric(research.durationBase, progressMultiplier / goal) : 0 //Theoretical Research Levels in 1 Second
+    const oneSecondBulk = isDone ? reverseGeometric(1, research.durationBase, progressMultiplier / goal) : 0 //Theoretical Research Levels in 1 Second
     const adjustedBulk = oneSecondBulk > getGlobalMultiplier(state) ? Math.pow(oneSecondBulk / getGlobalMultiplier(state), 0.3) * getGlobalMultiplier(state) : oneSecondBulk
     const bulkAmount = isDone ? Math.min(leftToMaxx, Math.floor(adjustedBulk)) : 0
     const progressBarWidth = isDone ? "100%" : Math.min(100 * percentage,99).toFixed(2) + "%"

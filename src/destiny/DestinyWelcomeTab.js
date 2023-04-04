@@ -109,7 +109,7 @@ function DestinyStarlightButton({state, updateState, upgrade, popup}) {
         border:"0px", 
         padding:"0px", 
         fontWeight: "bold",
-        width:"200px", 
+        width:"180px", 
         height: upgrade.useDefaultStyle ? "30px" : "50px", 
         fontSize:"16px",
         backgroundColor: isMaxxed ? "#ffff88" : "#ffffff",

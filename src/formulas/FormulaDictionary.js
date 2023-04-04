@@ -407,7 +407,7 @@ const formulaList = {
         targetLevel: 3,
         applyFormula: (eff, x,state)=>(state.formulaApplyCount <= 0 ? {error:"logarithm"} : x[3] + Math.pow(Math.log2(state.formulaApplyCount / state.myFormulas.length),13) * eff),
         explanation: "Boosted by formula applications (since x-Reset). Diminished by number of equipped formulas.",
-        hashtagU: true,
+        hashtagF: true,
         hashtagE: true,
         complex: true,
     },

@@ -162,7 +162,7 @@ export default function FormulaScreen({state, updateState, setTotalClicks, popup
             {state.insideChallenge && state.highestXTier === 3 && state.xValue[0] >= alphaTarget &&
               <>{spaces()}<button style={{color:"black"}} disabled={state.inNegativeSpace || state.activeChallenges.FULLYIDLE} onClick={completeChallenge}><b>Complete Challenge</b></button></>
             }
-            {state.progressionLayer >= 1 && (state.xValue[0] < alphaTarget || state.highestXTier < 3) &&
+            {state.progressionLayer >= 1 &&
               <>{spaces()}<button style={{color:"black"}} disabled={state.activeChallenges.FULLYIDLE} onClick={abortAlphaReset}>Abort</button></>
             }
           <h2>My Formulas</h2>

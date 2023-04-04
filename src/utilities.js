@@ -108,12 +108,12 @@ export const secondsToHms = (seconds)=>{
 
 export const logB = (base, value)=>Math.log(value)/Math.log(base);
 
-export const geometricSum = (base, steps)=>{
-    return (1 - Math.pow(base, steps + 1)) / (1 - base)
+export const geometricSum = (initial, base, steps)=>{
+    return initial * (1 - Math.pow(base, steps)) / (1 - base)
 }
 
-export const reverseGeometric = (base, sumvalue)=>{
-    return Math.floor(logB(base,sumvalue*(base-1) + 1))
+export const reverseGeometric = (initial, base, sumvalue)=>{
+    return Math.floor(logB(base, sumvalue*(base-1)/initial + 1))
 }
 
 export const clamp = (lower, value, upper)=>{

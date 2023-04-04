@@ -11,7 +11,7 @@ import * as eventsystem from './mails/MailEventSystem'
 import * as progresscalculation from './progresscalculation'
 
 export const majorversion = 1
-export const version = "0.46"
+export const version = "0.47"
 
 export const newSave = {
     version: version,
@@ -807,10 +807,11 @@ export const saveReducer = (state, action)=>{
                 notify.success("POSTGAME: DESTINY")
                 break;
             case "DEVTEST":
-                state.destinyStars = 10
-                state.alpha = 1
-                state.mileStoneCount = 6
-                state.progressionLayer = 1
+                state.destinyStars = 90
+                state.mileStoneCount = 12
+                state.progressionLayer = 0
+                state.constellationCount = 10
+                state.mailsForCheck.push("Destiny")
                 notify.success("DEVTEST")
                 break;
             default:
