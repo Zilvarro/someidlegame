@@ -26,7 +26,7 @@ export default function AlphaChallengeButton({state, challenge, popup, updateSta
         padding:"20px", 
         fontFamily: "Monaco", 
         fontWeight: "bold",
-        width:"320px", 
+        width:"300px", 
         height:"200px", 
         fontSize:"16px",
         backgroundColor: backgroundColor,

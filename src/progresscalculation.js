@@ -63,7 +63,7 @@ export const applyFormulaToState = (state, formula, forceApply, silent, multiApp
             return false;
 
         switch (state.settings.valueReduction) {
-            case "CONFIRM":
+            case "ON":
                 if (!forceApply && !state.decreaseCooldown) {
                     return false
                 } else {
@@ -82,7 +82,7 @@ export const applyFormulaToState = (state, formula, forceApply, silent, multiApp
                 break;
             case "NEVER":
                 return false
-            case "APPLY":
+            case "OFF":
                 break;
             default:
                 return false

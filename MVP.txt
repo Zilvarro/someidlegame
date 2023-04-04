@@ -1,11 +1,8 @@
 ~~~~~~~~~~VERYHIGH~~~~~~~~~~
 
-VERYHIGH: Resetters should work properly while on other tabs (Maybe fixed, observe if still relevant)
-
 ~~~~~~~~~~HIGH~~~~~~~~~~
 
 HIGH: Hotkeys
-HIGH: Configuration for confirmation popups
 
 ~~~~~~~~~~MEDIUM~~~~~~~~~~
 
@@ -23,41 +20,25 @@ VERYLOW: Back button to quit endings early
 VERYLOW: Negative Space Rounding
 
 
-Popups: 
-Offline Progress
-
-Formula Decrease
-Basic Reset
-X Reset
-
-Alpha Reset
-Abort
-Exit Challenge
-Memorize
-Alpha Upgrade
-
-(Starlight Upgrade)
-(Constellation)
-(Destiny Reset)
-
-
 Hotkeys:
 1/2/3/4 => Apply Formula  (+Hold!)
-Shift + 1/2/3/4 => Research
-B => Basic Reset
 X => X Reset
 A => Alpha Reset
+T => Toggle Auto
+
+Shift + 1/2/3/4 => Research
+B => Basic Reset
 C => Abort
 S => Memorize
 L => Remember
 U => Unequip
-T => Toggle Auto
 
 
 Shop Favorites
 Default => Except hidden
-Favorites => Only Favorites
 All => Everything
+Favorites => Only Favorites
+Hidden => Only Hidden
 Edit => Change State
 
 Normal => Favorite (Bold) => Hidden (Underlined/Strikethrough) => Normal

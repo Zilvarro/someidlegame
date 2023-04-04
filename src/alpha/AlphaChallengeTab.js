@@ -78,7 +78,7 @@ export default function AlphaChallengeTab({state, updateState, popup}) {
     const exitAlphaChallenge = ()=>{
         popup.confirm(<>Exit current Challenge?</>,()=>{
             updateState({name: "exitChallenge"})
-        })
+        }, state.settings.exitChallengePopup === "OFF")
     }
     const openChallengeInfo = ()=>{
         popup.alert(<>All challenges have a 30 minute time limit.

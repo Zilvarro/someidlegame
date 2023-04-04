@@ -77,17 +77,8 @@ export default function OptionScreen({state, popup, updateState, setTotalClicks}
         {/* {spaces()}<MultiOptionButton settingName="offlineProgress" statusList={["ON","ACTIVE","OFF"]} state={state} updateState={updateState} setTotalClicks={setTotalClicks}
           description="Offline Progress" tooltip="Controls whether the game calculates progress for offline/inactive time" tooltipList={["Always get offline progress","No offline progress upon load, but inactive periods (minimized tab etc) are considered", "No offline progress, not even after inactive (minimized tab etc) periods of 2+ minutes"]}/> */}
       </p><p>
-        {spaces()}<MultiOptionButton settingName="offlineProgressPopup" statusList={["ON","LAUNCH","OFF"]} state={state} updateState={updateState} setTotalClicks={setTotalClicks}
-          description="Offline Progress Pop-Up" tooltip="Controls whether the offline progress popup is shown" tooltipList={["Shown at launch and after inactive periods","Only shown at launch/loading", "Never shown"]}/>
-      </p><p>
-        {spaces()}<MultiOptionButton settingName="xResetPopup" statusList={["ON","OFF"]} state={state} updateState={updateState} setTotalClicks={setTotalClicks}
-          description="X-Reset Pop-Up" tooltip="Controls whether the confirmation popup for X-Resets is shown" tooltipList={["Show popup","Do not show popup"]}/>
-      </p><p>
         {spaces()}<MultiOptionButton settingName="numberFormat" statusList={["LETTER","SCIENTIFIC","AMBIGUOUS"]} state={state} updateState={updateState} setTotalClicks={setTotalClicks}
           description="Number Format" tooltip="Controls how numbers are displayed" tooltipList={["Use letters for thousands: K,M,B,T,Q,P,S,V,O,N,D","Use scientific notation", "Use ambigous notation"]}/>
-      </p><p>
-        {spaces()}<MultiOptionButton settingName="valueReduction" statusList={["CONFIRM","WARNING","PREVENT","NEVER","APPLY"]} state={state} updateState={updateState} setTotalClicks={setTotalClicks}
-          description="Decreasing Formula" tooltip="Controls behavior when trying to apply a formula that reduces the value" tooltipList={["Show confirmation popup that can be skipped by holding Shift","Apply when Shift is held, show warning otherwise.", "Prevent formula application unless Shift is held", "Never apply", "Always apply"]}/>
       </p><p>
         {spaces()}<MultiOptionButton settingName="shopPrices" statusList={["OFF","ON"]} state={state} updateState={updateState} setTotalClicks={setTotalClicks}
           description="Shop Price Labels" tooltip="Controls how formula prices and additional info are shown in Shop" tooltipList={["Shop Prices are only shown in Tooltips","Shop Prices are shown in Label."]}/>
@@ -106,6 +97,50 @@ export default function OptionScreen({state, popup, updateState, setTotalClicks}
       {false && <p>
         {spaces()}<button onClick={cheat}>Cheat</button>
       </p>}
+      <details>
+        <summary>Pop-Up-Settings</summary>
+        <p>
+          {spaces()}<MultiOptionButton settingName="offlineProgressPopup" statusList={["ON","LAUNCH","OFF"]} state={state} updateState={updateState} setTotalClicks={setTotalClicks}
+            description="Offline Progress Pop-Up" tooltip="Controls whether the offline progress popup is shown" tooltipList={["Shown at launch and after inactive periods","Only shown at launch/loading", "Never shown"]}/>
+        </p>
+        {/* <p>
+        {spaces()}<MultiOptionButton settingName="valueReduction" statusList={["CONFIRM","WARNING","PREVENT","NEVER","APPLY"]} state={state} updateState={updateState} setTotalClicks={setTotalClicks}
+          description="Decreasing Formula" tooltip="Controls behavior when trying to apply a formula that reduces the value" tooltipList={["Show confirmation popup that can be skipped by holding Shift","Apply when Shift is held, show warning otherwise.", "Prevent formula application unless Shift is held", "Never apply", "Always apply"]}/>
+        </p> */}
+        <p>
+        {spaces()}<MultiOptionButton settingName="valueReduction" statusList={["ON","OFF"]} state={state} updateState={updateState} setTotalClicks={setTotalClicks}
+          description="Decreasing Formula Pop-Up" tooltip="Controls whether the confirmation popup for decreasing an X-Value is shown" tooltipList={["Show popup","Do not show popup"]}/>
+        </p>
+        <p>
+          {spaces()}<MultiOptionButton settingName="xResetPopup" statusList={["ON","OFF"]} state={state} updateState={updateState} setTotalClicks={setTotalClicks}
+            description="Basic Reset Pop-Up" tooltip="Controls whether the confirmation popup for Basic Resets is shown" tooltipList={["Show popup","Do not show popup"]}/>
+        </p>
+        {(state.destinyStars > 1 || state.progressionLayer > 0) && <p>
+          {spaces()}<MultiOptionButton settingName="shopResetPopup" statusList={["ON","OFF"]} state={state} updateState={updateState} setTotalClicks={setTotalClicks}
+            description="x-Reset Pop-Up" tooltip="Controls whether the confirmation popup for x-Resets is shown" tooltipList={["Show popup","Do not show popup"]}/>
+        </p>}
+        {(state.destinyStars > 1 || state.progressionLayer > 0) && <p>
+          {spaces()}<MultiOptionButton settingName="alphaResetPopup" statusList={["ON","OFF"]} state={state} updateState={updateState} setTotalClicks={setTotalClicks}
+            description="Alpha-Reset Pop-Up" tooltip="Controls whether the confirmation popup for Alpha-Resets is shown" tooltipList={["Show popup","Do not show popup"]}/>
+        </p>}
+        {(state.destinyStars > 1 || state.progressionLayer > 0) && <p>
+          {spaces()}<MultiOptionButton settingName="alphaAbortPopup" statusList={["ON","OFF"]} state={state} updateState={updateState} setTotalClicks={setTotalClicks}
+            description="Abort Alpha Pop-Up" tooltip="Controls whether the confirmation popup for aborting an Alpha run is shown" tooltipList={["Show popup","Do not show popup"]}/>
+        </p>}
+        {(state.destinyStars > 1 || state.progressionLayer > 0) && <p>
+          {spaces()}<MultiOptionButton settingName="alphaUpgradePopup" statusList={["ON","OFF"]} state={state} updateState={updateState} setTotalClicks={setTotalClicks}
+            description="Alpha Upgrade Pop-Up" tooltip="Controls whether the confirmation popup for buying an Alpha Upgrade is shown" tooltipList={["Show popup","Do not show popup"]}/>
+        </p>}
+        {(state.destinyStars > 1 || state.alphaUpgrades.MEEQ === true) && <p>
+          {spaces()}<MultiOptionButton settingName="memorizePopup" statusList={["ON","OFF"]} state={state} updateState={updateState} setTotalClicks={setTotalClicks}
+            description="Memorize Pop-Up" tooltip="Controls whether the confirmation popup for memorizing Formula loadouts is shown" tooltipList={["Show popup","Do not show popup"]}/>
+        </p>}
+        {(state.mailsCompleted["Challenges"] || state.progressionLayer > 0) && <p>
+          {spaces()}<MultiOptionButton settingName="exitChallengePopup" statusList={["ON","OFF"]} state={state} updateState={updateState} setTotalClicks={setTotalClicks}
+            description="Exit Challenge Pop-Up" tooltip="Controls whether the confirmation popup for exiting Challenges is shown" tooltipList={["Show popup","Do not show popup"]}/>
+        </p>}
+      </details>
+
       {state.xValue[0] === 0 && state.mileStoneCount === 0 && (window.location.href.split("/").pop() === "?newgame") &&<p>
         {spaces()}<button onClick={chapterJump}>Chapter Jump</button>
       </p>}

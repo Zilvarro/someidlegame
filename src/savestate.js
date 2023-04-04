@@ -102,7 +102,7 @@ export const newSave = {
     mailsProgress: {},
     mailsUnlocked: {},
     settings: {
-        valueReduction: "CONFIRM",
+        valueReduction: "ON",
         offlineProgress: "ON",
         offlineProgressPopup: "ON",
         xResetPopup: "ON",
@@ -117,6 +117,12 @@ export const newSave = {
         autoResetterA: "OFF",
         alphaThreshold: "MINIMUM",
         autoRemembererActive: "ON",
+        shopResetPopup: "ON",
+        alphaResetPopup: "ON",
+        alphaAbortPopup: "ON",
+        memorizePopup: "ON",
+        exitChallengePopup: "ON",
+        alphaUpgradePopup: "ON",
     }
 }
 

@@ -70,21 +70,21 @@ export default function FormulaScreen({state, updateState, setTotalClicks, popup
         updateState({name: "upgradeXTier"})
         updateState({name: "resetShop"})
         setTotalClicks((x)=>x+1)
-      }, state.progressionLayer >= 1)
+      }, state.settings.shopResetPopup === "OFF")
     }
     
     const performAlphaReset = ()=>{
-      popup.confirm("You lose all your differentials but you join the Academy and gain a powerful Alpha Token.",()=>{
+      popup.confirm(state.progressionLayer === 0 ? "You lose all your differentials but you join the Academy and gain a powerful Alpha Token." : "Perform an Alpha Reset?",()=>{
         updateState({name: "alphaReset"})
         setTotalClicks((x)=>x+1)
-      }, state.progressionLayer >= 1)
+      }, state.settings.alphaResetPopup === "OFF")
     }
 
     const abortAlphaReset = ()=>{
       popup.confirm(state.insideChallenge ? "Abort run and exit the current Challenge?" : "Abort the current Alpha Run?",()=>{
         updateState({name: "alphaReset", isAbort: true})
         setTotalClicks((x)=>x+1)
-      })
+      }, state.settings.alphaAbortPopup === "OFF")
     }
 
     const negativeSpaceInfo = ()=>{
@@ -104,7 +104,7 @@ export default function FormulaScreen({state, updateState, setTotalClicks, popup
     const memorize = ()=>{
       popup.confirm("Save this loadout for later use?", ()=>{
         updateState({name: "memorize"})
-      })
+      }, state.settings.memorizePopup === "OFF")
     }
 
     const remember = ()=>{

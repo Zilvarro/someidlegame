@@ -28,7 +28,7 @@ export const getUnlockMultiplier = (formula, state)=>{
 
 export default function FormulaButton({state, popup, updateState, setTotalClicks, formulaName, context, myIndex}) {
     const applyFormula = (formula,evt)=>{
-        if (!state.decreaseCooldown && state.settings.valueReduction === "CONFIRM" && 0.9999 * state.xValue[formula.targetLevel] > formula.applyFormula(state.formulaEfficiency[formula.targetLevel],state.xValue, state)) {
+        if (!state.decreaseCooldown && state.settings.valueReduction === "ON" && 0.9999 * state.xValue[formula.targetLevel] > formula.applyFormula(state.formulaEfficiency[formula.targetLevel],state.xValue, state)) {
             popup.confirm(<>This will lower your X value. Are you sure?<br/>If you confirm, this pop-up gets disabled until your next Reset.</>,()=>{
                 updateState({name: "applyFormula", formula: formula, updateState: updateState, forceApply: true})
                 setTotalClicks((x)=>x+1)
