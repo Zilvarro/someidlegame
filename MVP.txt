@@ -1,5 +1,7 @@
 ~~~~~~~~~~VERYHIGH~~~~~~~~~~
 
+VERYHIGH: Average of two highest neighbours for Starting Stones
+
 ~~~~~~~~~~HIGH~~~~~~~~~~
 
 HIGH: Hotkeys
