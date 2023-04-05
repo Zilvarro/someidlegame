@@ -4,6 +4,7 @@ import { getGlobalMultiplier } from './savestate'
 import { notify } from './utilities'
 
 export const applyFormulaToState = (state, formula, forceApply, silent, multiApply)=>{
+    debugger
     if (!formula) return false
 
     let applyNeed = formula.applyNeed

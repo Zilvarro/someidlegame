@@ -14,6 +14,7 @@ import MainEndingTab from './endings/EndingBarScreen'
 import AutoSave from './AutoSave'
 import {PopupDialog, makeShowPopup} from './PopupDialog'
 import EndingSelectionScreen from './endings/EndingSelectionScreen';
+import KeyBoardHandler from './KeyBoardHandler';
 
 function App() {
   const [ playTime, setPlayTime ] = useState(0)
@@ -77,6 +78,7 @@ function App() {
 
   return (<>
     <AutoSave saveState={state}/>
+    <KeyBoardHandler state={state} updateState={updateState}/>
     <PopupDialog popupState={popupState} setPopupState={setPopupState}/>
     <h1 style={{fontSize: "40px", marginLeft: "20px", marginBottom: "10px", textAlign:"left"}}>x&nbsp;=&nbsp;{formatNumber(state.xValue[0], state.settings.numberFormat, 6, false, false)}</h1>
     <TabContent selectedTabKey={state.selectedTabKey}>

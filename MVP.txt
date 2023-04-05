@@ -1,10 +1,9 @@
 ~~~~~~~~~~VERYHIGH~~~~~~~~~~
 
 VERYHIGH: Average of two highest neighbours for Starting Stones
+VERYHIGH: Sanitize hotkey actions
 
 ~~~~~~~~~~HIGH~~~~~~~~~~
-
-HIGH: Hotkeys
 
 ~~~~~~~~~~MEDIUM~~~~~~~~~~
 
@@ -23,17 +22,10 @@ VERYLOW: Negative Space Rounding
 
 
 Hotkeys:
-1/2/3/4 => Apply Formula  (+Hold!)
-X => X Reset
-A => Alpha Reset
-T => Toggle Auto
-
-Shift + 1/2/3/4 => Research
-B => Basic Reset
-C => Abort
-S => Memorize
-L => Remember
-U => Unequip
+1/2/3/4/5 => Apply Formula  (+Hold!) (With Decrease Popup)
+X => X Reset (No Popup)
+A => Alpha Reset (No Popup)
+T => Toggle Auto (No Popup)
 
 
 Shop Favorites

@@ -11,7 +11,7 @@ import * as eventsystem from './mails/MailEventSystem'
 import * as progresscalculation from './progresscalculation'
 
 export const majorversion = 1
-export const version = "0.47"
+export const version = "0.48"
 
 export const newSave = {
     version: version,
@@ -123,6 +123,11 @@ export const newSave = {
         memorizePopup: "ON",
         exitChallengePopup: "ON",
         alphaUpgradePopup: "ON",
+        hotkeyApplyFormula: "ON",
+        hotkeyXReset: "OFF",
+        hotkeyAlphaReset: "OFF",
+        hotkeyToggleAuto: "OFF",
+        hotkeyAbortRun: "OFF",
     }
 }
 
@@ -505,6 +510,8 @@ export const saveReducer = (state, action)=>{
         let recoverValue = 0
         let recoverTier = 0
         if (state.holdAction?.type === "ApplyFormula"){
+            if (state.holdAction.temp > 0)
+                state.holdAction.temp--
             if(state.holdAction.delay > 0) {
                 state.holdAction.delay--
             } else {
@@ -523,6 +530,9 @@ export const saveReducer = (state, action)=>{
                     recoverTier = formula.targetLevel
                 }
             }
+
+            if (state.holdAction.temp === 0)
+                state.holdAction = null
         }
 
         //Auto Appliers

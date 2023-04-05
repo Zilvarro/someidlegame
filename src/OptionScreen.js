@@ -141,6 +141,31 @@ export default function OptionScreen({state, popup, updateState, setTotalClicks}
         </p>}
       </details>
 
+      <details>
+        <summary>Hotkey-Settings</summary>
+        <p>
+          {spaces()}<MultiOptionButton settingName="hotkeyApplyFormula" statusList={["ON","OFF"]} state={state} updateState={updateState} setTotalClicks={setTotalClicks}
+            description="Apply Formula Hotkeys [1/2/3]" tooltip="Controls whether number keys can be used to apply formulas" tooltipList={["Hotkeys Enabled", "Hotkeys Disabled"]}/>
+        </p>
+        <p>
+        {spaces()}<MultiOptionButton settingName="hotkeyXReset" statusList={["ON","OFF"]} state={state} updateState={updateState} setTotalClicks={setTotalClicks}
+          description="x-Reset Hotkey [X]" tooltip="Controls whether the X Key can be pressed to perform an x-Reset" tooltipList={["Hotkey Enabled", "Hotkey Disabled"]}/>
+        </p>
+        {(state.destinyStars > 1 || state.progressionLayer > 0) && <p>
+          {spaces()}<MultiOptionButton settingName="hotkeyAlphaReset" statusList={["ON","OFF"]} state={state} updateState={updateState} setTotalClicks={setTotalClicks}
+            description="Alpha-Reset Hotkey [A]" tooltip="Controls whether the A Key can be pressed to perform an Alpha-Reset" tooltipList={["Hotkey Enabled", "Hotkey Disabled"]}/>
+        </p>}
+        {(state.destinyStars > 1 || state.alphaUpgrades.SAPP) && <p>
+          {spaces()}<MultiOptionButton settingName="hotkeyToggleAuto" statusList={["ON","OFF"]} state={state} updateState={updateState} setTotalClicks={setTotalClicks}
+            description="Toggle Auto Hotkey [T]" tooltip="Controls whether the T Key can be used to toggle Auto Appliers" tooltipList={["Hotkey Enabled", "Hotkey Disabled"]}/>
+        </p>}
+        {(state.destinyStars > 1 || state.progressionLayer > 0) && <p>
+          {spaces()}<MultiOptionButton settingName="hotkeyAbortRun" statusList={["ON","OFF"]} state={state} updateState={updateState} setTotalClicks={setTotalClicks}
+            description="Abort Hotkey [C]" tooltip="Controls whether the C Key can be used to abort the current run" tooltipList={["Show popup","Do not show popup"]}/>
+        </p>}
+      </details>
+
+
       {state.xValue[0] === 0 && state.mileStoneCount === 0 && (window.location.href.split("/").pop() === "?newgame") &&<p>
         {spaces()}<button onClick={chapterJump}>Chapter Jump</button>
       </p>}
