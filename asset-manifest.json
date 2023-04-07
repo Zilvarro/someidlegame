@@ -1,11 +1,11 @@
 {
   "files": {
     "main.css": "/someidlegame/static/css/main.33864ac0.css",
-    "main.js": "/someidlegame/static/js/main.d7961ba4.js",
+    "main.js": "/someidlegame/static/js/main.c00e20de.js",
     "index.html": "/someidlegame/index.html"
   },
   "entrypoints": [
     "static/css/main.33864ac0.css",
-    "static/js/main.d7961ba4.js"
+    "static/js/main.c00e20de.js"
   ]
 }
