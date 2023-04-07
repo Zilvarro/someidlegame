@@ -1,6 +1,6 @@
 import {startingStones, stoneTable} from './AlphaStoneDictionary'
 import AlphaStartingStone from './AlphaStartingStone'
-import {formatNumber, spaces} from '../utilities'
+import {formatNumber, numericSort, spaces} from '../utilities'
 
 export const calcStoneResultForX = (state, grid)=>{
     const stoneLevels = grid.flat().map((id)=>(state.startingStoneLevel[id]||0))
@@ -21,50 +21,21 @@ const calcLevelBoundaries = (state, grid)=>{
     const dimX = grid.length
     const dimY = grid[0].length
     const stoneLevels = grid.map((row)=>row.map((id)=>(state.startingStoneLevel[id]||0)))
-    let boundaries = Array.from(Array(dimX), () => new Array(dimY).fill(0))
-    let neighbours = Array.from(Array(dimX), () => new Array(dimY).fill(0))
 
-//Right Neighbour
-for (let x = 0; x+1<dimX; x++) {
-    for (let y = 0; y<dimY; y++) {
-        boundaries[x][y] += stoneLevels[x+1][y]
-        neighbours[x][y] += 1
-    }
-}
+    return stoneLevels.map((row,xIndex)=>row.map((stone,yIndex)=>{
+        const neighbours = []
+        if (xIndex > 0)
+            neighbours.push(stoneLevels[xIndex-1][yIndex])
+        if (xIndex + 1 < dimX)
+            neighbours.push(stoneLevels[xIndex+1][yIndex])
+        if (yIndex > 0)
+            neighbours.push(stoneLevels[xIndex][yIndex-1])
+        if (yIndex + 1 < dimY)
+            neighbours.push(stoneLevels[xIndex][yIndex+1])
 
-//Left Neighbour
-for (let x = 1; x<dimX; x++) {
-    for (let y = 0; y<dimY; y++) {
-        boundaries[x][y] += stoneLevels[x-1][y]
-        neighbours[x][y] += 1
-    }
-}
-
-    //Top Neighbour
-    for (let x = 0; x<dimX; x++) {
-        for (let y = 1; y<dimY; y++) {
-            boundaries[x][y] += stoneLevels[x][y-1]
-            neighbours[x][y] += 1
-        }
-    }
-
-    //Bottom Neighbour
-    for (let x = 0; x<dimX; x++) {
-        for (let y = 0; y+1<dimY; y++) {
-            boundaries[x][y] += stoneLevels[x][y+1]
-            neighbours[x][y] += 1
-        }
-    }
-
-    //Final Boundary 12 mal Average (9*currentLevel <= neighbourpoints+1)
-    for (let x = 0; x<dimX; x++) {
-        for (let y = 0; y<dimY; y++) {
-            let multipliers = [12,12,6,4,3]
-            boundaries[x][y] *= multipliers[neighbours[x][y]]
-        }
-    }
-
-    return boundaries
+        const sortedNeighbours = numericSort(neighbours, true)
+        return (sortedNeighbours[0] || 0) + (sortedNeighbours[1] || 0)
+    }))
 }
 
 export default function AlphaStonesTab({state, popup, updateState}) {

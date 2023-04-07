@@ -148,3 +148,9 @@ export const getOfflinePopupLine = (label, before, after, numberFormat)=>{
 export const isMobileDevice = ()=>{
     return (/Android|webOS|iPhone|iPad|iPod|BlackBerry|BB|PlayBook|IEMobile|Windows Phone|Kindle|Silk|Opera Mini/i.test(navigator.userAgent))
 }
+
+export const numericSort = (numArray, descending)=>{
+    return numArray.sort(function(a, b) {
+        return descending ? b - a: a - b;
+    });
+}

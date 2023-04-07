@@ -16,8 +16,7 @@ export default function AlphaStartingStone({state, boundary,stone, popup, update
 
     const isTurned = state.startingStoneTurned[stone.id] 
     const isMaxxed = state.startingStoneLevel[stone.id] >= 10
-    const isBounded = !!state.startingStoneLevel[stone.id] || Math.pow(state.startingStoneLevel[stone.id],2) * 12 > boundary * 10
-    // const isBounded = state.startingStoneLevel[stone.id] * 12 + Math.pow(state.startingStoneLevel[stone.id],2) * 5 >= boundary * 5
+    const isBounded = !!state.startingStoneLevel[stone.id] && state.startingStoneLevel[stone.id] * (1 + Math.sqrt(state.startingStoneLevel[stone.id])) > 2 * boundary
 
     let disabled = false
     if ((!state.startingStoneLevel[stone.id] || state.startingStoneLevel[stone.id] <= 0) && state.startingStoneMode===-1)

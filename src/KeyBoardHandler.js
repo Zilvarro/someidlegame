@@ -1,18 +1,25 @@
 import Hotkeys from 'react-hot-keys';
 import formulaList from './formulas/FormulaDictionary';
 
-export default function KeyBoardHandler({state, updateState}) {
+export default function KeyBoardHandler({state, updateState, popup}) {
+
+    if (popup?.popupState?.visible) return undefined
 
     const hotkeyApplyFormulaDown = (keyName, e, handle) => {
         const index = keyName - 1
         if (index >= state.myFormulas.length) return
 
         const formula = formulaList[state.myFormulas[index]]
-        debugger
         if (e.repeat) {
             updateState({name: "changeHold", newValue:{type:"ApplyFormula", formulaName:formula.formulaName, delay: 0, temp: 10}})
         } else {
-            updateState({name: "applyFormula", formula: formula})
+            if (!state.decreaseCooldown && state.settings.valueReduction === "ON" && 0.9999 * state.xValue[formula.targetLevel] > formula.applyFormula(state.formulaEfficiency[formula.targetLevel],state.xValue, state)) {
+                popup.confirm(<>This will lower your X value. Are you sure?<br/>If you confirm, this pop-up gets disabled until your next Reset.</>,()=>{
+                    updateState({name: "applyFormula", formula: formula, updateState: updateState, forceApply: true})
+                })
+            } else {
+                updateState({name: "applyFormula", formula: formula, updateState: updateState, forceApply: e.shiftKey})
+            }
         }
     }
 
@@ -20,29 +27,34 @@ export default function KeyBoardHandler({state, updateState}) {
         updateState({name:"changeHold", newValue:null})
     }
 
+    const hotkeyBasicReset = (keyName, e, handle) => {
+        updateState({name:"resetXValues"})
+    }
+
     const hotkeyXReset = (keyName, e, handle) => {
+        updateState({name:"upgradeXTier"})
         updateState({name:"resetShop"})
     }
 
     const hotkeyAlphaReset = (keyName, e, handle) => {
-        updateState({name:"resetShop"})
+        if (state.progressionLayer < 1) return
+        updateState({name:"alphaReset", isAbort: false})
     }
 
     const hotkeyToggleAuto = (keyName, e, handle) => {
-        updateState({name:"resetShop"})
+        updateState({name:"toggleAutoApply"})
     }
 
     const hotkeyAbortRun = (keyName, e, handle) => {
-        updateState({name:"resetShop"})
+        if (state.progressionLayer < 1) return
+        updateState({name:"alphaReset", isAbort: true})
     }
 
 
 
     return <>
-            <div style={{ padding: "50px" }}>
-                Deine Mudda is deine Mudda!
-            </div>
         <Hotkeys keyName="1,2,3,4,5"  disabled={state.settings.hotkeyApplyFormula === "OFF"} onKeyDown={hotkeyApplyFormulaDown} onKeyUp={hotkeyApplyFormulaUp} allowRepeat={true}/>
+        <Hotkeys keyName="b" disabled={state.settings.hotkeyBasicReset === "OFF"} onKeyDown={hotkeyBasicReset}/>
         <Hotkeys keyName="x" disabled={state.settings.hotkeyXReset === "OFF"} onKeyDown={hotkeyXReset}/>
         <Hotkeys keyName="a" disabled={state.settings.hotkeyAlphaReset === "OFF"} onKeyDown={hotkeyAlphaReset}/>
         <Hotkeys keyName="t" disabled={state.settings.hotkeyToggleAuto === "OFF"} onKeyDown={hotkeyToggleAuto}/>

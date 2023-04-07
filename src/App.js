@@ -78,8 +78,8 @@ function App() {
 
   return (<>
     <AutoSave saveState={state}/>
-    <KeyBoardHandler state={state} updateState={updateState}/>
     <PopupDialog popupState={popupState} setPopupState={setPopupState}/>
+    <KeyBoardHandler state={state} updateState={updateState} popup={popup}/>
     <h1 style={{fontSize: "40px", marginLeft: "20px", marginBottom: "10px", textAlign:"left"}}>x&nbsp;=&nbsp;{formatNumber(state.xValue[0], state.settings.numberFormat, 6, false, false)}</h1>
     <TabContent selectedTabKey={state.selectedTabKey}>
       <FormulaScreen tabKey="FormulaScreen" popup={popup} state={state} updateState={updateState} setTotalClicks={setTotalClicks}/>

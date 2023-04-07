@@ -186,7 +186,7 @@ export default function FormulaButton({state, popup, updateState, setTotalClicks
             <tr><td align="left" className="block" style={{width:"auto"}}>
                 <button title={tooltipplus} className="fbutton" style={{backgroundColor: buttonColor, fontWeight: buttonBoldness}}
                     disabled={state.activeChallenges.FULLYIDLE || state.myFormulas.length >= getInventorySize(state)}
-                    onClick={()=>getFormula(formula)}>
+                    onClick={()=>getFormula(formula)} onMouseDown={(e)=>{e.preventDefault()}}>
                     GET {formula.description}
                 </button>
             </td><td>
@@ -200,7 +200,7 @@ export default function FormulaButton({state, popup, updateState, setTotalClicks
             <tr><td align="left" className="block" style={{"width":"auto"}}>
                 <button className="fbutton" style={{backgroundColor: "#ffffff", fontWeight: buttonBoldness}} title={tooltipplus}
                     disabled={state.activeChallenges.FULLYIDLE || (state.xValue[0] < formula.unlockCost * formula.unlockMultiplier && !formula.isFree)}
-                    onClick={()=>unlockFormula(formula)}>
+                    onClick={()=>unlockFormula(formula)} onMouseDown={(e)=>{e.preventDefault()}}>
                     UNLOCK {formula.description}
                 </button>
             </td><td>

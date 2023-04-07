@@ -140,12 +140,16 @@ export default function OptionScreen({state, popup, updateState, setTotalClicks}
             description="Exit Challenge Pop-Up" tooltip="Controls whether the confirmation popup for exiting Challenges is shown" tooltipList={["Show popup","Do not show popup"]}/>
         </p>}
       </details>
-
+      <br/>
       <details>
         <summary>Hotkey-Settings</summary>
         <p>
           {spaces()}<MultiOptionButton settingName="hotkeyApplyFormula" statusList={["ON","OFF"]} state={state} updateState={updateState} setTotalClicks={setTotalClicks}
             description="Apply Formula Hotkeys [1/2/3]" tooltip="Controls whether number keys can be used to apply formulas" tooltipList={["Hotkeys Enabled", "Hotkeys Disabled"]}/>
+        </p>
+        <p>
+        {spaces()}<MultiOptionButton settingName="hotkeyBasicReset" statusList={["ON","OFF"]} state={state} updateState={updateState} setTotalClicks={setTotalClicks}
+          description="Basic Reset Hotkey [B]" tooltip="Controls whether the B Key can be pressed to perform a Basic Reset" tooltipList={["Hotkey Enabled", "Hotkey Disabled"]}/>
         </p>
         <p>
         {spaces()}<MultiOptionButton settingName="hotkeyXReset" statusList={["ON","OFF"]} state={state} updateState={updateState} setTotalClicks={setTotalClicks}

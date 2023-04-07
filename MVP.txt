@@ -1,8 +1,5 @@
 ~~~~~~~~~~VERYHIGH~~~~~~~~~~
 
-VERYHIGH: Average of two highest neighbours for Starting Stones
-VERYHIGH: Sanitize hotkey actions
-
 ~~~~~~~~~~HIGH~~~~~~~~~~
 
 ~~~~~~~~~~MEDIUM~~~~~~~~~~
@@ -19,13 +16,6 @@ LOW: Notification / Indication for new highscores
 
 VERYLOW: Back button to quit endings early
 VERYLOW: Negative Space Rounding
-
-
-Hotkeys:
-1/2/3/4/5 => Apply Formula  (+Hold!) (With Decrease Popup)
-X => X Reset (No Popup)
-A => Alpha Reset (No Popup)
-T => Toggle Auto (No Popup)
 
 
 Shop Favorites

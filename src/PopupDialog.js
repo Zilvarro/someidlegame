@@ -20,6 +20,7 @@ export const makeShowPopup = (popupState, setPopupState) => {
             const mycallback = (option)=>(option==="YES" && callback(option))
             setPopupState({text: text, options: ["YES","NO"], callback: mycallback, visible: true})
         },
+        popupState: popupState,
     } 
 }
 

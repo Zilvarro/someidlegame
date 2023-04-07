@@ -13,7 +13,7 @@ export const milestoneList = [
     id:"XReset",
     name:"Back To Zero",
     description:<>Perform a Basic Reset</>,
-    check: (state)=>(state.xResetCount >= 1),
+    check: (state)=>(state.xResetCount >= 1 || state.highestXTier >= 1),
     tier: 0,
   },{
     id:"S",

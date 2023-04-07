@@ -11,7 +11,7 @@ import * as eventsystem from './mails/MailEventSystem'
 import * as progresscalculation from './progresscalculation'
 
 export const majorversion = 1
-export const version = "0.48"
+export const version = "0.50"
 
 export const newSave = {
     version: version,
@@ -124,6 +124,7 @@ export const newSave = {
         exitChallengePopup: "ON",
         alphaUpgradePopup: "ON",
         hotkeyApplyFormula: "ON",
+        hotkeyBasicReset: "OFF",
         hotkeyXReset: "OFF",
         hotkeyAlphaReset: "OFF",
         hotkeyToggleAuto: "OFF",
@@ -282,7 +283,7 @@ const performAlphaReset = (state)=>{
 }
 
 const giveAlphaRewards = (state)=>{
-    if (state.xValue[0] < alphaTarget) {return} //No rewards without the necessary points
+    if (state.xValue[0] < alphaTarget) {return state} //No rewards without the necessary points
 
     //Initial Unlock of the Layer
     if (state.progressionLayer <= 0) {
@@ -531,7 +532,7 @@ export const saveReducer = (state, action)=>{
                 }
             }
 
-            if (state.holdAction.temp === 0)
+            if (state.holdAction?.temp === 0)
                 state.holdAction = null
         }
 
@@ -713,6 +714,7 @@ export const saveReducer = (state, action)=>{
         state.decreaseCooldown = false
         break;
     case "changeHold":
+        if (state.activeChallenges.FULLYIDLE) break
         state.isFullyIdle = false
         state.holdAction = action.newValue
         state.isHolding = !!state.holdAction
@@ -731,6 +733,7 @@ export const saveReducer = (state, action)=>{
         }
         break;
     case "applyFormula":
+        if (state.activeChallenges.FULLYIDLE || !state.formulaUnlocked[action.formula.formulaName]) break
         state.isFullyIdle = false
         if (!state.tickFormula && !state.isHolding) {
             progresscalculation.applyFormulaToState(state, action.formula, action.forceApply)
@@ -755,25 +758,33 @@ export const saveReducer = (state, action)=>{
         state.myFormulas = state.myFormulas.filter(formulaName => formulaName !== action.formula.formulaName)
         break;
     case "resetXValues":
+        if (state.progressionLayer === 0 && state.highestXTier === 0 && state.formulaUnlockCount < 4) break
+        if (state.activeChallenges.FULLYIDLE || state.activeChallenges.ONESHOT || !state.anyFormulaUsed) break
         state.isFullyIdle = false
         performXReset(state)
         break;
     case "resetShop":
+        if (state.inNegativeSpace || state.activeChallenges.FULLYIDLE || state.highestXTier >= 3 || state.xValue[0] < differentialTargets[state.highestXTier]) break
         state.isFullyIdle = false
         performShopReset(state)
         rememberLoadout(state)
         break;
     case "upgradeXTier":
+        if (state.inNegativeSpace || state.activeChallenges.FULLYIDLE || state.highestXTier >= 3 || state.xValue[0] < differentialTargets[state.highestXTier]) break
         state.isFullyIdle = false
         upgradeXTier(state)
         break;
     case "alphaReset":
+        if (state.activeChallenges.FULLYIDLE) break
+        if ((state.highestXTier < 3 || state.xValue[0] < alphaTarget || state.inNegativeSpace) && !action.isAbort) break
+
         state.isFullyIdle = false
         if (action.isAbort && !state.insideChallenge) {
             state.settings.autoResetterS = "OFF"
             state.settings.autoResetterA = "OFF"
             state.autoApply = [false,false,false,false,false]
         }
+
         giveAlphaRewards(state)
         performAlphaReset(state)
         performShopReset(state)
@@ -855,6 +866,7 @@ export const saveReducer = (state, action)=>{
         state.formulaBought = state.myFormulas.reduce((a,v)=>({...a, [v]:true}),{})
         break;
     case "toggleAutoApply":
+        if (state.activeChallenges.FULLYIDLE || !state.alphaUpgrades.SAPP) break
         state.isFullyIdle = false
         if (action.all) {
             //If at least one applier is active deactivate all, otherwise activate all
