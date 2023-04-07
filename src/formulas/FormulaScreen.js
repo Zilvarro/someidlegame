@@ -68,7 +68,6 @@ export default function FormulaScreen({state, updateState, setTotalClicks, popup
       const shopMultiplier = shopMultipliers[state.highestXTier]
       popup.confirm("A new differential of x and its formulas become available, but the shop is reset and the unlock cost for all non-basic formulas is " + shopMultiplier + " times as high.",()=>{
         updateState({name: "upgradeXTier"})
-        updateState({name: "resetShop"})
         setTotalClicks((x)=>x+1)
       }, state.settings.shopResetPopup === "OFF")
     }

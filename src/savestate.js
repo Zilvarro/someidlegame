@@ -11,7 +11,7 @@ import * as eventsystem from './mails/MailEventSystem'
 import * as progresscalculation from './progresscalculation'
 
 export const majorversion = 1
-export const version = "0.52"
+export const version = "0.53"
 export const productive = false
 
 export const newSave = {
@@ -766,16 +766,12 @@ export const saveReducer = (state, action)=>{
         state.isFullyIdle = false
         performXReset(state)
         break;
-    case "resetShop":
-        if (state.inNegativeSpace || state.activeChallenges.FULLYIDLE || state.highestXTier >= 3 || state.xValue[0] < differentialTargets[state.highestXTier]) break
-        state.isFullyIdle = false
-        performShopReset(state)
-        rememberLoadout(state)
-        break;
     case "upgradeXTier":
         if (state.inNegativeSpace || state.activeChallenges.FULLYIDLE || state.highestXTier >= 3 || state.xValue[0] < differentialTargets[state.highestXTier]) break
         state.isFullyIdle = false
         upgradeXTier(state)
+        performShopReset(state)
+        rememberLoadout(state)
         break;
     case "alphaReset":
         if (state.activeChallenges.FULLYIDLE) break
@@ -828,6 +824,7 @@ export const saveReducer = (state, action)=>{
                 state.mileStoneCount = 6
                 state.progressionLayer = 1
                 state.mailsForCheck = ["Welcome"]
+                state.mailsCompleted["Favorites"] = 0 //Unlocks Shop Filters
                 notify.success("CHAPTER 5: ALPHA")
                 break;
             case "D3571NY574R":

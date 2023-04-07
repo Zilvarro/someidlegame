@@ -174,6 +174,6 @@ export default function OptionScreen({state, popup, updateState, setTotalClicks}
         {spaces()}<button onClick={chapterJump}>Chapter Jump</button>
       </p>}
       <br/>
-      <p>Version {version}{!productive && <>&nbsp;[Development Build]</>}</p>
+      <p>Version {version}{!productive && <>&nbsp;&nbsp;[Development Build]</>}</p>
   </div>)
 }

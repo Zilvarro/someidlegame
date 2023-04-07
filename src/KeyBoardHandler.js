@@ -33,7 +33,6 @@ export default function KeyBoardHandler({state, updateState, popup}) {
 
     const hotkeyXReset = (keyName, e, handle) => {
         updateState({name:"upgradeXTier"})
-        updateState({name:"resetShop"})
     }
 
     const hotkeyAlphaReset = (keyName, e, handle) => {
