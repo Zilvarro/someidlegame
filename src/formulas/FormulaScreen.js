@@ -123,7 +123,7 @@ export default function FormulaScreen({state, updateState, setTotalClicks, popup
       updateState({name:"toggleAutoApply", all:true})
     }
 
-    const sResetNames = ["x'", "x''", "x'''", "N/A"]
+    const sResetNames = ["x'", "x''", "x'''", "Alpha"]
     const sResetName = sResetNames[state.highestXTier]
 
 
@@ -141,6 +141,23 @@ export default function FormulaScreen({state, updateState, setTotalClicks, popup
     const hashtagB = state.myFormulas.some((formulaName)=>formulaList[formulaName].hashtagB)
     const hashtagF = state.myFormulas.some((formulaName)=>formulaList[formulaName].hashtagF)
     const hashtagE = state.myFormulas.some((formulaName)=>formulaList[formulaName].hashtagE)
+
+    let displayFilter = ()=>true
+    switch (state.settings.shopFilter) {
+      case "DEFAULT":
+        displayFilter = (formulaName)=>(state.shopFavorites[state.highestXTier][formulaName] !== -1) //Not Hidden
+        break;
+      case "FAVORITES":
+        displayFilter = (formulaName)=>(state.shopFavorites[state.highestXTier][formulaName] === 1) //Only Favorites
+        break;
+      case "HIDDEN":
+        displayFilter = (formulaName)=>(state.shopFavorites[state.highestXTier][formulaName] === -1) //Only Hidden
+        break;
+      default: //ALL + EDIT
+        break;
+    }
+    if (state.mailsCompleted["Favorites"] === undefined) //Not yet unlocked
+      displayFilter = ()=>true
 
     return (<div style={{color: "#99FF99"}}>
         <div className="row" style={{marginTop:"0px"}}><div className="column">
@@ -203,6 +220,8 @@ export default function FormulaScreen({state, updateState, setTotalClicks, popup
             {state.activeChallenges.COUNTDOWN && <p>Countdown: {secondsToHms(30 - state.millisSinceCountdown / 1000)}</p>}
             {state.activeChallenges.LIMITED && <p>You can apply {100 - state.formulaApplyCount} more formulas.</p>}
             {(state.xResetCount > 0 || state.highestXTier > 0 || state.progressionLayer > 0) && state.highestXTier < 3 && state.xValue[0] < differentialTarget && <p>Reach x={formatNumber(differentialTarget, state.settings.numberFormat)} for the next x-Reset</p>}
+            {state.progressionLayer > 0 && !state.insideChallenge && !state.inNegativeSpace && state.xValue[0] > differentialTarget && <p>{sResetName}-Reset Highscore: x={formatNumber(state.xHighScores[state.highestXTier], state.settings.numberFormat,3)}</p>}
+            {state.activeChallenges.FORMULAGOD && <p>Formula God Highscore: x={formatNumber(state.formulaGodScores[0], state.settings.numberFormat,3)}</p>}
             {state.progressionLayer >= 1 && state.highestXTier === 3 && state.xValue[0] < alphaTarget && !state.insideChallenge && <p>Reach x={formatNumber(alphaTarget, state.settings.numberFormat)} to perform an &alpha;-Reset</p>}
             {state.highestXTier === 3 && state.xValue[0] < alphaTarget && state.insideChallenge && <p>Reach x={formatNumber(alphaTarget,state.settings.numberFormat)} to complete the challenge</p>}
             {state.progressionLayer >= 1 && state.highestXTier === 3 && !state.inNegativeSpace && !state.insideChallenge && state.xValue[0] >= alphaTarget && <p>Alpha Reset for {alphaRewardTier.alpha * Math.pow(2,state.baseAlphaLevel)} &alpha;.{alphaRewardTier.next && <>&nbsp;(Next: {alphaRewardTier.nextAlpha * Math.pow(2,state.baseAlphaLevel)} &alpha; at x={formatNumber(alphaRewardTier.next)})</>}</p>}
@@ -225,8 +244,9 @@ export default function FormulaScreen({state, updateState, setTotalClicks, popup
             {hashtagE && <>#E = {formatNumber(state.myFormulas.length, state.settings.numberFormat, 3)}&nbsp;&nbsp;(Equipped Formulas)<br/></>}
         </div><div className="column">
         <h2 style={{marginTop:"0px"}}>Shop {state.myFormulas.length >= getInventorySize(state) && <>{spaces()}[FULL INVENTORY]</>}</h2>
+          {state.mailsCompleted["Favorites"] !== undefined && <p><DropdownOptionButton visible={true} settingName="shopFilter" statusList={["DEFAULT","ALL","FAVORITES","HIDDEN","EDIT"]} state={state} updateState={updateState} setTotalClicks={setTotalClicks} description="Display Mode"/></p>}
           <div style={state.settings.shopScroll === "ON" ? {overflow:"auto", height:"70vh"} : {}}>
-            <FormulaTable state={state} updateState={updateState} popup={popup} setTotalClicks={setTotalClicks} formulaNames={shopFormulas}/>
+            <FormulaTable state={state} updateState={updateState} popup={popup} setTotalClicks={setTotalClicks} formulaNames={shopFormulas.filter(displayFilter)}/>
           </div>
         </div></div>
     </div>)

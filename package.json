@@ -16,9 +16,8 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject",
-    "predeploy": "npm run build",
+    "nosourcebuild": "GENERATE_SOURCEMAP=false react-scripts build",
+    "predeploy": "npm run nosourcebuild",
     "deploy": "gh-pages -d build"
   },
   "eslintConfig": {

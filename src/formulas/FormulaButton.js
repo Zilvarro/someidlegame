@@ -96,8 +96,12 @@ export default function FormulaButton({state, popup, updateState, setTotalClicks
 
     let buttonColor = "#ffffff"
     let buttonBoldness = "normal"
-    if (formula.effectLevel === state.highestXTier) {
+    let buttonItalicity = "normal"
+    if (state.shopFavorites[state.highestXTier][formula.formulaName] === 1) {
         buttonBoldness = "bold"
+    }
+    if (state.shopFavorites[state.highestXTier][formula.formulaName] === -1) {
+        buttonItalicity = "italic"
     }
     if (applyNeed <= state.xValue[0] && applyCost <= state.xValue[0]) {
         buttonColor = "#CCFFCC"
@@ -141,6 +145,9 @@ export default function FormulaButton({state, popup, updateState, setTotalClicks
     const moveFormulaDown = (e)=>{
         updateState({name:"swapFormulas", formulaName:formula.formulaName, isDownward:true})
     }
+    const changeFavorite = (e)=>{
+        updateState({name:"changeFavorite", formulaName:formula.formulaName, tier:state.highestXTier})
+    }
 
     if (context === "my") { //APPLY BUTTON
         return (
@@ -168,6 +175,20 @@ export default function FormulaButton({state, popup, updateState, setTotalClicks
         )
     } else if (lockedByChallenge) { //LOCKED BY CHALLENGE (=>HIDDEN)
         return undefined
+    } else if (state.settings.shopFilter === "EDIT" && state.mailsCompleted["Favorites"] !== undefined) { //Edit Formula Display Type
+        return (
+            <tr><td align="left" className="block" style={{width:"auto"}}>
+                <button title={tooltipplus} className="fbutton" style={{backgroundColor: buttonColor, fontWeight: buttonBoldness, fontStyle: buttonItalicity}}
+                    onClick={()=>changeFavorite(formula)} onMouseDown={(e)=>{e.preventDefault()}}>
+                    {formula.description}
+                </button>
+            </td><td>
+                {spaces()}
+            </td><td>
+                {state.shopFavorites[state.highestXTier][formula.formulaName] === 1 && <b>Favorite</b>}
+                {state.shopFavorites[state.highestXTier][formula.formulaName] === -1 && <i>Hidden</i>}
+            </td></tr>
+        )
     } else if (state.formulaBought[formulaName]) { //EQUIPPED
         return (
             <tr><td align="left" className="block" style={{width:"auto"}}>
@@ -184,7 +205,7 @@ export default function FormulaButton({state, popup, updateState, setTotalClicks
     } else if (state.formulaUnlocked[formulaName]) { //GET BUTTON
         return (
             <tr><td align="left" className="block" style={{width:"auto"}}>
-                <button title={tooltipplus} className="fbutton" style={{backgroundColor: buttonColor, fontWeight: buttonBoldness}}
+                <button title={tooltipplus} className="fbutton" style={{backgroundColor: buttonColor, fontWeight: buttonBoldness, fontStyle: buttonItalicity}}
                     disabled={state.activeChallenges.FULLYIDLE || state.myFormulas.length >= getInventorySize(state)}
                     onClick={()=>getFormula(formula)} onMouseDown={(e)=>{e.preventDefault()}}>
                     GET {formula.description}
@@ -198,7 +219,7 @@ export default function FormulaButton({state, popup, updateState, setTotalClicks
     } else { //UNLOCK BUTTON
         return (
             <tr><td align="left" className="block" style={{"width":"auto"}}>
-                <button className="fbutton" style={{backgroundColor: "#ffffff", fontWeight: buttonBoldness}} title={tooltipplus}
+                <button className="fbutton" style={{backgroundColor: "#ffffff", fontWeight: buttonBoldness, fontStyle: buttonItalicity}} title={tooltipplus}
                     disabled={state.activeChallenges.FULLYIDLE || (state.xValue[0] < formula.unlockCost * formula.unlockMultiplier && !formula.isFree)}
                     onClick={()=>unlockFormula(formula)} onMouseDown={(e)=>{e.preventDefault()}}>
                     UNLOCK {formula.description}

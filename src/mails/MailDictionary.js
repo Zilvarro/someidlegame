@@ -12,7 +12,7 @@ export const mailDictionary = {
         sender: "Y",
         check: (state)=>(state.xValue[0] > 200e6 && state.highestXTier >= 1),
         delay: 20,
-        afterComplete: [["What", "Prince"],["Who", "Prince"]],
+        afterComplete: [["What", "Prince", "Favorites"],["Who", "Prince", "Favorites"]],
     },
     "What":{
         id: "What",
@@ -549,13 +549,15 @@ export const mailDictionary = {
     },
 
     //Sidestory: Just Developer Things
-    "Favorites":{ //Not yet included
+    "Favorites":{
         id: "Favorites",
         title: "Highlight your favorite formulas!",
-        content: <>Hey, there are a lot of formulas in the shop now, and it will be getting even more with the next x-Reset. And many of the lower differential formulas seem pretty useless by now. But no worries, I have a solution: You can now highlight and filter your favorite formulas. Go, try it out!<br/><br/>P.S.: I lied, this quality of life feature is not yet developed.</>,
+        content: <>Hey, there are a lot of formulas in the shop now, and it will be getting even more with the next x-Reset. And many of the lower differential formulas seem pretty useless by now. But no worries, I have a solution: You can now highlight and filter your favorite formulas. Go, try it out!</>,
+        responses: [<>UNLOCK SHOP DISPLAY MODE</>],
         sender: "Dev",
         check: (state)=>(state.xValue[0] > 200e9 && state.highestXTier >= 2),
-        delay: 60
+        delay: 60,
+        afterComplete: [[]],
     },
     "Survey":{ //Star Survey Minigame
         id: "Survey",

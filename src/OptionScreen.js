@@ -1,6 +1,6 @@
 import { Buffer } from "buffer";
 
-import {save, version} from './savestate'
+import {productive, save, version} from './savestate'
 import {spaces, notify} from './utilities'
 import MultiOptionButton from './MultiOptionButton'
 
@@ -94,7 +94,7 @@ export default function OptionScreen({state, popup, updateState, setTotalClicks}
       <p>
         {spaces()}<button onClick={resetSave}>Hard Reset</button>
       </p>
-      {false && <p>
+      {false && !productive && <p>
         {spaces()}<button onClick={cheat}>Cheat</button>
       </p>}
       <details>
@@ -173,6 +173,7 @@ export default function OptionScreen({state, popup, updateState, setTotalClicks}
       {state.xValue[0] === 0 && state.mileStoneCount === 0 && (window.location.href.split("/").pop() === "?newgame") &&<p>
         {spaces()}<button onClick={chapterJump}>Chapter Jump</button>
       </p>}
-      <p>Version {version}</p>
+      <br/>
+      <p>Version {version}{!productive && <>&nbsp;[Development Build]</>}</p>
   </div>)
 }

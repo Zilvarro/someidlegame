@@ -16,10 +16,13 @@ export default function DropdownOptionButton({state, updateState, settingName, d
         fullToolTip = tooltip
 
     return (
-        <select value={state.settings.alphaThreshold} style={{color:"black"}} title={fullToolTip} disabled={disabled} onChange={onSelectionChange}>
-            {statusList.map((status)=>
-                <option key={status} value={status}>{status}</option>
-            )}
-        </select>
+        <>
+            {description && <>{description}:&nbsp;&nbsp;</>}
+            <select value={state.settings[settingName]} style={{color:"black"}} title={fullToolTip} disabled={disabled} onChange={onSelectionChange}>
+                {statusList.map((status)=>
+                    <option key={status} value={status}>{status}</option>
+                )}
+            </select>
+        </>
     )
 }

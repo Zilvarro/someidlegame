@@ -4,25 +4,4 @@
 
 ~~~~~~~~~~MEDIUM~~~~~~~~~~
 
-MEDIUM: Shop favs and hidden
-
-~~~~~~~~~~~LOW~~~~~~~~~~~
-
-LOW: Dynamic header bar (x, alpha, stars, starlight)
-LOW: Reclicking Main Tab cycles through sub-tabs
-LOW: Notification / Indication for new highscores
-
-~~~~~~~~~~VERYLOW~~~~~~~~~~
-
-VERYLOW: Back button to quit endings early
-VERYLOW: Negative Space Rounding
-
-
-Shop Favorites
-Default => Except hidden
-All => Everything
-Favorites => Only Favorites
-Hidden => Only Hidden
-Edit => Change State
-
-Normal => Favorite (Bold) => Hidden (Underlined/Strikethrough) => Normal
+~~~~~~~~~~~~~~~~~~~~~~~~~~

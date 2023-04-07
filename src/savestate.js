@@ -11,7 +11,8 @@ import * as eventsystem from './mails/MailEventSystem'
 import * as progresscalculation from './progresscalculation'
 
 export const majorversion = 1
-export const version = "0.50"
+export const version = "0.52"
+export const productive = false
 
 export const newSave = {
     version: version,
@@ -37,6 +38,7 @@ export const newSave = {
     autoApplyLevel: 0,
     autoApplyRate: 2,
     equipLayouts: [[[],[],[],[]],[[],[],[],[]],[[],[],[],[]]],
+    shopFavorites: [{},{},{},{}], //-1: hidden // 1: favorite // undefined: normal
     selectedLayout: 0,
     anyFormulaUsed: true,
     xResetCount: 0,
@@ -113,6 +115,7 @@ export const newSave = {
         showHints: "ON",
         hotKeys: "ON",
         shopScroll: "OFF",
+        shopFilter: "ALL",
         autoResetterS: "OFF",
         autoResetterA: "OFF",
         alphaThreshold: "MINIMUM",
@@ -311,7 +314,7 @@ const giveAlphaRewards = (state)=>{
     } else {
 
         //Passive Alpha from Master of Idle
-        if (state.isFullyIdle) {
+        if (state.isFullyIdle && state.clearedChallenges.FULLYIDLE) {
             const newRewardInterval = getRewardInterval(alphaReward, state.currentAlphaTime, getGlobalMultiplier(state))
             const oldMOIRewardInterval = getRewardInterval(state.bestIdleTimeAlpha, state.bestIdleTime, getGlobalMultiplier(state))
             if (newRewardInterval < state.passiveAlphaInterval || newRewardInterval < oldMOIRewardInterval) {
@@ -797,6 +800,7 @@ export const saveReducer = (state, action)=>{
         }
         break;
     case "cheat":
+        if (productive) break
         state.currentEnding = "true"
         break;
     case "chapterJump":
@@ -834,6 +838,7 @@ export const saveReducer = (state, action)=>{
                 notify.success("POSTGAME: DESTINY")
                 break;
             case "DEVTEST":
+                if (productive) break
                 state.destinyStars = 90
                 state.mileStoneCount = 12
                 state.progressionLayer = 0
@@ -881,6 +886,14 @@ export const saveReducer = (state, action)=>{
             }
             state.autoApply[action.index] = !checked
         }
+        break;
+    case "changeFavorite":
+        if (!state.shopFavorites[action.tier][action.formulaName])
+            state.shopFavorites[action.tier][action.formulaName] = 1 //FAVORITE
+        else if (state.shopFavorites[action.tier][action.formulaName] > 0)
+            state.shopFavorites[action.tier][action.formulaName] = -1 //HIDDEN
+        else
+            delete state.shopFavorites[action.tier][action.formulaName] //NORMAL
         break;
     case "enterChallenge":
         performAlphaReset(state)
@@ -964,7 +977,7 @@ export const saveReducer = (state, action)=>{
         break;
     case "performDestinyReset":
         state.destinyStars += 1
-        state = {...structuredClone(newSave), calcTimeStamp: Date.now(), saveTimeStamp: Date.now(), settings:state.settings, mileStoneCount:state.mileStoneCount, destinyMileStoneCount:state.destinyMileStoneCount, allTimeEndings:state.allTimeEndings,
+        state = {...structuredClone(newSave), calcTimeStamp: Date.now(), saveTimeStamp: Date.now(), settings:state.settings, shopFavorites:state.shopFavorites, mileStoneCount:state.mileStoneCount, destinyMileStoneCount:state.destinyMileStoneCount, allTimeEndings:state.allTimeEndings,
             destinyStars:state.destinyStars, starLight:state.starLight, lightAdder:state.lightAdder, lightDoubler:state.lightDoubler, lightRaiser:state.lightRaiser, starConstellations:state.starConstellations, constellationCount:state.constellationCount};
         state.mailsForCheck.push("Destiny")
         break;
