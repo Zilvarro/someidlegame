@@ -175,6 +175,8 @@ export default function FormulaButton({state, popup, updateState, setTotalClicks
         )
     } else if (lockedByChallenge) { //LOCKED BY CHALLENGE (=>HIDDEN)
         return undefined
+    } else if (formula.effectLevel > state.highestXTier || formula.targetLevel > state.highestXTier) { //Not available in Shop
+        return undefined;
     } else if (state.settings.shopFilter === "EDIT" && state.mailsCompleted["Favorites"] !== undefined) { //Edit Formula Display Type
         return (
             <tr><td align="left" className="block" style={{width:"auto"}}>
@@ -200,8 +202,6 @@ export default function FormulaButton({state, popup, updateState, setTotalClicks
             </td><td>
             </td></tr>
         )
-    } else if (formula.effectLevel > state.highestXTier || formula.targetLevel > state.highestXTier) { //Not available in Shop
-        return undefined;
     } else if (state.formulaUnlocked[formulaName]) { //GET BUTTON
         return (
             <tr><td align="left" className="block" style={{width:"auto"}}>

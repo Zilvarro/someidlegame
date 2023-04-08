@@ -158,7 +158,7 @@ export default function FormulaScreen({state, updateState, setTotalClicks, popup
     if (state.mailsCompleted["Favorites"] === undefined) //Not yet unlocked
       displayFilter = ()=>true
 
-    return (<div style={{color: "#99FF99"}}>
+    return (<div style={{color: "#99FF99", marginLeft: "10px"}}>
         <div className="row" style={{marginTop:"0px"}}><div className="column">
         <h2 style={{marginTop:"0px"}}>X Values</h2>
             <ValueTable values={state.xValue} diffs={state.avgXPerSecond} baseName={"x"} maxTier={state.highestXTier} numberFormat={state.settings.numberFormat}/>
