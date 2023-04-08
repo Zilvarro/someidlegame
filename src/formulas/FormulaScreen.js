@@ -167,10 +167,10 @@ export default function FormulaScreen({state, updateState, setTotalClicks, popup
               <>{spaces()}<button onClick={getWorldFormula}><b>DISCOVER THE WORLD FORMULA</b></button><br/><br/></>
             }
             {(state.progressionLayer > 0 || state.highestXTier > 0 || state.formulaUnlockCount >= 4) &&
-              <>{spaces()}<button style={{color:"black"}} onClick={resetXValues} disabled={state.activeChallenges.FULLYIDLE || state.activeChallenges.ONESHOT || !state.anyFormulaUsed}>Basic Reset</button>{state.progressionLayer === 0 && state.highestXTier === 0 && state.xResetCount === 0 && <>{spaces()}&larr; Reset x, but you can adapt your equipped formulas.</>}</>
+              <>{spaces()}<button style={{color:"black"}} onClick={resetXValues} disabled={state.activeChallenges.FULLYIDLE || state.activeChallenges.ONESHOT || !state.anyFormulaUsed}>Basic Reset</button>{state.progressionLayer === 0 && state.highestXTier === 0 && state.xResetCount === 0 && <span style={{color:"#00FF00", fontWeight:"bold"}}>{spaces()}&larr; Reset x, but you can adapt your equipped formulas.</span>}</>
             }
             {(state.progressionLayer > 0 || (state.xValue[0] >= differentialTarget)) && state.highestXTier < 3 &&
-              <>{spaces()}<button style={{color:"black"}} disabled={state.inNegativeSpace || state.activeChallenges.FULLYIDLE || state.xValue[0] < differentialTarget} onClick={resetShop}>{sResetName}-Reset</button>{state.progressionLayer === 0 && <>{spaces()}&larr; Reset the shop for a new differential</>}</>
+              <>{spaces()}<button style={{color:"black"}} disabled={state.inNegativeSpace || state.activeChallenges.FULLYIDLE || state.xValue[0] < differentialTarget} onClick={resetShop}>{sResetName}-Reset</button>{state.progressionLayer === 0 && <span style={{color:"#00FF00", fontWeight:"bold"}}>{spaces()}&larr; Reset the shop for a new differential</span>}</>
             }
             {state.progressionLayer >= 1 && !state.insideChallenge && state.highestXTier === 3 &&
               <>{spaces()}<button style={{color:"black"}} disabled={state.inNegativeSpace || state.activeChallenges.FULLYIDLE || state.xValue[0] < alphaTarget} onClick={performAlphaReset}>&alpha;-Reset</button></>
@@ -219,6 +219,7 @@ export default function FormulaScreen({state, updateState, setTotalClicks, popup
             {state.activeChallenges.COUNTDOWN && <p>Countdown: {secondsToHms(30 - state.millisSinceCountdown / 1000)}</p>}
             {state.activeChallenges.LIMITED && <p>You can apply {100 - state.formulaApplyCount} more formulas.</p>}
             {(state.xResetCount > 0 || state.highestXTier > 0 || state.progressionLayer > 0) && state.highestXTier < 3 && state.xValue[0] < differentialTarget && <p>Reach x={formatNumber(differentialTarget, state.settings.numberFormat)} for the next x-Reset</p>}
+            {(state.xResetCount > 0 || state.highestXTier > 0 || state.progressionLayer > 0) && state.highestXTier < 3 && state.xValue[0] >= differentialTarget && <p style={{color:"#00FF00", fontWeight:"bold"}}>{sResetName}-Reset is now available! (See button above!)</p>}
             {state.progressionLayer > 0 && !state.insideChallenge && !state.inNegativeSpace && state.xValue[0] > differentialTarget && <p>{sResetName}-Reset Highscore: x={formatNumber(state.xHighScores[state.highestXTier], state.settings.numberFormat,3)}</p>}
             {state.activeChallenges.FORMULAGOD && <p>Formula God Highscore: x={formatNumber(state.formulaGodScores[0], state.settings.numberFormat,3)}</p>}
             {state.progressionLayer >= 1 && state.highestXTier === 3 && state.xValue[0] < alphaTarget && !state.insideChallenge && <p>Reach x={formatNumber(alphaTarget, state.settings.numberFormat)} to perform an &alpha;-Reset</p>}

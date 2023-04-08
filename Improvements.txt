@@ -4,7 +4,7 @@ LOW: Reclicking Main Tab cycles through sub-tabs
 
 ~~~~~~~~~~FORMULAS~~~~~~~~~~
 
-MEDIUM: Shop favs and hidden
+LOW: Allow swapping formulas with empty Inventory Slots
 LOW: Avoid Line breaks for Unlock Cost (PC, Shop Scrollbar)
 LOW: Negative Space Rounding
 

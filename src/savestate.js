@@ -1,7 +1,7 @@
 import { Buffer } from "buffer";
 
 import {destinyMileStoneList, milestoneList} from './AchievementScreen' 
-import {getRewardInterval, notify, secondsToHms, getOfflinePopupLine, isMobileDevice} from './utilities'
+import {getRewardInterval, notify, secondsToHms, getOfflinePopupLine} from './utilities'
 import formulaList from './formulas/FormulaDictionary'
 import {shopFormulas} from './formulas/FormulaScreen'
 import {getUnlockMultiplier, isLockedByChallenge} from './formulas/FormulaButton'
@@ -11,7 +11,7 @@ import * as eventsystem from './mails/MailEventSystem'
 import * as progresscalculation from './progresscalculation'
 
 export const majorversion = 1
-export const version = "0.53"
+export const version = "0.54"
 export const productive = false
 
 export const newSave = {
@@ -111,7 +111,7 @@ export const newSave = {
         autoSave: "ON",
         autoLoad: "ON",
         numberFormat: "LETTER",
-        shopPrices: isMobileDevice() ? "ON" : "OFF",
+        shopPrices: "ON",
         showHints: "ON",
         hotKeys: "ON",
         shopScroll: "OFF",
