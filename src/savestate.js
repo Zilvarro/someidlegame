@@ -11,7 +11,7 @@ import * as eventsystem from './mails/MailEventSystem'
 import * as progresscalculation from './progresscalculation'
 
 export const majorversion = 1
-export const version = "0.54"
+export const version = "0.57"
 export const productive = false
 
 export const newSave = {
@@ -745,8 +745,11 @@ export const saveReducer = (state, action)=>{
         break;
     case "unlockFormula":
         state.isFullyIdle = false
+        const unlockCost = action.formula.isFree ? 0 : action.formula.unlockCost * action.formula.unlockMultiplier
+        if (unlockCost > state.xValue[0] || state.formulaUnlocked[action.formula.formulaName])
+            break
         if (!state.alphaUpgrades.AUNL)
-            state.xValue[0] -= action.formula.isFree ? 0 : action.formula.unlockCost * action.formula.unlockMultiplier
+            state.xValue[0] -= unlockCost
         state.formulaUnlocked[action.formula.formulaName] = true
         state.formulaUnlockCount++
         break;
@@ -868,9 +871,10 @@ export const saveReducer = (state, action)=>{
         state.formulaBought = state.myFormulas.reduce((a,v)=>({...a, [v]:true}),{})
         break;
     case "toggleAutoApply":
-        if (state.activeChallenges.FULLYIDLE || !state.alphaUpgrades.SAPP) break
+        if (state.activeChallenges.FULLYIDLE) break
         state.isFullyIdle = false
         if (action.all) {
+            if (!state.alphaUpgrades.SAPP) break
             //If at least one applier is active deactivate all, otherwise activate all
             if (state.autoApply.some((b,i)=>(b&&i<getInventorySize(state))))
                 state.autoApply = [false,false,false,false,false]

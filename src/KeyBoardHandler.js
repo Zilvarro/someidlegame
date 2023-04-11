@@ -11,7 +11,7 @@ export default function KeyBoardHandler({state, updateState, popup}) {
 
         const formula = formulaList[state.myFormulas[index]]
         if (e.repeat) {
-            updateState({name: "changeHold", newValue:{type:"ApplyFormula", formulaName:formula.formulaName, delay: 0, temp: 10}})
+            updateState({name: "changeHold", newValue:{type:"ApplyFormula", formulaName:formula.formulaName, delay: state.holdAction ? Math.min(state.holdAction.delay !== undefined ? state.holdAction.delay : 1) : 2, temp: 10}})
         } else {
             if (!state.decreaseCooldown && state.settings.valueReduction === "ON" && 0.9999 * state.xValue[formula.targetLevel] > formula.applyFormula(state.formulaEfficiency[formula.targetLevel],state.xValue, state)) {
                 popup.confirm(<>This will lower your X value. Are you sure?<br/>If you confirm, this pop-up gets disabled until your next Reset.</>,()=>{

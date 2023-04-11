@@ -14,7 +14,7 @@ const setAlphaTab = (tabKey)=>{
 return (
     <div style={{color:"#ff7777"}}>
         {<h3 style={{fontSize: "32px", marginLeft: "20px", marginTop:"10px", marginBottom:"20px", textAlign:"left"}}>&alpha;&nbsp;=&nbsp;{formatNumber(state.alpha, state.settings.numberFormat,3)}</h3>}
-        <button onClick={()=>setAlphaTab("AlphaUpgradeTab")}>Upgrades</button>&nbsp;
+        <button style={{marginLeft: "20px"}} onClick={()=>setAlphaTab("AlphaUpgradeTab")}>Upgrades</button>&nbsp;
         {state.mailsCompleted["Research"] !== undefined && <><button onClick={()=>setAlphaTab("AlphaResearchTab")}>Research</button>&nbsp;</>} 
         {state.mailsCompleted["Challenges"] !== undefined && <><button onClick={()=>setAlphaTab("AlphaChallengeTab")}>Challenges</button>&nbsp;</>}
         {state.mailsCompleted["Stones"] !== undefined && <button onClick={()=>setAlphaTab("AlphaStonesTab")}>Stones</button>}

@@ -1,9 +1,13 @@
 ~~~~~~~~~~GENERAL~~~~~~~~~~
 
 LOW: Reclicking Main Tab cycles through sub-tabs
+LOW: Tab Navigation with Hotkeys (Arrow Keys?)
 
 ~~~~~~~~~~FORMULAS~~~~~~~~~~
 
+LOW: Decrease Formula Confirmation should show target differential
+LOW: Show Apply Cost for locked formulas
+LOW: Favorite Dropdown cancels Hotkey (=> May need better hotkey package)
 LOW: Allow swapping formulas with empty Inventory Slots
 LOW: Avoid Line breaks for Unlock Cost (PC, Shop Scrollbar)
 LOW: Negative Space Rounding

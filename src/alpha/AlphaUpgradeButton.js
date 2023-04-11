@@ -10,7 +10,7 @@ export default function AlphaUpgradeButton({state, popup, upgrade, updateState})
         } else {
             popup.confirm(<>{upgrade.title}<br/><br/>{upgrade.description}<br/><br/>Buy for {upgrade.cost} &alpha;?</>,()=>{
                 updateState({name: "alphaUpgrade", upgrade: upgrade})
-            }, state.settings.alphaUpgradePopup)
+            }, state.settings.alphaUpgradePopup === "OFF")
         }
     }
 
