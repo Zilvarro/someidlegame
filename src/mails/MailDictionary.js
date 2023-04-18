@@ -270,7 +270,7 @@ export const mailDictionary = {
     "Children":{
         id: "Children",
         title: "Bye",
-        content: <>Yeah, good for you. Now stop abusing me and my children for your stupid research. Stop wasting my time and instead <b>find that powerful formula</b> or whatever you were looking for!</>,
+        content: <>Yeah, good for you. Now stop annoying me and my children for your stupid research. Stop wasting our time and instead go <b>find that powerful formula</b> or whatever you were looking for!</>,
         sender: "Karen",
         delay: 2000,
         check: (state)=>(true),

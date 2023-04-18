@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { getGlobalMultiplier } from '../savestate'
+import {formatNumber} from '../utilities'
 
 export default function Mail({state, mail, popup, updateState, mailid}) {
 
@@ -85,7 +86,7 @@ export default function Mail({state, mail, popup, updateState, mailid}) {
                 [{mail.sender}]&nbsp;{mail.title}
             </summary>
             <p style={{paddingLeft: "30px"}}>
-                <button disabled={state.alpha < mail.alphaCost} onClick={unlockMail}>UNLOCK MAIL CONTENT</button>&nbsp;&nbsp;Cost: &alpha; = {mail.alphaCost}
+                <button disabled={state.alpha < mail.alphaCost} onClick={unlockMail}>UNLOCK MAIL CONTENT</button>&nbsp;&nbsp;Cost: &alpha; = {formatNumber(mail.alphaCost, state.settings.numberFormat, 0)}
             </p>
         </details>
     )

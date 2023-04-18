@@ -63,9 +63,9 @@ export default function OptionScreen({state, popup, updateState, setTotalClicks}
   return (<div style={{marginLeft: "20px"}}>
     <h1>Options</h1>
       <p>
-        {spaces()}<button onClick={saveGame} disabled={state.mileStoneCount < 1}>Manual Save</button>
-        {spaces()}<button onClick={exportGame} disabled={state.mileStoneCount < 1}>Export</button>
-        {spaces()}<button onClick={importGame}>Import</button>
+        {spaces()}<button title={"Perform a manual save. The game also automatically saves every 10 seconds"} onClick={saveGame} disabled={state.mileStoneCount < 1}>Manual Save</button>
+        {spaces()}<button title={"Exports the current game state as a text string to the clipboard"} onClick={exportGame} disabled={state.mileStoneCount < 1}>Export</button>
+        {spaces()}<button title={"Imports a previously exported text string and restores its game state"} onClick={importGame}>Import</button>
         {/* {spaces()}<MultiOptionButton settingName="autoSave" statusList={["ON","OFF"]} state={state} updateState={updateState} setTotalClicks={setTotalClicks}
           description="Auto Save" tooltip="Controls whether the game saves automatically" tooltipList={["Saves automatically every 10 seconds and tries to save (depends on browser) before closing tab","Game is not saved automatically"]}/> */}
       </p><p> 
@@ -92,7 +92,7 @@ export default function OptionScreen({state, popup, updateState, setTotalClicks}
           description="Hotkeys" tooltip="Controls whether hotkeys are enabled" tooltipList={["Hotkeys are enabled", "Hints are disabled"]}/> */}
       </p>
       <p>
-        {spaces()}<button onClick={resetSave}>Hard Reset</button>
+        {spaces()}<button title={"Starts a new game. This will overwrite your current save file."} onClick={resetSave}>Hard Reset</button>
       </p>
       {false && !productive && <p>
         {spaces()}<button onClick={cheat}>Cheat</button>
@@ -124,8 +124,8 @@ export default function OptionScreen({state, popup, updateState, setTotalClicks}
             description="Alpha-Reset Pop-Up" tooltip="Controls whether the confirmation popup for Alpha-Resets is shown" tooltipList={["Show popup","Do not show popup"]}/>
         </p>}
         {(state.destinyStars > 1 || state.progressionLayer > 0) && <p>
-          {spaces()}<MultiOptionButton settingName="alphaAbortPopup" statusList={["ON","OFF"]} state={state} updateState={updateState} setTotalClicks={setTotalClicks}
-            description="Abort Alpha Pop-Up" tooltip="Controls whether the confirmation popup for aborting an Alpha run is shown" tooltipList={["Show popup","Do not show popup"]}/>
+          {spaces()}<MultiOptionButton settingName="alphaAbortPopup" statusList={["DOUBLE", "ON","OFF"]} state={state} updateState={updateState} setTotalClicks={setTotalClicks}
+            description="Abort Alpha Pop-Up" tooltip="Controls whether the confirmation popup for aborting an Alpha run is shown" tooltipList={["Show two popups", "Show one popup","Do not show popup"]}/>
         </p>}
         {(state.destinyStars > 1 || state.progressionLayer > 0) && <p>
           {spaces()}<MultiOptionButton settingName="alphaUpgradePopup" statusList={["ON","OFF"]} state={state} updateState={updateState} setTotalClicks={setTotalClicks}

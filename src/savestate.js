@@ -1,6 +1,7 @@
 import { Buffer } from "buffer";
 
 import {destinyMileStoneList, milestoneList} from './AchievementScreen' 
+import {endingList} from './endings/EndingDictionary'
 import {getRewardInterval, notify, secondsToHms, getOfflinePopupLine} from './utilities'
 import formulaList from './formulas/FormulaDictionary'
 import {shopFormulas} from './formulas/FormulaScreen'
@@ -11,7 +12,7 @@ import * as eventsystem from './mails/MailEventSystem'
 import * as progresscalculation from './progresscalculation'
 
 export const majorversion = 1
-export const version = "0.57"
+export const version = "0.58"
 export const productive = false
 
 export const newSave = {
@@ -122,7 +123,7 @@ export const newSave = {
         autoRemembererActive: "ON",
         shopResetPopup: "ON",
         alphaResetPopup: "ON",
-        alphaAbortPopup: "ON",
+        alphaAbortPopup: "DOUBLE",
         memorizePopup: "ON",
         exitChallengePopup: "ON",
         alphaUpgradePopup: "ON",
@@ -504,9 +505,7 @@ export const saveReducer = (state, action)=>{
             state.currentChallengeTime += deltaMilliSeconds
             state = progresscalculation.applyIdleProgress(state, deltaMilliSeconds)
         } else if (state.settings.offlineProgressPopup === "ON" || (state.settings.offlineProgressPopup === "LAUNCH" && state.justLaunched)){
-            const timeText = <>You were away for {secondsToHms(Math.floor(deltaMilliSeconds / 1000))}.</>
-            popup.alert(timeText)
-            deltaMilliSeconds = 0 //prevents further progress
+            //Nothing done anymore
         }
 
         //Apply Mouse Hold / Touch Hold events
@@ -681,7 +680,7 @@ export const saveReducer = (state, action)=>{
         //Offline Progress Popup
         if (deltaMilliSeconds > 120000 && (state.settings.offlineProgressPopup === "ON" || (state.settings.offlineProgressPopup === "LAUNCH" && state.justLaunched))){
             const timeText = <>You were away for {secondsToHms(Math.floor(deltaMilliSeconds / 1000))}</>
-            const xText = getOfflinePopupLine(<>x</>, xBefore, state.xValue[0], state.numberFormat)
+            const xText = state.insideChallenge ? <></> : getOfflinePopupLine(<>x</>, xBefore, state.xValue[0], state.numberFormat)
             const aText = getOfflinePopupLine(<>&alpha;</>, aBefore, state.alpha, state.numberFormat)
             const sText = getOfflinePopupLine(<>&lambda;</>, sBefore, state.starLight, state.numberFormat)
             popup.alert(<>{timeText}{xText}{aText}{sText}</>)
@@ -714,7 +713,6 @@ export const saveReducer = (state, action)=>{
         break;
     case "changeSetting":
         state.settings[action.settingName] = action.nextStatus
-        state.decreaseCooldown = false
         break;
     case "changeHold":
         if (state.activeChallenges.FULLYIDLE) break
@@ -957,6 +955,8 @@ export const saveReducer = (state, action)=>{
         let isNew = !state.completedEndings[action.endingName]
         state.completedEndings[action.endingName] = true
         performXReset(state)
+        if (isNew && action.endingName !== "world")
+            notify.success("Ending Completed", endingList[action.endingName].title)
         state.currentEnding = ""
         if ((action.endingName === "world" || (action.endingName === "true" && state.destinyStars > 1))&& state.progressionLayer <= 2) {
             state.progressionLayer = 2

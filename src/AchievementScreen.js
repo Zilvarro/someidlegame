@@ -42,7 +42,7 @@ export const milestoneList = [
   },{
     id:"Alpha",
     name:"A new Era",
-    description:<>&alpha;-Reset and buy an Alpha Upgrade</>,
+    description:<>Join the Academy and buy an Alpha Upgrade</>,
     check: (state)=>(state.alphaUpgrades.SLOT || state.alphaUpgrades.AAPP || state.alphaUpgrades.AUNL),
     tier: 1,
   },{

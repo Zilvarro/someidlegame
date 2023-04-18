@@ -1,6 +1,7 @@
 import {startingStones, stoneTable} from './AlphaStoneDictionary'
 import AlphaStartingStone from './AlphaStartingStone'
 import {formatNumber, numericSort, spaces} from '../utilities'
+import { getStartingX } from '../savestate'
 
 export const calcStoneResultForX = (state, grid)=>{
     const stoneLevels = grid.flat().map((id)=>(state.startingStoneLevel[id]||0))
@@ -10,7 +11,7 @@ export const calcStoneResultForX = (state, grid)=>{
 }
 
 export const getStoneCalculationForX = (state, grid)=>{
-    const stoneLevels = grid.flat().map((id)=>(state.startingStoneLevel[id]||0))
+    const stoneLevels = grid.flat().map((id)=>(state.startingStoneLevel[id]||0)).filter((level)=>(level > 0))
     const stoneLevelCounts = stoneLevels.reduce((acc, e) => acc.set(e, (acc.get(e) || 0) + 1), new Map())
     const stoneLevelEntries = [...stoneLevelCounts.entries()]
     const xPartText = stoneLevelEntries.map(([level,count], index)=>(level > 0 && <span key={index}>{count}<sup>{level}</sup>{index < stoneLevelEntries.length - 1 && <> + </>}</span>))
@@ -64,7 +65,8 @@ export default function AlphaStonesTab({state, popup, updateState}) {
                 )}</div>)}
                 <br/>
                 {xBonus > 0 && <div style={{fontSize:"20px",fontWeight:"bold"}}>{spaces()}s<sub>x</sub> = {getStoneCalculationForX(state, stoneTable)} = {formatNumber(xBonus, state.settings.numberFormat)}<br/></div>}
-                {xBonus > 1 && <div>{spaces()} s<sub>x</sub> multiplies Starting x</div>}
+                {xBonus > 1 && <div>{spaces()} s<sub>x</sub> multiplies your Starting x<br/></div>}
+                {xBonus > 1 && <div>{spaces()} Your total Starting x is {formatNumber(getStartingX(state),state.settings.numberFormat, 2)}</div>}
             </>}
         </div>)
 }

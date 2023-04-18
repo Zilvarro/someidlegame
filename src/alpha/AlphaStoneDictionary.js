@@ -17,8 +17,8 @@ export const startingStones = {
     "StartingValue":{
         id: "StartingValue",
         title: "Stone Skipper",
-        description: <>Reach exactly s<sub>x</sub>=100</>,
-        check: (state=>(state.startingStoneX === 100)),
+        description: <>Reach exactly s<sub>x</sub>=60</>,
+        check: (state=>(state.startingStoneX === 60)),
     },
     "Googol":{
         id: "Googol",

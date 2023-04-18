@@ -94,6 +94,7 @@ export default function AlphaChallengeTab({state, updateState, popup}) {
 
     return (<div style={{marginLeft:"20px"}}>
         <h2>Challenges</h2>
+        Challenges are like normal Alpha-Runs, but with additional constraints.<br/> You are rewarded for each successful x-Reset and for completing the entire run!<br/>
         {challengeBonus.full === 13 ? <>You completed all challenges, boosting your Formula Efficiency by {challengeBonus.bonus.toFixed(2)}.</>: <>Your {challengeBonus.full} challenge completions and {challengeBonus.segment} segment completions boost your Formula Efficiency by {challengeBonus.bonus.toFixed(2)}.</>}
         {state.currentChallenge && <p>You are currently in the "{state.currentChallengeName}" Challenge.</p>}
         <p>

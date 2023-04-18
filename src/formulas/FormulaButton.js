@@ -29,7 +29,10 @@ export const getUnlockMultiplier = (formula, state)=>{
 export default function FormulaButton({state, popup, updateState, setTotalClicks, formulaName, context, myIndex}) {
     const applyFormula = (formula,evt)=>{
         if (!state.decreaseCooldown && state.settings.valueReduction === "ON" && 0.9999 * state.xValue[formula.targetLevel] > formula.applyFormula(state.formulaEfficiency[formula.targetLevel],state.xValue, state)) {
-            popup.confirm(<>This will lower your X value. Are you sure?<br/>If you confirm, this pop-up gets disabled until your next Reset.</>,()=>{
+            popup.confirm(<>Applying this formula will reduce the value. Are you sure?<br/>If you confirm, this pop-up gets disabled until your next Reset.</>,()=>{
+                state.decreaseCooldown = true
+                state.holdAction = null
+                state.isHolding = false
                 updateState({name: "applyFormula", formula: formula, updateState: updateState, forceApply: true})
                 setTotalClicks((x)=>x+1)
             })
@@ -65,7 +68,7 @@ export default function FormulaButton({state, popup, updateState, setTotalClicks
         return ( 
             <tr>{state.alphaUpgrades.AAPP && <td><input onClick={toggleAutoApply} disabled={state.activeChallenges.FULLYIDLE} style={{transform:"scale(1.2)"}} type="checkbox" checked={state.autoApply[myIndex]} readOnly></input></td>}
                 <td align="left" className="block" style={{width:"auto"}}>
-                <button className="fbutton" style={{backgroundColor:"#ffffff"}} disabled={true}>-------</button>
+                <button className="fbutton" style={{backgroundColor:"#ffffff", height: "40px"}} disabled={true}>-------</button>
             </td><td>
             </td><td>
             </td>
@@ -153,7 +156,7 @@ export default function FormulaButton({state, popup, updateState, setTotalClicks
         return (
             <tr>{state.alphaUpgrades.AAPP && <td><input onClick={toggleAutoApply} disabled={state.activeChallenges.FULLYIDLE} style={{transform:"scale(1.2)"}} type="checkbox" checked={state.autoApply[myIndex]} readOnly></input></td>}
                 <td align="left" className="block" style={{width:"auto"}}>
-                <button className="fbutton" title={tooltipplus} style={{backgroundColor: buttonColor}}
+                <button className="fbutton" title={tooltipplus} style={{backgroundColor: buttonColor, height: "40px"}}
                     disabled={lockedByChallenge || state.activeChallenges.FULLYIDLE || !state.formulaUnlocked[formulaName] || (applyNeed && state.xValue[0] < applyNeed) || (applyCost && state.xValue[0] < applyCost)}
                     onClick={(evt)=>applyFormula(formula,evt)} onMouseDown={mouseHandler} onMouseUp={mouseHandler} onMouseLeave={mouseHandler} onTouchStart={mouseHandler} onTouchEnd={mouseHandler}>
                     {formula.description}

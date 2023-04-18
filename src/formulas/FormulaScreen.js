@@ -81,8 +81,10 @@ export default function FormulaScreen({state, updateState, setTotalClicks, popup
 
     const abortAlphaReset = ()=>{
       popup.confirm(state.insideChallenge ? "Abort run and exit the current Challenge?" : "Abort the current Alpha Run?",()=>{
-        updateState({name: "alphaReset", isAbort: true})
-        setTotalClicks((x)=>x+1)
+        popup.confirm("Are you really sure?",()=>{
+          updateState({name: "alphaReset", isAbort: true})
+          setTotalClicks((x)=>x+1)
+        }, state.settings.alphaAbortPopup !== "DOUBLE")
       }, state.settings.alphaAbortPopup === "OFF")
     }
 
@@ -163,24 +165,26 @@ export default function FormulaScreen({state, updateState, setTotalClicks, popup
         <h2 style={{marginTop:"0px"}}>X Values</h2>
             <ValueTable values={state.xValue} diffs={state.avgXPerSecond} baseName={"x"} maxTier={state.highestXTier} numberFormat={state.settings.numberFormat}/>
             <br/>
-            {!state.insideChallenge && state.xValue[0] >= Infinity &&
+            {!state.insideChallenge && state.xValue[0] >= Infinity ?
               <>{spaces()}<button onClick={getWorldFormula}><b>DISCOVER THE WORLD FORMULA</b></button><br/><br/></>
+            :
+              <>{(state.progressionLayer > 0 || state.highestXTier > 0 || state.formulaUnlockCount >= 4) &&
+                <>{spaces()}<button style={{color:"black"}} onClick={resetXValues} disabled={state.activeChallenges.FULLYIDLE || state.activeChallenges.ONESHOT || !state.anyFormulaUsed}>Basic Reset</button>{state.progressionLayer === 0 && state.highestXTier === 0 && state.xResetCount === 0 && <span style={{color:"#00FF00", fontWeight:"bold"}}>{spaces()}&larr; Reset x, but you can adapt your equipped formulas.</span>}</>
+              }
+              {(state.progressionLayer > 0 || (state.xValue[0] >= differentialTarget)) && state.highestXTier < 3 &&
+                <>{spaces()}<button style={{color:"black"}} disabled={state.inNegativeSpace || state.activeChallenges.FULLYIDLE || state.xValue[0] < differentialTarget} onClick={resetShop}>{sResetName}-Reset</button>{state.progressionLayer === 0 && <span style={{color:"#00FF00", fontWeight:"bold"}}>{spaces()}&larr; Reset the shop for a new differential</span>}</>
+              }
+              {state.progressionLayer >= 1 && !state.insideChallenge && state.highestXTier === 3 &&
+                <>{spaces()}<button style={{color:"black"}} disabled={state.inNegativeSpace || state.activeChallenges.FULLYIDLE || state.xValue[0] < alphaTarget} onClick={performAlphaReset}>&alpha;-Reset</button></>
+              }
+              {state.insideChallenge && state.highestXTier === 3 && state.xValue[0] >= alphaTarget &&
+                <>{spaces()}<button style={{color:"black"}} disabled={state.inNegativeSpace || state.activeChallenges.FULLYIDLE} onClick={completeChallenge}><b>Complete Challenge</b></button></>
+              }
+              {state.progressionLayer >= 1 &&
+                <>{spaces()}<button style={{color:"black"}} disabled={state.activeChallenges.FULLYIDLE} onClick={abortAlphaReset}>Abort</button></>
+              }</>
             }
-            {(state.progressionLayer > 0 || state.highestXTier > 0 || state.formulaUnlockCount >= 4) &&
-              <>{spaces()}<button style={{color:"black"}} onClick={resetXValues} disabled={state.activeChallenges.FULLYIDLE || state.activeChallenges.ONESHOT || !state.anyFormulaUsed}>Basic Reset</button>{state.progressionLayer === 0 && state.highestXTier === 0 && state.xResetCount === 0 && <span style={{color:"#00FF00", fontWeight:"bold"}}>{spaces()}&larr; Reset x, but you can adapt your equipped formulas.</span>}</>
-            }
-            {(state.progressionLayer > 0 || (state.xValue[0] >= differentialTarget)) && state.highestXTier < 3 &&
-              <>{spaces()}<button style={{color:"black"}} disabled={state.inNegativeSpace || state.activeChallenges.FULLYIDLE || state.xValue[0] < differentialTarget} onClick={resetShop}>{sResetName}-Reset</button>{state.progressionLayer === 0 && <span style={{color:"#00FF00", fontWeight:"bold"}}>{spaces()}&larr; Reset the shop for a new differential</span>}</>
-            }
-            {state.progressionLayer >= 1 && !state.insideChallenge && state.highestXTier === 3 &&
-              <>{spaces()}<button style={{color:"black"}} disabled={state.inNegativeSpace || state.activeChallenges.FULLYIDLE || state.xValue[0] < alphaTarget} onClick={performAlphaReset}>&alpha;-Reset</button></>
-            }
-            {state.insideChallenge && state.highestXTier === 3 && state.xValue[0] >= alphaTarget &&
-              <>{spaces()}<button style={{color:"black"}} disabled={state.inNegativeSpace || state.activeChallenges.FULLYIDLE} onClick={completeChallenge}><b>Complete Challenge</b></button></>
-            }
-            {state.progressionLayer >= 1 &&
-              <>{spaces()}<button style={{color:"black"}} disabled={state.activeChallenges.FULLYIDLE} onClick={abortAlphaReset}>Abort</button></>
-            }
+
           <h2>My Formulas</h2>
           <FormulaTable state={state} updateState={updateState} popup={popup} setTotalClicks={setTotalClicks} formulaNames={inventoryFormulas} context="my"/>
           {state.progressionLayer === 0 && state.formulaUnlockCount >= 2 && state.highestXTier === 0 && 
@@ -219,7 +223,7 @@ export default function FormulaScreen({state, updateState, setTotalClicks, popup
             {state.activeChallenges.COUNTDOWN && <p>Countdown: {secondsToHms(30 - state.millisSinceCountdown / 1000)}</p>}
             {state.activeChallenges.LIMITED && <p>You can apply {100 - state.formulaApplyCount} more formulas.</p>}
             {(state.xResetCount > 0 || state.highestXTier > 0 || state.progressionLayer > 0) && state.highestXTier < 3 && state.xValue[0] < differentialTarget && <p>Reach x={formatNumber(differentialTarget, state.settings.numberFormat)} for the next x-Reset</p>}
-            {(state.xResetCount > 0 || state.highestXTier > 0 || state.progressionLayer > 0) && state.highestXTier < 3 && state.xValue[0] >= differentialTarget && <p style={{color:"#00FF00", fontWeight:"bold"}}>{sResetName}-Reset is now available! (See button above!)</p>}
+            {(state.xResetCount > 0 || state.highestXTier > 0) && state.progressionLayer === 0 && state.highestXTier < 3 && state.xValue[0] >= differentialTarget && <p style={{color:"#00FF00", fontWeight:"bold"}}>{sResetName}-Reset is now available! (See button above!)</p>}
             {state.progressionLayer > 0 && !state.insideChallenge && !state.inNegativeSpace && state.xValue[0] > differentialTarget && <p>{sResetName}-Reset Highscore: x={formatNumber(state.xHighScores[state.highestXTier], state.settings.numberFormat,3)}</p>}
             {state.activeChallenges.FORMULAGOD && <p>Formula God Highscore: x={formatNumber(state.formulaGodScores[0], state.settings.numberFormat,3)}</p>}
             {state.progressionLayer >= 1 && state.highestXTier === 3 && state.xValue[0] < alphaTarget && !state.insideChallenge && <p>Reach x={formatNumber(alphaTarget, state.settings.numberFormat)} to perform an &alpha;-Reset</p>}
@@ -230,9 +234,9 @@ export default function FormulaScreen({state, updateState, setTotalClicks, popup
             {state.progressionLayer === 0 && state.autoUnlockIndex < shopFormulas.length && nextUnlockCost > alphaTarget && <p>Almost done! Let's fill this bar!</p>}
             <p></p>
             {state.progressionLayer === 0 && (state.xValue[0] >= alphaTarget ?
-                <button onClick={performAlphaReset} style={{backgroundColor:"#99FF99", fontWeight:"bold", border:"2px solid", height:"25px", width:"280px"}}>
+                <div><button onClick={performAlphaReset} style={{backgroundColor:"#99FF99", fontWeight:"bold", border:"2px solid", height:"25px", width:"280px"}}>
                   JOIN THE ACADEMY
-                </button>
+                </button></div>
             : 
               <div style={{color:"#000000", backgroundColor:"#ffffff", border:"2px solid", height:"25px",width:"280px"}}>
                 <div style={{backgroundColor:"#99FF99", border:"0px", height:"25px", width:progressBarWidth}}></div>
