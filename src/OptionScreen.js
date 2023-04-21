@@ -1,7 +1,7 @@
 import { Buffer } from "buffer";
 
-import {productive, save, version} from './savestate'
-import {spaces, notify} from './utilities'
+import {invitation, productive, save, version} from './savestate'
+import {spaces, notify, secondsToHms} from './utilities'
 import MultiOptionButton from './MultiOptionButton'
 
 export default function OptionScreen({state, popup, updateState, setTotalClicks}) {
@@ -174,6 +174,18 @@ export default function OptionScreen({state, popup, updateState, setTotalClicks}
         {spaces()}<button onClick={chapterJump}>Chapter Jump</button>
       </p>}
       <br/>
-      <p>Version {version}{!productive && <>&nbsp;&nbsp;[Development Build]</>}</p>
+      <p>Version:&nbsp;&nbsp;{version}{!productive && <>&nbsp;&nbsp;[Development Build]</>}</p>
+      {state.destinyStartTimeStamp > 0 && 
+        state.destinyEndTimeStamp > 0 ? 
+          <p>Playtime:&nbsp;&nbsp;{secondsToHms((state.destinyEndTimeStamp - state.destinyStartTimeStamp)/1000)}&nbsp;&nbsp;[Game Finished!]</p> 
+        :
+          <p>Playtime:&nbsp;&nbsp;{secondsToHms((Date.now() - state.destinyStartTimeStamp)/1000)}</p> 
+      }
+      <p>This game is created by Zilvarro.</p>
+      {state.mileStoneCount >= 3 ? 
+        <p><a href={"https://discord.gg/" + invitation} target="_blank" rel="noopener noreferrer">Join the Discord Community</a></p>
+        :
+        <p><a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" target="_blank" rel="noopener noreferrer">Must have 3 Milestones to join the Discord &#9785;</a></p>
+      }
   </div>)
 }

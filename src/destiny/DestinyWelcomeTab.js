@@ -68,13 +68,13 @@ export default function DestinyWelcomeTab({state, popup, updateState}) {
                 {state.destinyStars < 1 && <><h2>You finished the game!</h2><p>Claim this Destiny Star as a reward!</p><br/><button onClick={claimFirstStar}><b>CLAIM DESTINY STAR</b></button></>}
                 {state.destinyStars >= 1 && <>
                     <h2>Destiny Stars</h2>
-                    <p>You have {state.destinyStars} Destiny Star{state.destinyStars !== 1 && "s"}.<br/>Destiny Stars multiply the speed of the previous layers.<br/>You can get Destiny Stars by replaying the game.</p>
+                    <p>You have {state.destinyStars} Destiny Star{state.destinyStars !== 1 && "s"}.<br/>They multiply the speed of the previous layers.<br/><br/>You can get Destiny Stars by replaying the game.</p>
                     {state.progressionLayer >= 2 && <button onClick={performDestinyReset} className="fbutton" style={{ backgroundColor:"#FFFF88", fontWeight:"bold", width:"280px"}} ><b>{"CHANGE YOUR DESTINY"}</b></button>}
                     <br/><h2>Starlight</h2>
                     <h3>&lambda; = {formatNumber(Math.floor(state.starLight),state.settings.numberFormat,3)}</h3>
                     You get {formatNumber(getStarLightRate(state),state.settings.numberFormat,3)} Starlight per Second!<br/>
                     {/* This is calculated by {state.lightAdder} * 2<sup>&nbsp;{state.lightDoubler}</sup> * {state.destinyStars}<sup>&nbsp;{state.lightRaiser}</sup>.<br/> */}
-                    {constellationPrices[state.constellationCount] < Infinity && <>The night sky can hold up to {formatNumber(constellationPrices[state.constellationCount],state.numberFormat)} Starlight.<br/></>}
+                    {constellationPrices[state.constellationCount] < Infinity && <>The night sky can hold up to {formatNumber(constellationPrices[state.constellationCount],state.settings.numberFormat)} Starlight.<br/></>}
                     {/* <button onClick={()=>buyLight("destinyStars",0)}>+ 1 Star</button><br/>
                     <button onClick={()=>passTime(3600)}>+ 1 Hour</button><br/>
                     <button onClick={()=>passTime(24*3600)}>+ 1 Day</button><br/>
@@ -87,7 +87,7 @@ export default function DestinyWelcomeTab({state, popup, updateState}) {
                     {state.lightRaiser > 0 && state.destinyStars <= 1 && <b>!!! Luminous Moons do nothing unless &#9733; &ge; 2 !!!<br/></b>}
                     {/* {getStarLightRate(state) < 20 && <><button onClick={()=>updateState({name:"buyLightUpgrade", currency:"starLight", cost:0})}>Gaze at the night sky</button><br/><br/></>} */}
                     <h2>Star Constellations</h2>
-                    {state.constellationCount < 12 ? <>Fill the entire night sky with Starlight to complete a Star Constellation.<br/>{state.constellationCount > 0 && <>Each Constellation halves the prices of Starlight Upgrades and increases the Starlight cap tenfold.<br/></>}</> : <>All Star Constellations are complete. Congratulations!<br/>The prices of Starlight Upgrades are divided by 5000 and the Starlight cap is removed entirely.<br/></>}
+                    {state.constellationCount < 12 ? <>Fill the entire night sky with Starlight to complete a Star Constellation.<br/><br/>{state.constellationCount > 0 && <>Each Constellation halves the prices of Starlight Upgrades and increases the Starlight cap tenfold.<br/></>}</> : <>All Star Constellations are complete. Congratulations!<br/><br/>The prices of Starlight Upgrades are divided by 5000 and the Starlight cap is removed entirely.<br/></>}
                     
                     {constellationList.map((id)=><DestinyConstellationButton key={id} popup={popup} constellation={starConstellations[id]} state={state} updateState={updateState}/>)}<br/><br/>
                 </>}

@@ -39,3 +39,4 @@ Negative Space Rounding
 1/2/3/4 in Hotkey Options
 Change Highscore Text when x is above Highscore
 Grey out Subtab Buttons when fully done
+Alpha Target can only be set below highscore

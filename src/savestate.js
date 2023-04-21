@@ -12,8 +12,9 @@ import * as eventsystem from './mails/MailEventSystem'
 import * as progresscalculation from './progresscalculation'
 
 export const majorversion = 1
-export const version = "0.58"
+export const version = "0.62d"
 export const productive = false
+export var invitation = "efHyDkqGRZ"
 
 export const newSave = {
     version: version,
@@ -60,6 +61,9 @@ export const newSave = {
     autoUnlockIndex: 0,
     saveTimeStamp: 0,
     calcTimeStamp: 0,
+    fileStartTimeStamp: -1,
+    destinyStartTimeStamp: -1,
+    destinyEndTimeStamp: -1,
     millisSinceAutoApply: 0,
     millisSinceCountdown: 0,
     mileStoneCount: 0,
@@ -155,14 +159,14 @@ export const getSaveGame = ()=>{
     if (savedversion && window.location.href.split("/").pop() !== "?newgame")
         savedgame = window.localStorage.getItem('idleformulas_v' + savedversion)
     if (!savedgame) {
-        return ({...structuredClone(newSave), saveTimeStamp: Date.now(), calcTimeStamp: Date.now()})
+        return ({...structuredClone(newSave), saveTimeStamp: Date.now(), calcTimeStamp: Date.now(), fileStartTimeStamp: Date.now(), destinyStartTimeStamp: Date.now()})
     }
     else{
         const decodedGame = Buffer.from(savedgame,"base64").toString()
         const savedgamejson = JSON.parse(decodedGame)
         if (savedgamejson.settings.autoLoad === "OFF") {
             notify.warning("Auto Load disabled")
-            let newgame = {...structuredClone(newSave), saveTimeStamp: Date.now(), calcTimeStamp: Date.now()}
+            let newgame = {...structuredClone(newSave), saveTimeStamp: Date.now(), calcTimeStamp: Date.now(), fileStartTimeStamp: Date.now(), destinyStartTimeStamp: Date.now()}
             newgame.settings.autoSave = "OFF"
             newgame.settings.autoLoad = "OFF"
             return newgame
@@ -637,7 +641,7 @@ export const saveReducer = (state, action)=>{
         //Auto Resetters
         const alphaThreshold = alphaThresholds[state.settings.alphaThreshold] || alphaTarget
 
-        if (!state.inNegativeSpace && state.settings.autoResetterA !== "OFF" && state.alphaUpgrades.ARES && state.highestXTier === 3 && state.xValue[0] >= alphaThreshold) {
+        if (!state.inNegativeSpace && state.settings.autoResetterA !== "OFF" && state.alphaUpgrades.ARES && state.highestXTier === 3 && (state.xValue[0] >= alphaThreshold || (state.insideChallenge && state.xValue[0] >= alphaTarget))) {
             giveAlphaRewards(state)
             performAlphaReset(state)
             performShopReset(state)
@@ -706,7 +710,7 @@ export const saveReducer = (state, action)=>{
         state.selectedAlphaTabKey = action.tabKey
         break;
     case "hardreset":
-        state = {...structuredClone(newSave), calcTimeStamp: Date.now(), saveTimeStamp: Date.now()};
+        state = {...structuredClone(newSave), calcTimeStamp: Date.now(), saveTimeStamp: Date.now(), destinyStartTimeStamp: Date.now(), fileStartTimeStamp: Date.now()};
         break;
     case "load":
         state = action.state || loadGame() || state;
@@ -806,22 +810,26 @@ export const saveReducer = (state, action)=>{
                 notify.success("CHAPTER 1: FORMULAS")
                 break;
             case "51N6L3PR1M3":
+                state.destinyStartTimeStamp = -1
                 state.mileStoneCount = 3
                 state.highestXTier = 1
                 notify.success("CHAPTER 2: FIRST DIFFERENTIAL")
                 break;
             case "D0UBL3PR1M3":
+                state.destinyStartTimeStamp = -1
                 state.mileStoneCount = 4
                 state.highestXTier = 2
                 notify.success("CHAPTER 3: SECOND DIFFERENTIAL")
                 break;
             case "7R1PL3PR1M3":
+                state.destinyStartTimeStamp = -1
                 state.mileStoneCount = 5
                 state.highestXTier = 3
                 notify.success("CHAPTER 4: THIRD DIFFERENTIAL")
                 break;
             case "4LPH470K3N":
                 state.alpha = 1
+                state.destinyStartTimeStamp = -1
                 state.mileStoneCount = 6
                 state.progressionLayer = 1
                 state.mailsForCheck = ["Welcome"]
@@ -837,6 +845,7 @@ export const saveReducer = (state, action)=>{
                 break;
             case "DEVTEST":
                 if (productive) break
+                state.destinyStartTimeStamp = -1
                 state.destinyStars = 90
                 state.mileStoneCount = 12
                 state.progressionLayer = 0
@@ -960,6 +969,7 @@ export const saveReducer = (state, action)=>{
         state.currentEnding = ""
         if ((action.endingName === "world" || (action.endingName === "true" && state.destinyStars > 1))&& state.progressionLayer <= 2) {
             state.progressionLayer = 2
+            state.destinyEndTimeStamp = Date.now()
             state.mailsForCheck.push("Destiny")
             notify.success("DESTINY", "You finished the game!")
             performAlphaReset(state)
@@ -979,7 +989,7 @@ export const saveReducer = (state, action)=>{
     case "performDestinyReset":
         state.destinyStars += 1
         state = {...structuredClone(newSave), calcTimeStamp: Date.now(), saveTimeStamp: Date.now(), settings:state.settings, shopFavorites:state.shopFavorites, mileStoneCount:state.mileStoneCount, destinyMileStoneCount:state.destinyMileStoneCount, allTimeEndings:state.allTimeEndings,
-            destinyStars:state.destinyStars, starLight:state.starLight, lightAdder:state.lightAdder, lightDoubler:state.lightDoubler, lightRaiser:state.lightRaiser, starConstellations:state.starConstellations, constellationCount:state.constellationCount};
+            destinyStars:state.destinyStars, starLight:state.starLight, lightAdder:state.lightAdder, lightDoubler:state.lightDoubler, lightRaiser:state.lightRaiser, starConstellations:state.starConstellations, constellationCount:state.constellationCount, fileStartTimeStamp:state.fileStartTimeStamp, destinyStartTimeStamp: Date.now()};
         state.mailsForCheck.push("Destiny")
         break;
     case "buyLightUpgrade":

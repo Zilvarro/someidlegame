@@ -1,3 +1,5 @@
+import { notify } from "../utilities"
+
 const getHomeworkProgress = ()=>[[false,false,false,false],[false,false,false,false],[false,false,false,false],[false,false,false,false]]
 const homeworkResponses = [<>Flawless! You sent back the correct answers with explanations.</>, <>Well done! You sent back the correct answers.</>,<>You sent back mostly correct answers.</>,<>Terrible! You sent back random answers that are most likely wrong.</>]
 
@@ -262,7 +264,7 @@ export const mailDictionary = {
         content: <>Well now you know that <b>logarithms of fractions can produce negative results</b>, those negative numbers can become <b>positive by squaring</b> them, <b>subtracting negative numbers</b> makes things bigger, and that square roots and logarithms <b>go towards Infinity</b> if you put in bigger and bigger numbers. Seems like a lot to me.</>,
         responses: [<>I knew that before!</>, <>Thx, I guess?!?</>, <>Oooh, that might actually help me.</>],
         sender: "Karen",
-        delay: 700,
+        delay: 2000,
         check: (state)=>(true),
         afterComplete: [["Children"],["Children"],["Children"]],
     },
@@ -496,7 +498,7 @@ export const mailDictionary = {
         title: "You very bad person",
         content: <>You not helped me! You no sent any money! Now prince can not feed family. We poor. Why you no heart? See picture of family!</>,
         responses: [<>Open Attachment: familypicture.exe</>,<>Attachment removed by malware detection</>],
-        effects: [(state)=>{state.noProdTime = 20 * 60000},null],
+        effects: [(state)=>{notify.error("Production Halted!", "familypicture.exe");state.noProdTime = 20 * 60000},null],
         hiddenResponses: 1,
         sender: "Prince",
         check: (state)=>(true),
@@ -510,7 +512,7 @@ export const mailDictionary = {
         title: "You bad person",
         content: <>You no sent enough! Now prince struggle with feed family. We poor. Why you heart so little? See picture of family!</>,
         responses: [<>Open Attachment: familypicture.exe</>,<>Attachment removed by malware detection</>],
-        effects: [(state)=>{state.noProdTime = 20 * 60000},null],
+        effects: [(state)=>{notify.error("Production Halted!", "familypicture.exe");state.noProdTime = 20 * 60000},null],
         hiddenResponses: 1,
         sender: "Prince",
         check: (state)=>(true),
@@ -532,7 +534,7 @@ export const mailDictionary = {
         title: "Thank you",
         content: <>Now prince can feed family. We poor. You have big heart. Attachment will double your x! But can only use once!</>,
         responses: [<>Open Attachment: xdoubler.exe</>],
-        effects: [(state)=>{state.xValue[0] *= 2}],
+        effects: [(state)=>{notify.success("Value of x doubled!", "xdoubler.exe");state.xValue[0] *= 2}],
         sender: "Prince",
         check: (state)=>(true),
         delay: 3000,
@@ -542,7 +544,7 @@ export const mailDictionary = {
         title: "Thank you so much!!!",
         content: <>Not only did you help me to feed my family, I was even able to hire someone to fix my bad grammar and wording for this email! It really means a lot to us, and we send you much love! Sadly, I cannot properly repay you, but the attachment can triple the value of your x. It can only be used once though, so be careful. Best regards, the prince and his family.</>,
         responses: [<>Open Attachment: xtripler.exe</>],
-        effects: [(state)=>{state.xValue[0] *= 3}],
+        effects: [(state)=>{notify.success("Value of x tripled!", "xtripler.exe");state.xValue[0] *= 3}],
         sender: "Prince",
         check: (state)=>(true),
         delay: 3000,

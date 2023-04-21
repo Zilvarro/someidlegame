@@ -16,10 +16,13 @@ export default function AlphaResearchBar({state, research, updateState}) {
     const adjustedBulk = oneSecondBulk > getGlobalMultiplier(state) ? Math.pow(oneSecondBulk / getGlobalMultiplier(state), 0.3) * getGlobalMultiplier(state) : oneSecondBulk
     const bulkAmount = isDone ? Math.min(leftToMaxx, Math.floor(adjustedBulk)) : 0
     const progressBarWidth = isDone ? "100%" : Math.min(100 * percentage,99).toFixed(2) + "%"
+    var hasResearched = false
     
     const clickResearchBar = ()=>{
-      if (isDone)
+      if (isDone && !hasResearched) {
+        hasResearched = true
         updateState({name: "startResearch", research: research, bulkAmount: Math.max(bulkAmount, 1)})
+      }
     }
 
     if (!researchLevel && !research.checkUnlock(state))
