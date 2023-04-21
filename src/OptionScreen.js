@@ -176,10 +176,10 @@ export default function OptionScreen({state, popup, updateState, setTotalClicks}
       <br/>
       <p>Version:&nbsp;&nbsp;{version}{!productive && <>&nbsp;&nbsp;[Development Build]</>}</p>
       {state.destinyStartTimeStamp > 0 && 
-        state.destinyEndTimeStamp > 0 ? 
+        (state.destinyEndTimeStamp > 0 ? 
           <p>Playtime:&nbsp;&nbsp;{secondsToHms((state.destinyEndTimeStamp - state.destinyStartTimeStamp)/1000)}&nbsp;&nbsp;[Game Finished!]</p> 
         :
-          <p>Playtime:&nbsp;&nbsp;{secondsToHms((Date.now() - state.destinyStartTimeStamp)/1000)}</p> 
+          <p>Playtime:&nbsp;&nbsp;{secondsToHms((Date.now() - state.destinyStartTimeStamp)/1000)}</p>)
       }
       <p>This game is created by Zilvarro.</p>
       {state.mileStoneCount >= 3 ? 
