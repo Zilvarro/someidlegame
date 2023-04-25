@@ -182,10 +182,10 @@ export default function OptionScreen({state, popup, updateState, setTotalClicks}
           <p>Playtime:&nbsp;&nbsp;{secondsToHms((Date.now() - state.destinyStartTimeStamp)/1000)}</p>)
       }
       <p>This game is created by Zilvarro.</p>
-      {state.mileStoneCount >= 3 ? 
+      {state.productive && (state.mileStoneCount >= 3 ? 
         <p><a href={"https://discord.gg/" + invitation} target="_blank" rel="noopener noreferrer">Join the Discord Community</a></p>
         :
         <p><a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" target="_blank" rel="noopener noreferrer">Must have 3 Milestones to join the Discord &#9785;</a></p>
-      }
+      )}
   </div>)
 }

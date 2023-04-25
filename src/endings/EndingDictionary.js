@@ -422,6 +422,7 @@ const worldActions = [
 export const endingList = {
     good: {
         title:<>Cure the World</>,
+        titlestring: "Cure the World",
         teaseTitle:<>???? ??? ?????</>,
         actions:goodActions,
         generators:goodGenerators,
@@ -432,6 +433,7 @@ export const endingList = {
     },
     evil: {
         title:<>Extinction</>,
+        titlestring: "Extinction",
         teaseTitle:<>??????????</>,
         actions:evilActions,
         generators:evilGenerators,
@@ -443,6 +445,7 @@ export const endingList = {
     },
     true: {
         title:<>Numbers and Games</>,
+        titlestring: "Numbers and Games",
         teaseTitle:<>??????? ??? ?????</>,
         actions:trueActions,
         generators:[],
@@ -463,6 +466,7 @@ export const endingList = {
     },
     skipped: {
         title:"No Ambitions",
+        titlestring: "No Ambitions",
         teaseTitle:"?? ?????????",
     actions:[{
         title: "You are Speedrunning!",
@@ -474,7 +478,7 @@ export const endingList = {
         endingName:"skipped",
         instaDestiny:true,
     }]},
-    logarithm: {actions:[{
+    logarithm: {titlestring: "Depressed Logarithm", actions:[{
         title: "Depressed Logarithm",
         teaseTitle:"????????? ?????????",
         durationSeconds: 3,
@@ -485,7 +489,7 @@ export const endingList = {
         endingName:"logarithm",
         instaDestiny:true,
     }]},
-    negative: {actions:[{
+    negative: {titlestring: "Negative Hell", actions:[{
         title: "Negative Hell",
         teaseTitle:"???????? ????",
         durationSeconds: 3,
@@ -496,7 +500,7 @@ export const endingList = {
         endingName:"negative",
         instaDestiny:true,
     }]},
-    divide: {actions:[{
+    divide: {titlestring: "The not so Great Divide", actions:[{
         title: "The not so Great Divide",
         teaseTitle:"??? ??? ?? ????? ??????",
         durationSeconds: 3,
@@ -507,7 +511,7 @@ export const endingList = {
         endingName:"divide",
         instaDestiny:true,
     }]},
-    imaginary: {actions:[{
+    imaginary: {titlestring: "Too Complex", actions:[{
         title: "Too Complex",
         teaseTitle:"??? ???????",
         durationSeconds: 3,
@@ -518,7 +522,7 @@ export const endingList = {
         endingName:"imaginary",
         instaDestiny:true,
     }]},
-    infinite: {actions:[{
+    infinite: {titlestring: "Infinite Problems", actions:[{
         title: "Infinite Problems",
         teaseTitle:"???????? ????????",
         durationSeconds: 3,
@@ -529,7 +533,7 @@ export const endingList = {
         endingName:"infinite",
         instaDestiny:true,
     }]},
-    timeout: {actions:[{
+    timeout: {titlestring: "Timed Out", actions:[{
         title: "Timed Out",
         teaseTitle:"????? ???",
         durationSeconds: 3,
