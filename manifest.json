@@ -7,7 +7,7 @@
   "background_color": "#ffffff",
   "icons": [
     {
-      "src": "logo512.png", 
+      "src": "IconAppDownload.png", 
       "type": "image/png",
       "sizes": "512x512"
     }
