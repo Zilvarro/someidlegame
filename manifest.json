@@ -3,8 +3,8 @@
   "name": "Idle Formulas",
   "start_url": ".",
   "display": "standalone",
-  "theme_color": "#FF0000",
-  "background_color": "#FF0000",
+  "theme_color": "#111111",
+  "background_color": "#111111",
   "icons": [
     {
       "src": "IconAppDownloadMask.png", 
