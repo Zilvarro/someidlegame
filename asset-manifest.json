@@ -1,12 +1,12 @@
 {
   "files": {
     "main.css": "/someidlegame/static/css/main.33864ac0.css",
-    "main.js": "/someidlegame/static/js/main.60b3ed95.js",
+    "main.js": "/someidlegame/static/js/main.5f9e64d3.js",
     "service-worker.js": "/someidlegame/service-worker.js",
     "index.html": "/someidlegame/index.html"
   },
   "entrypoints": [
     "static/css/main.33864ac0.css",
-    "static/js/main.60b3ed95.js"
+    "static/js/main.5f9e64d3.js"
   ]
 }
