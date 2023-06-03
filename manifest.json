@@ -7,10 +7,16 @@
   "background_color": "#ffffff",
   "icons": [
     {
+      "src": "IconAppDownloadMask.png", 
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "maskable"
+    },
+    {
       "src": "IconAppDownload.png", 
       "type": "image/png",
       "sizes": "512x512",
-      "purpose": "any maskable"
+      "purpose": "any"
     }
   ]
 }
