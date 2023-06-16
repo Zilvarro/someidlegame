@@ -66,6 +66,7 @@ export default function Mail({state, mail, popup, updateState, mailid}) {
     }
 
     const unlockMail = ()=>{
+        if (state.alpha < mail.alphaCost) return
         updateState({name: "unlockMail", mailid})
     }
 
@@ -138,11 +139,11 @@ export default function Mail({state, mail, popup, updateState, mailid}) {
             {mail.transfer && (state.mailsCompleted["Transfer"] === undefined ? 
                 <p style={{paddingLeft: "50px", fontWeight: 900 }}>
                     <span className="fbutton" style={{width:"auto", backgroundColor:"#ffffff"}} onClick={()=>changeRating(+1)}>Transfer 1$</span>
-                    {state.mailsProgress["Transfer"] > 0 && <><br/><br/>{state.mailsProgress["Transfer"]}$ Transferred</>}
+                    {state.mailsProgress["Transfer"] > 0 && <><br/><br/>${state.mailsProgress["Transfer"]} Transferred</>}
                 </p> 
             : 
                 <p style={{paddingLeft: "50px", fontWeight: 900 }}>
-                    {state.mailsProgress["Transfer"] > 0 && <>{state.mailsProgress["Transfer"]}$ Transferred</>}
+                    {state.mailsProgress["Transfer"] > 0 && <>${state.mailsProgress["Transfer"]} Transferred</>}
                 </p> 
             )}
 

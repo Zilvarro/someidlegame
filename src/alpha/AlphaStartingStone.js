@@ -1,19 +1,7 @@
-export default function AlphaStartingStone({state, boundary,stone, popup, updateState}) {
-    
-    const clickStartingStone = ()=>{
-        switch (state.startingStoneMode) {
-            case 1:
-                updateState({name: "incrementStone", stone: stone})
-                break;
-            case -1:
-                updateState({name: "decrementStone", stone: stone})
-                break
-            default:
-                popup.alert(<>{stone.title}<br/><br/>{stone.description}</>)
-                break;
-        }
-    }
+import ReactDOMServer from 'react-dom/server'
 
+export default function AlphaStartingStone({state, boundary,stone, popup, updateState}) {
+   
     const isTurned = state.startingStoneTurned[stone.id] 
     const isMaxxed = state.startingStoneLevel[stone.id] >= 10
     const isBounded = !!state.startingStoneLevel[stone.id] && state.startingStoneLevel[stone.id] * (1 + Math.sqrt(state.startingStoneLevel[stone.id])) > 2 * boundary
@@ -54,8 +42,28 @@ export default function AlphaStartingStone({state, boundary,stone, popup, update
         verticalAlign: "top",
     }
 
+    const clickStartingStone = ()=>{
+        switch (state.startingStoneMode) {
+            case 1:
+                if (!disabled) {
+                    disabled = true
+                    updateState({name: "incrementStone", stone: stone})
+                }
+                break;
+            case -1:
+                if (!disabled) {
+                    disabled = true
+                    updateState({name: "decrementStone", stone: stone})
+                }
+                break
+            default:
+                popup.alert(<>{stone.title}<br/><br/>{stone.description}</>,undefined,undefined,true)
+                break;
+        }
+    }
+
     //Normal
     return (
-        <button disabled={disabled} onClick={clickStartingStone} style={buttonStyle}>{stone.title}<br/>{state.startingStoneLevel[stone.id] || <>&nbsp;</>}</button>
+        <button disabled={disabled} title={stone.tooltip || ReactDOMServer.renderToString(stone.description)} onClick={clickStartingStone} style={buttonStyle}>{stone.title}<br/>{state.startingStoneLevel[stone.id] || <>&nbsp;</>}</button>
     )
 }

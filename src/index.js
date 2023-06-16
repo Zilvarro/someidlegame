@@ -9,18 +9,16 @@ const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
     <App />
 );
+
+//Service Worker Registration for Progressive Web App features (offline caching, installing as web-app)
 serviceWorkerRegistration.register({
-    onSuccess: ()=>{notify.success("Ready for Offline Use")},
     onUpdate: (registration)=>{
         notify.warning("Update available", "Refresh page to apply update",true)
         registration.waiting.postMessage({type: 'SKIP_WAITING'})
     }
 });
 
-
 window.addEventListener('beforeinstallprompt', (e) => {
-  // Prevents the default mini-infobar or install dialog from appearing on mobile
-  e.preventDefault();
-  // Save the event because you'll need to trigger it later.
-  window.installPromptPWAevent = e;
+  e.preventDefault(); //Prevents user being asked to install web-app immediately on mobile
+  window.installPromptPWAevent = e; //Saving event to trigger install popup later
 });

@@ -57,7 +57,6 @@ function registerValidSW(swUrl, config) {
     .register(swUrl)
     .then((registration) => {
       registration.onupdatefound = () => {
-        console.log("onupdatefound fired")
         const installingWorker = registration.installing;
         if (installingWorker == null) {
           return;
@@ -68,9 +67,7 @@ function registerValidSW(swUrl, config) {
               // At this point, the updated precached content has been fetched,
               // but the previous service worker will still serve the older
               // content until all client tabs are closed.
-              console.log(
-                'New Update is available'
-              );
+              console.log('New Update is available. Refresh the page to apply it.');
 
               // Execute callback
               if (config && config.onUpdate) {
@@ -140,21 +137,21 @@ export function unregister() {
 
 //Check for updates once, if actual update found registration.onupdatefound is fired as usual
 export async function checkForUpdates() {
-    if (!navigator?.serviceWorker?.getRegistration) return
-    const registration = await navigator.serviceWorker.getRegistration()
-    if (!registration) 
-      return
-    const newregistration = await registration.update() 
-    return newregistration
+  if (!navigator?.serviceWorker?.getRegistration) return
+  const registration = await navigator.serviceWorker.getRegistration()
+  if (!registration) 
+    return
+  const newregistration = await registration.update() 
+  return newregistration
 }
 
 //Check for updates regularly in intervals, if actual update found registration.onupdatefound is fired as usual
 //callbackBeforeCheck is called before every check, callbackAfterCheck is called after every successful check even if no new content was found
 export async function schedulePeriodicUpdateChecks(intervalSeconds, callbackBeforeCheck, callbackAfterCheck) {
-  return setInterval(async()=>{
-    callbackBeforeCheck?.()
-    const newregistration = await checkForUpdates()
-    if (newregistration)
-      callbackAfterCheck?.(newregistration)
-  }, 1000*intervalSeconds)
+return setInterval(async()=>{
+  callbackBeforeCheck?.()
+  const newregistration = await checkForUpdates()
+  if (newregistration)
+    callbackAfterCheck?.(newregistration)
+}, 1000*intervalSeconds)
 }

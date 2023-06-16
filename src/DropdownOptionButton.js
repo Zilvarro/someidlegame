@@ -19,7 +19,7 @@ export default function DropdownOptionButton({state, updateState, settingName, d
         <>
             {description && <>{description}:&nbsp;&nbsp;</>}
             <select value={state.settings[settingName]} style={{color:"black"}} title={fullToolTip} disabled={disabled} onChange={onSelectionChange}>
-                {statusList.map((status)=>
+                {statusList.filter((status)=>status).map((status)=>
                     <option key={status} value={status}>{status}</option>
                 )}
             </select>

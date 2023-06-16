@@ -1,5 +1,5 @@
 {
-  "name": "someidlegame",
+  "name": "idleformulas",
   "version": "0.1.0",
   "homepage": "https://Zilvarro.github.io/someidlegame",
   "private": true,
@@ -10,9 +10,8 @@
     "react-dom": "^18.2.0",
     "react-hot-keys": "^2.7.2",
     "react-scripts": "5.0.1",
-    "simple-notify": "^0.5.4",
-    "simple-react-modal": "^0.5.1",
-    "web-vitals": "^2.1.4"
+    "simple-notify": "^0.5.5",
+    "simple-react-modal": "^0.5.1"
   },
   "scripts": {
     "start": "react-scripts start",

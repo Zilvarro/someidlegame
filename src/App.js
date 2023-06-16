@@ -2,7 +2,7 @@ import React, { useState, useEffect, useReducer} from 'react'
 
 import './App.css';
 import {saveReducer, getSaveGame} from './savestate'
-import {formatNumber, notify} from './utilities'
+import {formatNumber, spaces} from './utilities'
 import TabContent from './TabContent'
 import FormulaScreen from './formulas/FormulaScreen'
 import OptionScreen from './OptionScreen'
@@ -15,9 +15,7 @@ import AutoSave from './AutoSave'
 import {PopupDialog, makeShowPopup} from './PopupDialog'
 import EndingSelectionScreen from './endings/EndingSelectionScreen';
 import KeyBoardHandler from './KeyBoardHandler';
-import { checkForUpdates, schedulePeriodicUpdateChecks } from './serviceWorkerRegistration';
-import { FormulaNumber } from './game/FormulaNumber';
-import { describeFormula, evaluateFormula } from './game/formulaBuilder';
+import { schedulePeriodicUpdateChecks } from './serviceWorkerRegistration';
 
 function App() {
   const [ playTime, setPlayTime ] = useState(0)
@@ -38,55 +36,17 @@ function App() {
     })
   },[])
 
-  const [nums, updateNums] = useState([new FormulaNumber(0), new FormulaNumber(0), new FormulaNumber(0), new FormulaNumber(0), new FormulaNumber(2), new FormulaNumber(0)])
-  const varnames = ["hand", "x","y","z", "c", "result"]
-  const setnum = (index, value)=>{
-    let newnums = [...nums]
-    newnums[index] = value
-    updateNums(newnums)
-  }
-  return <>
-    Hello World<br/>
-    Formula: {describeFormula([2,3,4,"*","+"])}<br/>
-    Result: {evaluateFormula([2,3,4,"*","+"], {}).print()}<br/>
-    {nums.map((number, index)=><p key={index}>{varnames[index]} = {number.print()}</p>)}
-    <button onClick={()=>{setnum(0, nums[1])}}>Take x</button>
-    <button onClick={()=>{setnum(1, nums[0])}}>Put x</button>
-    <button onClick={()=>{setnum(0, nums[2])}}>Take y</button>
-    <button onClick={()=>{setnum(2, nums[0])}}>Put y</button>
-    <button onClick={()=>{setnum(0, nums[3])}}>Take z</button>
-    <button onClick={()=>{setnum(3, nums[0])}}>Put z</button>
-    <button onClick={()=>{setnum(0, nums[4])}}>Take c</button>
-    <button onClick={()=>{setnum(0, nums[5])}}>Take Result</button>
-    <br/>
-    <button onClick={()=>{setnum(0, nums[0].add(new FormulaNumber(1)))}}>Increment</button>
-    <button onClick={()=>{setnum(0, nums[0].sub(new FormulaNumber(1)))}}>Decrement</button>
-    <button onClick={()=>{setnum(0, nums[0].neg())}}>Negate</button>
-    <button onClick={()=>{setnum(0, nums[0].abs())}}>Make positive</button>
-    <button onClick={()=>{setnum(0, nums[0].exp(2))}}>Square</button>
-    <button onClick={()=>{setnum(0, nums[0].exp(0.5))}}>Take square root</button>
-    <button onClick={()=>{setnum(0, nums[0].logC(2))}}>Take log2</button>
-    <br/>
-    <button onClick={()=>{setnum(5, nums[2].add(nums[3]))}}>Add y and z</button>
-    <button onClick={()=>{setnum(5, nums[2].mult(nums[3]))}}>Multiply y and z</button>
-    <button onClick={()=>{setnum(5, nums[2].div(nums[3]))}}>Divide y by z</button>
-    {/* <button onClick={()=>{setnum(5, nums[2].exp(nums[4].factor))}}>Raise y to the c</button>
-    <button onClick={()=>{setnum(5, nums[2].logC(nums[4].factor))}}>Take logC of y</button> */}
-    <button onClick={()=>{setnum(5, nums[3].expand(1,1))}}>Raise Infinity by z</button>
-    <button onClick={()=>{setnum(5, nums[3].collapse())}}>Reduce Infinities of z</button>
-  </>
-
-/*
-  useEffect(()=>{
-    setTimer((t)=>{
-      schedulePeriodicUpdateChecks(10,()=>{console.log("Attempt Update Check")},()=>{console.log("Update Check Completed")})
-    })
-  },[])
-
   useEffect(()=>{
     if (playTime > 0)
       updateState({name: "idle", popup:popup, playTime:playTime})
   },[playTime, popup])
+
+  //Checks for updates once per hour if online
+  useEffect(()=>{
+    setTimer((t)=>{
+      schedulePeriodicUpdateChecks(3600,()=>{console.log("Attempt Update Check")},()=>{console.log("Update Check Completed")})
+    })
+  },[])
 
   useEffect(() => {
     let link = document.querySelector("link[rel~='icon']");
@@ -126,9 +86,24 @@ function App() {
 
   return (<>
     <AutoSave saveState={state}/>
-    <PopupDialog popupState={popupState} setPopupState={setPopupState}/>
     <KeyBoardHandler state={state} updateState={updateState} popup={popup}/>
-    <h1 style={{fontSize: "40px", marginLeft: "20px", marginBottom: "10px", textAlign:"left"}}>x&nbsp;=&nbsp;{formatNumber(state.xValue[0], state.settings.numberFormat, 6, false, false)}</h1>
+    <PopupDialog popupState={popupState} setPopupState={setPopupState} discardable={state.settings.hotkeyDiscardPopup === "ON"}/>
+    {state.settings.headerDisplay === "VERTICAL" && <div style={{fontSize: "32px", fontWeight:"bold", marginLeft: "20px", marginBottom: "10px", textAlign:"left"}}>
+      <div>x&nbsp;=&nbsp;{formatNumber(state.xValue[0], state.settings.numberFormat, 6, false, false)}</div>
+      {state.progressionLayer >= 1 && <div>&alpha;&nbsp;=&nbsp;{formatNumber(state.alpha, state.settings.numberFormat, 6, false, false)}</div>}
+      {state.destinyStars >= 1 && <div>&lambda;&nbsp;=&nbsp;{formatNumber(state.starLight, state.settings.numberFormat, 6, false, false)}</div>}
+      {state.destinyStars >= 1 && <div style={{marginTop:"-4px"}}>&#9733;&nbsp;=&nbsp;{formatNumber(state.destinyStars, state.settings.numberFormat, 6, false, false)}</div>}
+    </div>}
+    {state.settings.headerDisplay === "HORIZONTAL" && <div style={{fontSize: "36px", fontWeight:"bold", marginLeft: "20px", marginBottom: "10px", textAlign:"left"}}>
+      <span>x&nbsp;=&nbsp;{formatNumber(state.xValue[0], state.settings.numberFormat, 6, false, false)}{spaces()}</span>
+      {state.progressionLayer >= 1 && <span>&alpha;&nbsp;=&nbsp;{formatNumber(state.alpha, state.settings.numberFormat, 6, false, false)}{spaces()}</span>}
+      {state.destinyStars >= 1 && <span>&lambda;&nbsp;=&nbsp;{formatNumber(state.starLight, state.settings.numberFormat, 6, false, false)}{spaces()}</span>}
+      {state.destinyStars >= 1 && <span style={{marginTop:"-4px"}}>&#9733;&nbsp;=&nbsp;{formatNumber(state.destinyStars, state.settings.numberFormat, 6, false, false)}{spaces()}</span>}
+    </div>}
+    {state.settings.headerDisplay === "X" && <h1 style={{fontSize: "40px", marginLeft: "20px", marginBottom: "10px", textAlign:"left"}}>x&nbsp;=&nbsp;{formatNumber(state.xValue[0], state.settings.numberFormat, 6, false, false)}</h1>}
+    {state.settings.headerDisplay === "ALPHA" && <h1 style={{fontSize: "40px", marginLeft: "20px", marginBottom: "10px", textAlign:"left"}}>&alpha;&nbsp;=&nbsp;{formatNumber(state.alpha, state.settings.numberFormat, 6, false, false)}</h1>}
+    {state.settings.headerDisplay === "STARS" && <h1 style={{fontSize: "40px", marginLeft: "20px",marginBottom: "10px", textAlign:"left"}}>&#9733;&nbsp;=&nbsp;{formatNumber(state.destinyStars, state.settings.numberFormat, 6, false, false)}</h1>}
+    {state.settings.headerDisplay === "STARLIGHT" && <h1 style={{fontSize: "40px", marginLeft: "20px", marginBottom: "10px", textAlign:"left"}}>&lambda;&nbsp;=&nbsp;{formatNumber(state.starLight, state.settings.numberFormat, 6, false, false)}</h1>}
     <TabContent selectedTabKey={state.selectedTabKey}>
       <FormulaScreen tabKey="FormulaScreen" popup={popup} state={state} updateState={updateState} setTotalClicks={setTotalClicks}/>
       <AlphaScreen tabKey="AlphaScreen" popup={popup} state={state} updateState={updateState} setTotalClicks={setTotalClicks}/>
@@ -152,7 +127,6 @@ function App() {
     </span>
     </footer>
   </>);
-  */
 }
 
 export default App;

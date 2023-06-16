@@ -1,9 +1,9 @@
 import { Buffer } from "buffer";
 
-import {invitation, productive, save, version} from './savestate'
-import {spaces, notify, secondsToHms} from './utilities'
+import {invitation, newSave, productive, save, version} from './savestate'
+import {spaces, notify, secondsToHms, stringifyProperly} from './utilities'
 import MultiOptionButton from './MultiOptionButton'
-import { checkForUpdates } from "./serviceWorkerRegistration";
+import DropdownOptionButton from "./DropdownOptionButton";
 
 export default function OptionScreen({state, popup, updateState, setTotalClicks}) {
   const saveGame = ()=>{
@@ -24,19 +24,31 @@ export default function OptionScreen({state, popup, updateState, setTotalClicks}
   // }
 
   const exportGame = ()=>{
-    const encodedState = Buffer.from(JSON.stringify(state)).toString("base64");
+    const encodedState = Buffer.from(stringifyProperly(state)).toString("base64");
     navigator.clipboard.writeText(encodedState);
     notify.success("Copied to Clipboard")
   }
 
   const importGame = ()=>{
-    const encodedState = window.prompt("Paste your save here:");
-    if (encodedState && (!state.mileStoneCount || window.confirm("This will overwrite your current save! Are you sure?"))){
-      const decodedState = JSON.parse(Buffer.from(encodedState,"base64").toString())
-      updateState({name: "load", state: decodedState})
-      setTotalClicks((x)=>x+1)
-      notify.success("Save Imported")
-    }
+    popup.prompt("IMPORT", "Paste your savestring here...", ["IMPORT", "CANCEL"], (option, popupState)=>{
+      const encodedState = popupState.inputText;
+      if (option==="CANCEL" || !encodedState) return
+
+      try {
+        const decodedState = JSON.parse(Buffer.from(encodedState,"base64").toString())
+        const stateToLoad = {...structuredClone(newSave), ...decodedState, settings:{...structuredClone(newSave.settings), ...decodedState.settings}, saveTimeStamp: Date.now(), currentEnding: decodedState.currentEnding, justLaunched: true}
+        popup.confirm("This will overwrite your current save! Are you sure?", ()=>{
+          console.log("Attempting to load")
+          updateState({name: "load", state: stateToLoad})
+          setTotalClicks((x)=>x+1)
+          notify.success("Save Imported")
+        })
+      } catch (error) {
+        console.error(error)
+        notify.error("IMPORT FAILED")
+        return
+      }
+    })
   }
 
   const resetSave = ()=>{
@@ -64,17 +76,14 @@ export default function OptionScreen({state, popup, updateState, setTotalClicks}
   return (<div style={{marginLeft: "20px"}}>
     <h1>Options</h1>
       <p>
-        {state.displayvalue}<br/>
-        <button onClick={()=>{updateState({name: "getStarted"})}}>Get Started</button>
-        <button onClick={()=>{updateState({name: "doSomething"})}}>Do Something</button>
-      </p>
-      <p>
         {spaces()}<button title={"Perform a manual save. The game also automatically saves every 10 seconds"} onClick={saveGame} disabled={state.mileStoneCount < 1}>Manual Save</button>
         {spaces()}<button title={"Exports the current game state as a text string to the clipboard"} onClick={exportGame} disabled={state.mileStoneCount < 1}>Export</button>
         {spaces()}<button title={"Imports a previously exported text string and restores its game state"} onClick={importGame}>Import</button>
         {/* {spaces()}<MultiOptionButton settingName="autoSave" statusList={["ON","OFF"]} state={state} updateState={updateState} setTotalClicks={setTotalClicks}
           description="Auto Save" tooltip="Controls whether the game saves automatically" tooltipList={["Saves automatically every 10 seconds and tries to save (depends on browser) before closing tab","Game is not saved automatically"]}/> */}
-      </p><p> 
+      </p>
+      {!!window.installPromptPWAevent && <p>{spaces()}<button onClick={()=>{window.installPromptPWAevent.prompt(); window.installPromptPWAevent = null; popup.alert(<>IMPORTANT NOTE:<br/><br/>The game data is still stored in the browser even when using the app.<br/>Therefore deleting the browser cache also resets the app including your save.</>)}}>Install as Web-App</button></p>}
+      <p> 
         {/* {spaces()}<button onClick={load}>Load Game</button> */}
         
         {/* {spaces()}<MultiOptionButton settingName="autoLoad" statusList={["ON","OFF"]} state={state} updateState={updateState} setTotalClicks={setTotalClicks}
@@ -82,7 +91,12 @@ export default function OptionScreen({state, popup, updateState, setTotalClicks}
       </p><p>
         {/* {spaces()}<MultiOptionButton settingName="offlineProgress" statusList={["ON","ACTIVE","OFF"]} state={state} updateState={updateState} setTotalClicks={setTotalClicks}
           description="Offline Progress" tooltip="Controls whether the game calculates progress for offline/inactive time" tooltipList={["Always get offline progress","No offline progress upon load, but inactive periods (minimized tab etc) are considered", "No offline progress, not even after inactive (minimized tab etc) periods of 2+ minutes"]}/> */}
-      </p><p>
+      </p>
+      {(state.destinyStars > 1 || state.progressionLayer > 0) && <p>
+        {spaces()}<DropdownOptionButton settingName="headerDisplay" statusList={["X","ALPHA",state.destinyStars > 1 && "STARS",state.destinyStars > 1 && "STARLIGHT", "VERTICAL", "HORIZONTAL", "OFF"].filter((x)=>x)} state={state} updateState={updateState} setTotalClicks={setTotalClicks}
+          description="Header Display" tooltip="Controls display at the top of the site"/>
+      </p>}
+      <p>
         {spaces()}<MultiOptionButton settingName="numberFormat" statusList={["LETTER","SCIENTIFIC","AMBIGUOUS"]} state={state} updateState={updateState} setTotalClicks={setTotalClicks}
           description="Number Format" tooltip="Controls how numbers are displayed" tooltipList={["Use letters for thousands: K,M,B,T,Q,P,S,V,O,N,D","Use scientific notation", "Use ambigous notation"]}/>
       </p><p>
@@ -91,7 +105,16 @@ export default function OptionScreen({state, popup, updateState, setTotalClicks}
       </p><p>
         {spaces()}<MultiOptionButton settingName="shopScroll" statusList={["ON","OFF"]} state={state} updateState={updateState} setTotalClicks={setTotalClicks}
           description="Shop Scrollbar" tooltip="Controls whether the formula shop has a separate scroll bar" tooltipList={["Shop has a scroll bar","Shop does not have a scroll bar."]}/>
-      </p><p>
+      </p>
+      {(state.destinyStars > 1 || state.mailsCompleted["Favorites"] !== undefined) && <p>
+        {spaces()}<MultiOptionButton settingName="advancedDisplayModes" statusList={["OFF","ON"]} state={state} updateState={updateState} setTotalClicks={setTotalClicks}
+          description="Advanced Display Modes" tooltip="Enables some additional options for filtering the formula shop" tooltipList={["Does not show additional filters","Shows all additional filters."]}/>
+      </p>}
+      {(state.destinyStars > 1 || state.mailsCompleted["Challenges"] !== undefined) && <p>
+        {spaces()}<MultiOptionButton settingName="challengeTabSwitch" statusList={["ON","OFF"]} state={state} updateState={updateState} setTotalClicks={setTotalClicks}
+          description="Challenge Tab Switch" tooltip="Controls whether automatic tab switch occurs when starting or finishing a challenge" tooltipList={["Tab is switched automatically","Tab is not switched automatically."]}/>
+      </p>}
+      <p>
            {/* {spaces()}<MultiOptionButton settingName="showHints" statusList={["ON", "OFF"]} state={state} updateState={updateState} setTotalClicks={setTotalClicks}
           description="Show Hints" tooltip="Controls whether hints are shown" tooltipList={["Hints are shown", "Hints are not shown"]}/>
         {spaces()}<MultiOptionButton settingName="hotKeys" statusList={["ON", "OFF"]} state={state} updateState={updateState} setTotalClicks={setTotalClicks}
@@ -118,8 +141,8 @@ export default function OptionScreen({state, popup, updateState, setTotalClicks}
           description="Decreasing Formula Pop-Up" tooltip="Controls whether the confirmation popup for decreasing an X-Value is shown" tooltipList={["Show popup","Do not show popup"]}/>
         </p>
         <p>
-          {spaces()}<MultiOptionButton settingName="xResetPopup" statusList={["ON","OFF"]} state={state} updateState={updateState} setTotalClicks={setTotalClicks}
-            description="Basic Reset Pop-Up" tooltip="Controls whether the confirmation popup for Basic Resets is shown" tooltipList={["Show popup","Do not show popup"]}/>
+          {spaces()}<MultiOptionButton settingName="xResetPopup" statusList={["ON","OFF","SMART","SAFE"]} state={state} updateState={updateState} setTotalClicks={setTotalClicks}
+            description="Basic Reset Pop-Up" tooltip="Controls whether the confirmation popup for Basic Resets is shown" tooltipList={["Show popup","Do not show popup","Only show popup when formula unlocks etc possible","Shows two popups when formula unlocks etc possible"]}/>
         </p>
         {(state.destinyStars > 1 || state.progressionLayer > 0) && <p>
           {spaces()}<MultiOptionButton settingName="shopResetPopup" statusList={["ON","OFF"]} state={state} updateState={updateState} setTotalClicks={setTotalClicks}
@@ -161,6 +184,10 @@ export default function OptionScreen({state, popup, updateState, setTotalClicks}
         {spaces()}<MultiOptionButton settingName="hotkeyXReset" statusList={["ON","OFF"]} state={state} updateState={updateState} setTotalClicks={setTotalClicks}
           description="x-Reset Hotkey [X]" tooltip="Controls whether the X Key can be pressed to perform an x-Reset" tooltipList={["Hotkey Enabled", "Hotkey Disabled"]}/>
         </p>
+        <p>
+          {spaces()}<MultiOptionButton settingName="hotkeyDiscardPopup" statusList={["ON","OFF"]} state={state} updateState={updateState} setTotalClicks={setTotalClicks}
+            description="Dismiss Popup [Escape]" tooltip="Controls whether the Escape Key can be pressed to close Popups" tooltipList={["Hotkeys Enabled", "Hotkeys Disabled"]}/>
+        </p>
         {(state.destinyStars > 1 || state.progressionLayer > 0) && <p>
           {spaces()}<MultiOptionButton settingName="hotkeyAlphaReset" statusList={["ON","OFF"]} state={state} updateState={updateState} setTotalClicks={setTotalClicks}
             description="Alpha-Reset Hotkey [A]" tooltip="Controls whether the A Key can be pressed to perform an Alpha-Reset" tooltipList={["Hotkey Enabled", "Hotkey Disabled"]}/>
@@ -171,7 +198,11 @@ export default function OptionScreen({state, popup, updateState, setTotalClicks}
         </p>}
         {(state.destinyStars > 1 || state.progressionLayer > 0) && <p>
           {spaces()}<MultiOptionButton settingName="hotkeyAbortRun" statusList={["ON","OFF"]} state={state} updateState={updateState} setTotalClicks={setTotalClicks}
-            description="Abort Hotkey [C]" tooltip="Controls whether the C Key can be used to abort the current run" tooltipList={["Show popup","Do not show popup"]}/>
+            description="Abort Hotkey [C]" tooltip="Controls whether the C Key can be used to abort the current run" tooltipList={["Hotkey Enabled", "Hotkey Disabled"]}/>
+        </p>}
+        {(state.destinyStars > 1 || state.mailsCompleted["ResearchAll"] !== undefined) && <p>
+          {spaces()}<MultiOptionButton settingName="hotkeyResearchAll" statusList={["ON","OFF"]} state={state} updateState={updateState} setTotalClicks={setTotalClicks}
+            description="Research All Hotkey [R]" tooltip="Controls whether the R Key to start all available Research" tooltipList={["Hotkey Enabled", "Hotkey Disabled"]}/>
         </p>}
       </details>
 
@@ -183,31 +214,22 @@ export default function OptionScreen({state, popup, updateState, setTotalClicks}
       <p>Version:&nbsp;&nbsp;{version}{!productive && <>&nbsp;&nbsp;[Development Build]</>}</p>
       {state.destinyStartTimeStamp > 0 && 
         (state.destinyEndTimeStamp > 0 ? 
-          <p>Playtime:&nbsp;&nbsp;{secondsToHms((state.destinyEndTimeStamp - state.destinyStartTimeStamp)/1000)}&nbsp;&nbsp;[Game Finished!]</p> 
+          <>Playtime:&nbsp;&nbsp;{secondsToHms((state.destinyEndTimeStamp - state.destinyStartTimeStamp)/1000)}&nbsp;&nbsp;[Game Finished!]</> 
         :
-          <p>Playtime:&nbsp;&nbsp;{secondsToHms((Date.now() - state.destinyStartTimeStamp)/1000)}</p>)
+          <>Playtime:&nbsp;&nbsp;{secondsToHms((Date.now() - state.destinyStartTimeStamp)/1000)}</>)
+      }
+      {state.destinyStars > 1 && state.destinyRecordMillis <= 30*86400*1000 && <><br/>Record:&nbsp;&nbsp;{secondsToHms(state.destinyRecordMillis/1000)}</>}
+      {state.starlightStartTimeStamp > 0 && 
+        (state.starlightEndTimeStamp > 0 ? 
+          <><br/>Starlight Age:&nbsp;&nbsp;{secondsToHms((state.starlightEndTimeStamp - state.starlightStartTimeStamp)/1000)}&nbsp;&nbsp;[Infinite Starlight!]</> 
+        :
+          <><br/>Starlight Age:&nbsp;&nbsp;{secondsToHms((Date.now() - state.starlightStartTimeStamp)/1000)}</>)
       }
       <p>This game is created by Zilvarro.</p>
-      {state.productive && (state.mileStoneCount >= 3 ? 
+      {state.mileStoneCount >= 3 ? 
         <p><a href={"https://discord.gg/" + invitation} target="_blank" rel="noopener noreferrer">Join the Discord Community</a></p>
         :
         <p><a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" target="_blank" rel="noopener noreferrer">Must have 3 Milestones to join the Discord &#9785;</a></p>
-      )}
-      {!!window.installPromptPWAevent && <button onClick={()=>{window.installPromptPWAevent.prompt(); window.installPromptPWAevent = null}}>Install as Web-App</button>}
-      <button onClick={async()=>{
-        notify.warning("Checking...")
-        const newregistration = await checkForUpdates()
-        if (newregistration)
-          notify.success("Checked for Updates")
-        // debugger
-        // if (!navigator?.serviceWorker?.getRegistration) return
-        // const registration = await navigator.serviceWorker.getRegistration()
-        // notify.warning("Checking for Updates","",false)
-        // debugger
-        // if (!registration) 
-        //   return
-        // const newregistration = await registration.update() 
-        // notify.success("Checked for Updates")
-      }}>Check for Updates</button>
+      }
   </div>)
 }

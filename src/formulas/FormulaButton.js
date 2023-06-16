@@ -203,6 +203,7 @@ export default function FormulaButton({state, popup, updateState, setTotalClicks
             </td><td>
                 {spaces()}
             </td><td>
+                {state.settings.shopPrices === "ON" && tooltip}
             </td></tr>
         )
     } else if (state.formulaUnlocked[formulaName]) { //GET BUTTON

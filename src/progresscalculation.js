@@ -136,6 +136,12 @@ export const getStarLightRate = (state)=>{
 }
 
 export const generateStarLight = (state, deltaMilliSeconds) => {
+    if (deltaMilliSeconds < 10)
+        return
+    if (isNaN(state.starLight)) {
+        console.log("Starlight became NaN")
+        state.starlight = 0
+    }
     state.starLight += deltaMilliSeconds / 1000 * getStarLightRate(state)
     state.starLight = Math.min(state.starLight,constellationPrices[state.constellationCount])
 }
@@ -167,7 +173,7 @@ export const simulateOfflineProgress = (state, deltaMilliSeconds) => {
     state.formulaApplyCount += Math.floor(activeAppliers * state.autoApplyRate * (deltaMilliSeconds - 300) / 1000)
 
     // STEP 3: Calculate Production
-    state = applyProduction(state, (deltaMilliSeconds - 300) * getGlobalMultiplier(state), applierBonus)
+    state = applyProduction(state, (deltaMilliSeconds - 300) * getGlobalMultiplier(state), applierBonus.map((v)=>(v || 0)))
  
     return state
 }

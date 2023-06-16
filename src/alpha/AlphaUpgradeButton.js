@@ -4,13 +4,13 @@ export default function AlphaUpgradeButton({state, popup, upgrade, updateState})
 
     const clickAlphaUpgrade = ()=>{
         if (state.alphaUpgrades[upgrade.id]) {
-            popup.alert(<>{upgrade.title}<br/><br/>{upgrade.description}<br/><br/>ALREADY BOUGHT!</>)
+            popup.alert(<>{upgrade.title}<br/><br/>{upgrade.description}<br/><br/>ALREADY BOUGHT!</>, undefined, undefined, true)
         } else if (state.alpha < upgrade.cost) {
-            popup.alert(<>{upgrade.title}<br/><br/>{upgrade.description}<br/><br/>Cost: {upgrade.cost} &alpha;</>)
+            popup.alert(<>{upgrade.title}<br/><br/>{upgrade.description}<br/><br/>Cost: {upgrade.cost} &alpha;</>, undefined, undefined, true)
         } else {
             popup.confirm(<>{upgrade.title}<br/><br/>{upgrade.description}<br/><br/>Buy for {upgrade.cost} &alpha;?</>,()=>{
                 updateState({name: "alphaUpgrade", upgrade: upgrade})
-            }, state.settings.alphaUpgradePopup === "OFF")
+            }, state.settings.alphaUpgradePopup === "OFF", true)
         }
     }
 

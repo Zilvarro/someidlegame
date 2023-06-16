@@ -18,6 +18,7 @@ export const startingStones = {
         id: "StartingValue",
         title: "Stone Skipper",
         description: <>Reach exactly s<sub>x</sub>=60</>,
+        tooltip: "Reach exactly sx=60",
         check: (state=>(state.startingStoneX === 60)),
     },
     "Googol":{
@@ -25,13 +26,12 @@ export const startingStones = {
         title: "Googol",
         description: <>&alpha;-Reset with x=1e100 or more</>,
         check: (state=>(state.xHighScores[3] >= 1e100)),
-        
     },
     "Timewall":{
         id: "Timewall",
         title: "Timewall ",
-        description: <>&alpha;-Reset while having at least five billion Alpha and x=1e110</>,
-        check: (state=>(state.xHighScores[3] >= 1e110 && state.alpha >= 5e9)),
+        description: <>&alpha;-Reset while having at least four billion Alpha and x=1e110</>,
+        check: (state=>state.clearedTimewall),
     },
     "AllChallenges":{
         id: "AllChallenges",
@@ -41,7 +41,7 @@ export const startingStones = {
     },
     "VeryAlpha":{
         id: "VeryAlpha",
-        title: "Alpha Millionnaire",
+        title: "Mighty Million",
         description: <>Reach a million Alpha</>,
         check: (state=>(state.alpha >= 1e6)),
     },

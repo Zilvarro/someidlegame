@@ -57,18 +57,21 @@ export const shopFormulas=[
 
 export default function FormulaScreen({state, updateState, setTotalClicks, popup}) {
     const resetXValues = ()=>{
-      popup.confirm("Your x values are reset, but you can change your equipped formulas.",()=>{
+      const isProgressAvailable = state.xValue[0] >= nextUnlockCost || state.xValue[0] >= differentialTarget || state.xValue[0] >= alphaTarget
+      popup.confirm("Your X values are reset, but you can change your equipped formulas.",()=>{
+        popup.confirm("Your x is high enough to unlock something or progress instead. Do you still want to do a Basic Research?",()=>{
           updateState({name: "resetXValues"})
           setTotalClicks((x)=>x+1)
-      }, state.settings.xResetPopup === "OFF")
+        }, state.settings.xResetPopup === "OFF" || state.settings.xResetPopup === "ON" || !isProgressAvailable)
+      }, state.settings.xResetPopup === "OFF" || state.settings.xResetPopup === "SMART")
     }
     
     const resetShop = ()=>{
       const shopMultipliers = [4, 12, 8000, 1]
       const shopMultiplier = shopMultipliers[state.highestXTier]
       popup.confirm("A new differential of x and its formulas become available, but the shop is reset and the unlock cost for all non-basic formulas is " + shopMultiplier + " times as high.",()=>{
-        updateState({name: "upgradeXTier"})
-        setTotalClicks((x)=>x+1)
+          updateState({name: "upgradeXTier"})
+          setTotalClicks((x)=>x+1)
       }, state.settings.shopResetPopup === "OFF")
     }
     
@@ -81,7 +84,7 @@ export default function FormulaScreen({state, updateState, setTotalClicks, popup
 
     const abortAlphaReset = ()=>{
       popup.confirm(state.insideChallenge ? "Abort run and exit the current Challenge?" : "Abort the current Alpha Run?",()=>{
-        popup.confirm("Are you really sure?",()=>{
+        popup.confirm("Do you really want to abort the run?",()=>{
           updateState({name: "alphaReset", isAbort: true})
           setTotalClicks((x)=>x+1)
         }, state.settings.alphaAbortPopup !== "DOUBLE")
@@ -135,6 +138,8 @@ export default function FormulaScreen({state, updateState, setTotalClicks, popup
     const progressBarWidth = Math.min(100 * Math.log10(Math.max(state.xValue[0],1)) / Math.log10(alphaTarget),99).toFixed(0) + "%"
 
     const alphaRewardTier = getAlphaRewardTier(state.xValue[0])
+    const xhs = state.xHighScores[3]
+    const alphaTargetList = ["MINIMUM","1e40",xhs >= 1e40 && "1e50",xhs >= 1e50 && "1e60",xhs >= 1e60 && "1e70",xhs >= 1e70 && "1e80",xhs >= 1e80 && "1e90",xhs >= 1e90 && "1e100"].filter((x)=>x)
 
     const nextUnlockCost = state.autoUnlockIndex < shopFormulas.length ? formulaList[shopFormulas[state.autoUnlockIndex]].unlockCost * getUnlockMultiplier(formulaList[shopFormulas[state.autoUnlockIndex]],state) : Infinity
 
@@ -153,6 +158,18 @@ export default function FormulaScreen({state, updateState, setTotalClicks, popup
         break;
       case "HIDDEN":
         displayFilter = (formulaName)=>(state.shopFavorites[state.highestXTier][formulaName] === -1) //Only Hidden
+        break;
+      case "X":
+        displayFilter = (formulaName)=>(formulaList[formulaName].targetLevel === 0 && state.shopFavorites[state.highestXTier][formulaName] !== -1) //Non-Hidden X
+        break;
+      case "X'":
+        displayFilter = (formulaName)=>(formulaList[formulaName].targetLevel === 1 && state.shopFavorites[state.highestXTier][formulaName] !== -1) //Non-Hidden X'
+        break;
+      case "X''":
+        displayFilter = (formulaName)=>(formulaList[formulaName].targetLevel === 2 && state.shopFavorites[state.highestXTier][formulaName] !== -1) //Non-Hidden X''
+        break;
+      case "X'''":
+        displayFilter = (formulaName)=>(formulaList[formulaName].targetLevel === 3 && state.shopFavorites[state.highestXTier][formulaName] !== -1) //Non-Hidden X'''
         break;
       default: //ALL + EDIT
         break;
@@ -180,7 +197,7 @@ export default function FormulaScreen({state, updateState, setTotalClicks, popup
               {state.insideChallenge && state.highestXTier === 3 && state.xValue[0] >= alphaTarget &&
                 <>{spaces()}<button style={{color:"black"}} disabled={state.inNegativeSpace || state.activeChallenges.FULLYIDLE} onClick={completeChallenge}><b>Complete Challenge</b></button></>
               }
-              {state.progressionLayer >= 1 &&
+              {state.progressionLayer >= 1 && !(state.insideChallenge && state.highestXTier === 3 && state.xValue[0] >= alphaTarget) &&
                 <>{spaces()}<button style={{color:"black"}} disabled={state.activeChallenges.FULLYIDLE} onClick={abortAlphaReset}>Abort</button></>
               }</>
             }
@@ -213,7 +230,7 @@ export default function FormulaScreen({state, updateState, setTotalClicks, popup
           
           {state.alphaUpgrades.ARES && <><MultiOptionButton disabled={state.activeChallenges.FULLYIDLE} settingName="autoResetterA" statusList={["ON","OFF"]} state={state} updateState={updateState} setTotalClicks={setTotalClicks}
             description="Alpha Resetter"/></>}
-          {state.alphaUpgrades.ARES && <>{spaces()}<DropdownOptionButton disabled={state.activeChallenges.FULLYIDLE} settingName="alphaThreshold" statusList={["MINIMUM","1e40","1e50","1e60","1e70","1e80","1e90","1e100"]} state={state} updateState={updateState} setTotalClicks={setTotalClicks}
+          {state.alphaUpgrades.ARES && <>{spaces()}<DropdownOptionButton disabled={state.activeChallenges.FULLYIDLE} settingName="alphaThreshold" statusList={alphaTargetList} state={state} updateState={updateState} setTotalClicks={setTotalClicks}
             description="Target"/></>}
           {(state.alphaUpgrades.SRES || state.alphaUpgrades.AREM) && <><br/><br/></>}
 
@@ -231,7 +248,7 @@ export default function FormulaScreen({state, updateState, setTotalClicks, popup
             {state.progressionLayer >= 1 && state.highestXTier === 3 && !state.inNegativeSpace && !state.insideChallenge && state.xValue[0] >= alphaTarget && <p>Alpha Reset for {alphaRewardTier.alpha * Math.pow(2,state.baseAlphaLevel)} &alpha;.{alphaRewardTier.next && <>&nbsp;(Next: {alphaRewardTier.nextAlpha * Math.pow(2,state.baseAlphaLevel)} &alpha; at x={formatNumber(alphaRewardTier.next)})</>}</p>}
             {(state.progressionLayer > 0 || state.highestXTier > 0) && state.autoUnlockIndex < shopFormulas.length && state.xValue[0] < nextUnlockCost && (nextUnlockCost <= alphaTarget || state.progressionLayer > 0) && <p>Next Formula at x={formatNumber(nextUnlockCost, state.settings.numberFormat)}</p>}
             {(state.progressionLayer > 0 || state.highestXTier > 0) && state.autoUnlockIndex < shopFormulas.length && state.xValue[0] >= nextUnlockCost && <p>New Formula available</p>}
-            {state.progressionLayer === 0 && state.autoUnlockIndex < shopFormulas.length && nextUnlockCost > alphaTarget && <p>Almost done! Let's fill this bar!</p>}
+            {state.progressionLayer === 0 && state.autoUnlockIndex < shopFormulas.length && nextUnlockCost > alphaTarget && <p>Almost done! Let's fill this bar! (at x={formatNumber(alphaTarget, state.settings.numberFormat)})</p>}
             <p></p>
             {state.progressionLayer === 0 && (state.xValue[0] >= alphaTarget ?
                 <div><button onClick={performAlphaReset} style={{backgroundColor:"#99FF99", fontWeight:"bold", border:"2px solid", height:"25px", width:"280px"}}>
@@ -248,7 +265,7 @@ export default function FormulaScreen({state, updateState, setTotalClicks, popup
             {hashtagE && <>#E = {formatNumber(state.myFormulas.length, state.settings.numberFormat, 3)}&nbsp;&nbsp;(Equipped Formulas)<br/></>}
         </div><div className="column">
         <h2 style={{marginTop:"0px"}}>Shop {state.myFormulas.length >= getInventorySize(state) && <>{spaces()}[FULL INVENTORY]</>}</h2>
-          {state.mailsCompleted["Favorites"] !== undefined && <p><DropdownOptionButton visible={true} settingName="shopFilter" statusList={["DEFAULT","ALL","FAVORITES","HIDDEN","EDIT"]} state={state} updateState={updateState} setTotalClicks={setTotalClicks} description="Display Mode"/></p>}
+          {state.mailsCompleted["Favorites"] !== undefined && <p><DropdownOptionButton visible={true} settingName="shopFilter" statusList={state.settings.advancedDisplayModes === "ON" ? ["DEFAULT","ALL","FAVORITES","HIDDEN","X","X'","X''","X'''","EDIT"] : ["DEFAULT","ALL","FAVORITES","HIDDEN","EDIT"]} state={state} updateState={updateState} setTotalClicks={setTotalClicks} description="Display Mode"/></p>}
           <div style={state.settings.shopScroll === "ON" ? {overflow:"auto", height:"70vh"} : {}}>
             <FormulaTable state={state} updateState={updateState} popup={popup} setTotalClicks={setTotalClicks} formulaNames={shopFormulas.filter(displayFilter)}/>
           </div>

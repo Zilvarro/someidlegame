@@ -1,3 +1,5 @@
+import { countAlphaUpgrades } from "../alpha/AlphaUpgradeTab"
+import { getChallengeBonus } from "../savestate"
 import { notify } from "../utilities"
 
 const getHomeworkProgress = ()=>[[false,false,false,false],[false,false,false,false],[false,false,false,false],[false,false,false,false]]
@@ -75,11 +77,11 @@ export const mailDictionary = {
     "How":{
         id: "How",
         title: "But how???",
-        content: <>Hearing about the world formula, you may be wondering how to achieve such a state of mind, how to <i>discover</i> the World Formula for yourself. One must break out of the prison imposed by ones formulas. Find unlimited growth. Yearn for <b>Infinity</b>. Yet one must not just invent new formulas, instead one must <b>exploit the core of mathematics</b> to break free of the bounds which constrain ones conciousness.</>,
+        content: <>Hearing about the world formula, you may be wondering how to achieve such a state of mind, how to <i>discover</i> the World Formula for yourself. One must break out of the prison imposed by ones formulas. Find unlimited growth. Yearn for <b>Infinity</b>. Yet one must not just invent new formulas, instead one must <b>exploit the core of mathematics</b> to break free of the bounds which constrain ones conciousness. And those who get blinded by greed and stop being careful may end up stuck with infinitely many problems, or deep down in the depths of hell.</>,
         sender: "Mister Y",
         check: (state)=>(state.alpha >= 42),
         delay: 500,
-        afterRead: ["Dangerous"],
+        afterRead: ["Dangerous", "InfiniteProblemsHint"],
     },
     "Dangerous":{
         id: "Dangerous",
@@ -354,15 +356,27 @@ export const mailDictionary = {
         sender: "Academy",
         check: (state)=>(state.researchLevel["x"] >= 100 && state.researchLevel["x'"] >= 100 && state.researchLevel["x''"] >= 100 && state.researchLevel["x'''"] >= 100),
         delay: 128,
-        afterComplete: [["Idle","God"]],
+        afterComplete: [["Idle","God","MythicalStones","ResearchAllIdea"]],
     },
     "Stones":{
         id: "Stones",
         title: "Stones",
         content: <>I heard you found a rare stone? I do not know what it is and what to do with it. But you can find your stones on the Alpha tab. Feel free to experiment with them, though I am not sure if they will turn out to be useful for anything.</>,
-        responses: [<>UNLOCK STONES</>],
+        responses: [<>UNLOCK STARTING STONES</>],
         sender: "Academy",
         check: (state)=>(Object.keys(state.startingStoneTurned).length > 0),
+        abandon: (state)=>state.mailsReceived["MythicalStones"],
+        delay: 280,
+        afterComplete: [["MaxStones"]],
+    },
+    "MythicalStones":{
+        id: "MythicalStones",
+        title: "Leaving no Stone Unturned",
+        content: <>There is a legend at our academy about a hero who embarks on a quest to find nine mythical stones. Most likely it is just gossip, and not useful for anything of importance. But if you insist and can find some stones, then you may use our academy garden to play with them.</>,
+        responses: [<>UNLOCK STARTING STONES</>],
+        sender: "Academy",
+        check: (state)=>(getChallengeBonus(state).full >= 1 && countAlphaUpgrades(state)>=9 && (state.researchLevel["x"] >= 2500 || state.researchLevel["x'"] >= 2500 || state.researchLevel["x''"] >= 2500 || state.researchLevel["x'''"] >= 2500)),
+        abandon: (state)=>state.mailsReceived["Stones"],
         delay: 380,
         afterComplete: [["MaxStones"]],
     },
@@ -385,7 +399,7 @@ export const mailDictionary = {
     "God":{
         id: "God",
         title: "Formula God",
-        content: <>Thank you for attempting the Formula God Challenge. That one is truly giving us nightmares. However, we are able to support you by boosting your Research speed proportional to your best scores in the Formula God Challenge. You can check this special boost on the Research tab. Keep trying and improving!</>,
+        content: <>Thank you for attempting the Formula God Challenge. That one is truly giving us nightmares. However, we are able to support you by multiplying your research speeds by your respective best scores in the Formula God Challenge. You can check this special boost on the Research tab. Keep trying and improving those highscores!</>,
         sender: "Academy",
         check: (state)=>(state.formulaGodScores[0] > 1),
         delay: 45
@@ -407,14 +421,24 @@ export const mailDictionary = {
         sender: "Academy",
         check: (state)=>(true),
         delay: 1300,
-        afterRead: ["TrueHint"],
+        afterRead: ["TrueHint","NoHint"],
     },
     "TrueHint":{
         id: "TrueHint",
         title: "We have an idea for those Stones.",
         content: <>Sorry for taking so long, we went down the wrong path for a while: Your starting x now allows you to get the three differentials without using any formulas. But that does not really seem to help you do anything new. Then, upon closer inspection we noticed that with your Starting X it should now be possible to use x''' &#10141; x''' + log<sub>2</sub>(x)<sup>2</sup> as your first formula. Curiously, if one was to apply that formula while x = Infinity, then one could also reach x''' = Infinity.</>,
         check: (state)=>(true),
+        abandon: (state)=>(state.mailsReceived["NoHint"]),
         delay: 30000,
+        sender: "Academy",
+    },
+    "NoHint":{
+        id: "NoHint",
+        title: "We have no idea for those Stones.",
+        content: <>Sorry, but the academy member who was assigned to look into what the stones are fore suddenly went on an extended vacation. So we sadly cannot help you with that anymore, but wish you the best, of course!</>,
+        check: (state)=>(state.completedEndings["true"]),
+        abandon: (state)=>(state.mailsReceived["TrueHint"]),
+        delay: 600,
         sender: "Academy",
     },
 
@@ -422,7 +446,7 @@ export const mailDictionary = {
     "Destiny":{
         id: "Destiny",
         title: "Fight the Darkness with me",
-        content: <>Hello, congratiulations on finishing the main game! You now have gained access to my realm. My name is Estelle, the goddess of Starlight and sleepless overseer of the eternal night. Sadly, during the last weeks, the night sky has darkened drastically. It became almost devoid of Stars and Starlight. I could really use your help to restore as much of that as possible. Since this is optional post-game content, you can do as little or much of it as you want without really missing out on anything important. But every ray of Starlight counts and helps me! <br/><br/>Here is a quick overview:<br/><br/>Astral Glance: Produces 1 Starlight per Second<br/><br/>Shooting Star: Doubles Starlight Rate<br/><br/>Luminous Moon: Multiplies Starlight Rate with number of Destiny Stars<br/><br/>Gaze at the night sky: Grants 1 Starlight, only possible if there is no other means of generating Starlight<br/><br/>Destiny Reset: Resets the entire main game ("New Game Plus") for a Destiny Star. Only available when the main game is completed.<br/><br/>Destiny Star: The number of Destiny Stars acts as a global multiplier for many aspects of the main game. And, as mentioned before, Destiny Stars boost the effect of Luminous Moons.<br/><br/>Star Constellations: There is a legend that, when the night sky is full of Starlight, all of it can be transformed into a beautiful Star Constellation!</>,
+        content: <>Hello, congratulations on finishing the main game! You now have gained access to my realm. My name is Estelle, the goddess of Starlight and sleepless overseer of the eternal night. Sadly, during the last weeks, the night sky has darkened drastically. It became almost devoid of Stars and Starlight. I could really use your help to restore as much of that as possible. Since this is optional post-game content, you can do as little or much of it as you want without really missing out on anything important. But every ray of Starlight counts and helps me! <br/><br/>Here is a quick overview:<br/><br/>Astral Glance: Produces 1 Starlight per Second<br/><br/>Shooting Star: Doubles Starlight Rate<br/><br/>Luminous Moon: Multiplies Starlight Rate with number of Destiny Stars<br/><br/>Gaze at the night sky: Grants 1 Starlight, only possible if there is no other means of generating Starlight<br/><br/>Destiny Reset: Resets the entire main game ("New Game Plus") for a Destiny Star. Only available when the main game is completed.<br/><br/>Destiny Star: The number of Destiny Stars acts as a global multiplier for many aspects of the main game. And, as mentioned before, Destiny Stars boost the effect of Luminous Moons.<br/><br/>Star Constellations: There is a legend that, when the night sky is full of Starlight, all of it can be transformed into a beautiful Star Constellation!</>,
         sender: "Estelle",
         check: (state)=>(state.destinyStars >= 1),
         delay: 0,
@@ -446,15 +470,16 @@ export const mailDictionary = {
         sender: "Estelle",
         check: (state)=>(state.constellationCount >= 12),
         delay: 0,
-        afterReceive: ["Constellation"],
+        afterReceive: ["Eternal"],
         silent: true
     },
     "Eternal":{
         id: "Eternal",
         title: "The eternal night is over",
-        content: <>This is absolutely incredible. With an Infinity of Starlight, the eternal night is finally coming to an end, and the Age of Illumination is about to begin. However, the dawn of this new era means that it is time for us to part ways. And that it is time for me to get some rest. But I will hold to the memories of our time together dearly, and take them with me, whereever fate may take me!<br/><br/>Farewell, and thank you for everything!<br/><br/>Estelle</>,
+        content: <>This is absolutely incredible. With an Infinity of Starlight, replenishing itself quickly should darkness ever arise again, the eternal night is finally coming to an end, and the Age of Illumination is about to begin. However, the dawn of this new era means that it is time for us to part ways. And that it is time for me to get some rest. But I will hold to the memories of our time together dearly, and take them with me, whereever fate may take me!<br/><br/>Farewell, and thank you for everything!<br/><br/>Estelle</>,
         sender: "Estelle",
-        check: (state)=>(state.starLight >= Infinity && state.lightAdder >= 1000 && state.lightDoubler >= 1000 && state.lightRaiser >= 1000),
+        check: (state)=>(state.starlightRecordMillis <= 120000 && state.starLight >= Infinity && state.lightAdder >= 1000 && state.lightDoubler >= 1000 && state.lightRaiser >= 1000),
+        delay: 0,
         silent: true,
     },
 
@@ -472,7 +497,7 @@ export const mailDictionary = {
     "Transfer":{ //Transfer minigame
         id: "Transfer",
         title: "Re: How can I give you?",
-        content: <>Transfer money. 150$! Have only one day. But must not be suspicious. Must transfer only one dollar at a time!</>,
+        content: <>Transfer money. $150! Have only one day. But must not be suspicious. Must transfer only one dollar at a time!</>,
         getProgress: ()=>0,
         responses: [<>Transferred nothing</>, <>Transferred too little</>, <>Transferred enough</>, <>Transferred waaay too much</>],
         sender: "Prince",
@@ -504,7 +529,7 @@ export const mailDictionary = {
         check: (state)=>(true),
         delay: 3000,
         afterComplete: [["Virus"],[]],
-        timeout: 86400,
+        timeout: 36000,
         getTimeoutReply: ()=>1
     },
     "Failed":{
@@ -518,7 +543,7 @@ export const mailDictionary = {
         check: (state)=>(true),
         delay: 3000,
         afterComplete: [["Virus"],[]],
-        timeout: 86400,
+        timeout: 36000,
         getTimeoutReply: ()=>1
     },
     "Virus":{
@@ -559,8 +584,18 @@ export const mailDictionary = {
         sender: "Dev",
         check: (state)=>(state.xValue[0] > 200e9 && state.highestXTier >= 2),
         delay: 60,
-        afterComplete: [[]],
+        afterComplete: [["RoundDown"]],
     },
+
+    "RoundDown":{
+        id: "RoundDown",
+        title: "Just a small hint",
+        content: <>Hi again, I hope you are doing well! Here's a small hint for you, since I have no idea where else to put it in the game: the result from applying a formula is generally rounded down (except for formulas that just add something to the current value). Maybe this will be helpful, or not, I don't know.</>,
+        sender: "Dev",
+        check: (state)=>(state.xValue[0] > 5e30 && state.highestXTier >= 3),
+        delay: 200,
+    },
+    
     "Survey":{ //Star Survey Minigame
         id: "Survey",
         title: "Survey",
@@ -569,7 +604,7 @@ export const mailDictionary = {
         content: <>Hi, I hope you are enjoying this game! Please take a moment and rate your experience on a scale of 1 to 5 stars.</>,
         sender: "Dev",
         check: (state)=>(true),
-        delay: 80000,
+        delay: 60000,
         afterComplete: [["Submitted"]],
         rating: true,
     },
@@ -592,14 +627,70 @@ export const mailDictionary = {
         check: (state)=>(true),
         delay: 20,
     },
-    "Results":{ //Make result vary by User Input
+    "Results":{
         id: "Results",
         title: "Survey Results",
         content: <>Here are the latest results of the survey:</>,
         sender: "Dev",
         check: (state)=>(true),
-        delay: 120000,
+        delay: 100000,
         surveyresult: true,
+    },
+    "ResearchAllIdea":{
+        id: "ResearchAllIdea",
+        title: "Convenient Button Idea",
+        content: <>I just had a great idea! How about we add a button to the Research tab that lets you trigger all available Research at once! I'm sure it would save you some clicking.</>,
+        responses: [<>That sounds awesome!</>,<>Do whatever you like.</>],
+        sender: "Dev",
+        check: (state)=>(getChallengeBonus(state).full >= 1 && countAlphaUpgrades(state)>=9),
+        delay: 180,
+        afterComplete: [["SoundsAwesome"],["DoWhatever"]],
+    },
+    "SoundsAwesome":{
+        id: "SoundsAwesome",
+        title: "Re: That sounds awesome!",
+        content: <>Glad you like my idea! The Research All feature is a lot of work, but I'll start coding right now and let you know when it's done. So stay tuned!</>,
+        sender: "Dev",
+        check: (state)=>(true),
+        delay: 600,
+        afterRead: [["ResearchAll"]],
+    },
+    "DoWhatever":{
+        id: "DoWhatever",
+        title: "Re: Do whatever you like.",
+        content: <>Yeah you are right. Research All is not too important, not really a priority right now. I'll see when I can make some time for it.</>,
+        sender: "Dev",
+        check: (state)=>(true),
+        delay: 800,
+        afterRead: [["ResearchAllSlow"]],
+    },
+    "ResearchAllSlow":{
+        id: "ResearchAllSlow",
+        title: "Getting to work",
+        content: <>Hey there. Sorry, I had lots of other stuff to do, but now I finally started working on that Research All feature I promised you. I will let you know when it is done.</>,
+        sender: "Dev",
+        check: (state)=>(true),
+        delay: 7000,
+        afterRead: [["ResearchAll"]],
+    },
+    "ResearchAll":{
+        id: "ResearchAll",
+        title: "Research All Button",
+        content: <>It was not easy, but I am finally done developing that "Research All" feature we were talking about earlier. You can find it at the top of the Research tab.</>,
+        responses: [<>UNLOCK RESEARCH ALL</>],
+        sender: "Dev",
+        check: (state)=>(true),
+        delay: 12000,
+        afterComplete: [[]],
+    },
+    "InfiniteProblemsHint":{
+        id: "InfiniteProblemsHint",
+        title: "You were soooo close",
+        content: <>While browsing the logs I've seen that you got a bad ending while trying to achieve greatness. But do not give up, you are on the right track and really close! I dug a bit deeper into what happened there, and it seems like your x''' got to -Infinity. So if you switch to applying the formula carefully one by one as soon as your x''' starts going crazy, you should be able to avoid that and still get x to Infinity. Good luck!</>,
+        sender: "Dev",
+        check: (state)=>(state.infProd),
+        abandon: (state)=>(state.startingStoneTurned["WorldFormula"]),
+        delay: 5400,
     },
 
     //Sidestory: x-Mail
@@ -636,7 +727,7 @@ export const mailDictionary = {
 }
 
 const worldformula = ["Warning", "What", "Who", "Still", "Formula", "Joined", "How", "Dangerous", "After", "Found", "Nothing"] //Formula Layer + Alpha Layer
-const academy = ["Welcome", "Research", "Challenges", "Stones", "Maxxed", "Idle", "God", "MaxStones", "Hint", "TrueHint"] //Alpha Layer
+const academy = ["Welcome", "Research", "Challenges", "Stones", "MythicalStones", "Maxxed", "Idle", "God", "MaxStones", "Hint", "TrueHint"] //Alpha Layer
 const homework = ["Homework", "Learn", "Important", "Refuse", "Klausi", "Henry", "Powerful", "Tommy", "Jimmy", "Gary", "Thx", "Profit", "Children"] //Alpha Layer
 
 const prince = ["Prince", "Transfer", "Failed", "Virus", "Sent", "Rich"] //Formula Layer

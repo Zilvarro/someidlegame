@@ -2,7 +2,7 @@ import { Buffer } from "buffer";
 
 import {destinyMileStoneList, milestoneList} from './AchievementScreen' 
 import {endingList} from './endings/EndingDictionary'
-import {getRewardInterval, notify, secondsToHms, getOfflinePopupLine} from './utilities'
+import {getRewardInterval, notify, secondsToHms, getOfflinePopupLine, stringifyProperly} from './utilities'
 import formulaList from './formulas/FormulaDictionary'
 import {shopFormulas} from './formulas/FormulaScreen'
 import {getUnlockMultiplier, isLockedByChallenge} from './formulas/FormulaButton'
@@ -10,18 +10,17 @@ import {calcStoneResultForX} from './alpha/AlphaStonesTab'
 import {startingStones, stoneTable, stoneList} from './alpha/AlphaStoneDictionary'
 import * as eventsystem from './mails/MailEventSystem'
 import * as progresscalculation from './progresscalculation'
-import { Game } from "./game/Game"
-import { FormulaNumber } from "./game/FormulaNumber";
+import { checkResearch, researchList } from "./alpha/AlphaResearchHelper";
+import { autoBuyStarlightUpgrades } from "./destiny/DestinyWelcomeTab";
 
-export const majorversion = 1
-export const version = "0.86d"
+export const majorversion = 2
+export const version = "2.00d"
 export const productive = false
 export var invitation = "efHyDkqGRZ"
 
 export const newSave = {
     version: version,
     progressionLayer: 0,
-    displayvalue: 0,
     selectedTabKey: "FormulaScreen",
     selectedAlphaTabKey: "AlphaUpgradeTab",
     xValue: [0,0,0,0],
@@ -67,8 +66,15 @@ export const newSave = {
     fileStartTimeStamp: -1,
     destinyStartTimeStamp: -1,
     destinyEndTimeStamp: -1,
+    destinyRecordMillis: 1e100,
+    starlightStartTimeStamp: -1,
+    starlightEndTimeStamp: -1,
+    starlightRecordMillis: 1e100,
+    starLightInfiniteResetCount: 0,
     millisSinceAutoApply: 0,
+    millisSinceHoldEvent: 0,
     millisSinceCountdown: 0,
+    millisSinceDestinyAuto: 0,
     mileStoneCount: 0,
     destinyMileStoneCount: 0,
     holdAction: null,
@@ -95,11 +101,13 @@ export const newSave = {
     startingStoneLevel:{},
     startingStoneMode:1, //1 Increment, 0 Description, -1 Decrement
     startingStoneX: 0,
+    clearedTimewall: false,
     baseAlphaLevel: 0,
     currentEnding: "",
     completedEndings: {},
     allTimeEndings: {},
     badEndingCount: 0,
+    infProd: false, //For Hint about avoiding x'''=-Infinity
     passedTime: 0, //For Debugging
     noProdTime: 0, //For Prince Mail
     mailsForCheck: ["Warning"],
@@ -118,11 +126,14 @@ export const newSave = {
         xResetPopup: "ON",
         autoSave: "ON",
         autoLoad: "ON",
+        headerDisplay: "X",
         numberFormat: "LETTER",
         shopPrices: "ON",
         showHints: "ON",
         hotKeys: "ON",
         shopScroll: "OFF",
+        advancedDisplayModes: "OFF",
+        challengeTabSwitch: "ON",
         shopFilter: "ALL",
         autoResetterS: "OFF",
         autoResetterA: "OFF",
@@ -140,6 +151,8 @@ export const newSave = {
         hotkeyAlphaReset: "OFF",
         hotkeyToggleAuto: "OFF",
         hotkeyAbortRun: "OFF",
+        hotkeyResearchAll: "OFF",
+        hotkeyDiscardPopup: "ON",
     }
 }
 
@@ -218,7 +231,7 @@ export const getGlobalMultiplier = (state)=>{
 export const save = (state)=>{
     state.version = version
     state.saveTimeStamp = Date.now()
-    let currentgame = JSON.stringify({...state, holdAction:null})
+    let currentgame = stringifyProperly({...state, holdAction:null})
     const encodedGame = Buffer.from(currentgame).toString("base64");
     window.localStorage.setItem('majorversion', majorversion)
     window.localStorage.setItem('idleformulas_v' + majorversion, encodedGame)
@@ -294,7 +307,7 @@ const performAlphaReset = (state)=>{
 }
 
 const giveAlphaRewards = (state)=>{
-    if (state.xValue[0] < alphaTarget) {return state} //No rewards without the necessary points
+    if (state.xValue[0] < alphaTarget || state.inNegativeSpace) {return state} //No rewards
 
     //Initial Unlock of the Layer
     if (state.progressionLayer <= 0) {
@@ -316,8 +329,10 @@ const giveAlphaRewards = (state)=>{
         state.insideChallenge = false
         state.currentChallenge = null
         state.currentChallengeName = null
-        state.selectedTabKey = "AlphaScreen"
-        state.selectedAlphaTabKey = "AlphaChallengeTab"
+        if (state.settings.challengeTabSwitch === "ON") {
+            state.selectedTabKey = "AlphaScreen"
+            state.selectedAlphaTabKey = "AlphaChallengeTab"
+        }
         state = updateFormulaEfficiency(state)
     } else {
 
@@ -338,6 +353,8 @@ const giveAlphaRewards = (state)=>{
         state.passiveAlphaTime = Math.min(state.passiveAlphaTime, state.bestAlphaTime)
         state.passiveAlphaInterval = Math.min(state.passiveAlphaInterval, getRewardInterval(1, state.bestAlphaTime, getGlobalMultiplier(state)))
         state.xHighScores[state.highestXTier] = Math.max(state.xHighScores[state.highestXTier], state.xValue[0])
+        if ((state.xValue[0] >= 1e110 && state.alpha >= 4e9))
+            state.clearedTimewall = true
     }
     return state
 }
@@ -386,6 +403,8 @@ const rememberLoadout = (state, isManual)=>{
 }
 
 const upgradeXTier = (state)=>{
+    if (state.inNegativeSpace) return
+
     if (state.progressionLayer !== 0)
         state.xHighScores[state.highestXTier] = Math.max(state.xHighScores[state.highestXTier], state.xValue[0])
     state.highestXTier++
@@ -450,6 +469,14 @@ export const saveReducer = (state, action)=>{
     switch(action.name){
     case "idle":
         if (action.playTime === state.lastPlayTime) break
+
+        //Mitigation Research All Button for savefiles created before v1.08
+        if (state.version !== version && !state.mitigation108) {
+            state.mitigation108 = true
+            if (state.mailsCompleted["Challenges"] !== undefined) {
+                state.mailsForCheck.push("ResearchAllIdea")
+            }
+        }
 
         state.lastPlayTime = action.playTime
         const timeStamp = Date.now()
@@ -524,8 +551,9 @@ export const saveReducer = (state, action)=>{
                 state.holdAction.temp--
             if(state.holdAction.delay > 0) {
                 state.holdAction.delay--
-            } else {
-            const formula = formulaList[state.holdAction.formulaName]
+            } else if (state.millisSinceHoldEvent + deltaMilliSeconds >= 80){
+                state.millisSinceHoldEvent += deltaMilliSeconds
+                const formula = formulaList[state.holdAction.formulaName]
                 let xBeforeHold = state.xValue[formula.targetLevel]
                 const isApplied = progresscalculation.applyFormulaToState(state, formula, false, false, true)
                 if (!isApplied) {
@@ -539,6 +567,10 @@ export const saveReducer = (state, action)=>{
                     recoverValue = state.xValue[formula.targetLevel]
                     recoverTier = formula.targetLevel
                 }
+
+                state.millisSinceHoldEvent = Math.min(100, state.millisSinceHoldEvent - 100) //Buffer up to 100 ms
+            } else {
+                state.millisSinceHoldEvent += deltaMilliSeconds
             }
 
             if (state.holdAction?.temp === 0)
@@ -547,7 +579,7 @@ export const saveReducer = (state, action)=>{
 
         //Auto Appliers
         state.millisSinceAutoApply += deltaMilliSeconds
-        if (state.alphaUpgrades.AAPP && state.millisSinceAutoApply > 1000 / state.autoApplyRate){
+        if (state.alphaUpgrades.AAPP && state.millisSinceAutoApply > 800 / state.autoApplyRate){
             for (let i = 0; i<5; i++) {
                 if (state.autoApply[i] && state.myFormulas.length > i) {
                     progresscalculation.applyFormulaToState(state,formulaList[state.myFormulas[i]],false, true, true)
@@ -605,6 +637,10 @@ export const saveReducer = (state, action)=>{
             state.myFormulas = state.myFormulas.filter(formulaName => formulaList[formulaName]);
             state.holdAction = null
         }
+        //Kick out formulas beyond inventory size
+        if (state.myFormulas.length > getInventorySize(state)) {
+            state.myFormulas = state.myFormulas.slice(0, getInventorySize(state))
+        }
 
         state.calcTimeStamp = timeStamp
         state.justLaunched = false
@@ -649,7 +685,7 @@ export const saveReducer = (state, action)=>{
             performAlphaReset(state)
             performShopReset(state)
             rememberLoadout(state)
-        } else if (!state.inNegativeSpace && state.settings.autoResetterS !== "OFF" && state.alphaUpgrades.SRES && state.xValue[0] >= differentialTargets[state.highestXTier]) {
+        } else if (!state.inNegativeSpace && state.highestXTier < 3 && state.settings.autoResetterS !== "OFF" && state.alphaUpgrades.SRES && state.xValue[0] >= differentialTargets[state.highestXTier]) {
             upgradeXTier(state)
             performShopReset(state)
             rememberLoadout(state)
@@ -665,13 +701,24 @@ export const saveReducer = (state, action)=>{
 
         //Generate Starlight for Destiny Layer
         progresscalculation.generateStarLight(state, deltaMilliSeconds)
+        if (state.starlightStartTimeStamp > 0 && state.starlightEndTimeStamp < 0 && state.starLight === Infinity){
+            state.starlightEndTimeStamp = Date.now()
+            state.starlightRecordMillis = Math.min(state.starlightRecordMillis, state.starlightEndTimeStamp - state.starlightStartTimeStamp)
+        }
+
+        //Destiny Automation
+        state.millisSinceDestinyAuto += deltaMilliSeconds
+        if (state.millisSinceDestinyAuto > 100) {
+            autoBuyStarlightUpgrades(state)
+            state.millisSinceDestinyAuto = Math.min(state.millisSinceDestinyAuto - 100, 100)
+        }
 
         //Estimate x per Second
         if (state.progressionLayer > 0 || state.destinyStars > 1) {
             let perSecond = [0,0,0,0]
             for(let i = 0; i < state.xValue.length; i++) {
                 perSecond[i] = deltaMilliSeconds ? (state.xValue[i] - xValuesBefore[i]) / (deltaMilliSeconds / 1000) : 0
-                // state.xPerSecond[i] = ((state.xPerSecond[i] || 0) + (state.xValue[i] - xValuesBefore[i])) / (1 + deltaMilliSeconds / 1000)
+                perSecond[i] = perSecond[i] || 0
             }
             state.xPerSecond.splice(0,1)
             state.xPerSecond.push(perSecond)
@@ -680,16 +727,16 @@ export const saveReducer = (state, action)=>{
                 history.sort((a,b)=>(a - b))
                 const newAvg = (history[2] + history[3] + history[4] + history[5] + history[6] + history[7]) / 6
                 state.avgXPerSecond[i] = (newAvg > state.avgXPerSecond[i] || newAvg < 0.9 * state.avgXPerSecond[i]) ? newAvg : state.avgXPerSecond[i]
-                //state.avgXPerSecond[i] = Math.max(state.xPerSecond[0][i], state.xPerSecond[1][i], state.xPerSecond[2][i], state.xPerSecond[3][i])
+                state.avgXPerSecond[i] = state.avgXPerSecond[i] || 0
             }
         }
 
         //Offline Progress Popup
         if (deltaMilliSeconds > 120000 && (state.settings.offlineProgressPopup === "ON" || (state.settings.offlineProgressPopup === "LAUNCH" && state.justLaunched))){
             const timeText = <>You were away for {secondsToHms(Math.floor(deltaMilliSeconds / 1000))}</>
-            const xText = state.insideChallenge ? <></> : getOfflinePopupLine(<>x</>, xBefore, state.xValue[0], state.numberFormat)
-            const aText = getOfflinePopupLine(<>&alpha;</>, aBefore, state.alpha, state.numberFormat)
-            const sText = getOfflinePopupLine(<>&lambda;</>, sBefore, state.starLight, state.numberFormat)
+            const xText = state.insideChallenge ? <></> : getOfflinePopupLine(<>x</>, xBefore, state.xValue[0], state.settings.numberFormat)
+            const aText = getOfflinePopupLine(<>&alpha;</>, aBefore, state.alpha, state.settings.numberFormat)
+            const sText = getOfflinePopupLine(<>&lambda;</>, sBefore, state.starLight, state.settings.numberFormat)
             popup.alert(<>{timeText}{xText}{aText}{sText}</>)
         }
 
@@ -698,6 +745,9 @@ export const saveReducer = (state, action)=>{
         if (state.mileStoneCount > 0 && state.settings.autoSave === "ON" && lastSaveMilliseconds >= 10000) {
             save(state)
         }
+
+        if (state.xValue[3] === -Infinity)
+            state.infProd = true //Triggers mail with hint if world formula not found within 90 minutes
 
         //Failsafe NaN
         if (!state.currentEnding && (isNaN(state.xValue[0]) || isNaN(state.xValue[1]) || isNaN(state.xValue[2]) || isNaN(state.xValue[3])))
@@ -792,7 +842,9 @@ export const saveReducer = (state, action)=>{
             state.autoApply = [false,false,false,false,false]
         }
 
-        giveAlphaRewards(state)
+        if (!action.isAbort)
+            giveAlphaRewards(state)
+
         performAlphaReset(state)
         performShopReset(state)
         rememberLoadout(state)
@@ -920,7 +972,9 @@ export const saveReducer = (state, action)=>{
         if (!state.clearedChallenges[action.challenge.id])
             state.highestXTier = state.challengeProgress[action.challenge.id] || 0
         rememberLoadout(state)
-        state.selectedTabKey = "FormulaScreen"
+        if (state.settings.challengeTabSwitch === "ON") {
+            state.selectedTabKey = "FormulaScreen"
+        }
         break;
     case "exitChallenge":
         performAlphaReset(state)
@@ -932,6 +986,24 @@ export const saveReducer = (state, action)=>{
         state.researchLevel[action.research.id] = Math.min(2500, (state.researchLevel[action.research.id] || 0) + action.bulkAmount)
         state = updateProductionBonus(state)
         state = updateFormulaEfficiency(state)
+        break;
+    case "researchAll":
+        let totalGains = 0
+        for (const researchName of researchList) {
+            const researchInfo = checkResearch(state,researchName)
+            if (!researchInfo.isBlocked && researchInfo.isDone) {
+                const previousLevel = state.researchLevel[researchName]
+                state.researchStartTime[researchName] = Date.now()
+                state.researchLevel[researchName] = Math.min(2500, (state.researchLevel[researchName] || 0) + researchInfo.bulkAmount)
+                totalGains += state.researchLevel[researchName] - previousLevel
+            }
+        }
+        state = updateProductionBonus(state)
+        state = updateFormulaEfficiency(state)
+        if(action.showNotification && totalGains === 1)
+            notify.success("Research Successful", "1 Research Level Gained")
+        else if(action.showNotification && totalGains > 1)
+            notify.success("Research Successful", totalGains.toFixed(0) + " Research Levels Gained")
         break;
     case "upgradeApplierRate":
         state.alpha -= action.cost
@@ -967,12 +1039,14 @@ export const saveReducer = (state, action)=>{
         let isNew = !state.completedEndings[action.endingName]
         state.completedEndings[action.endingName] = true
         performXReset(state)
-        if (isNew && action.endingName !== "world")
-            notify.success("Ending Completed", endingList[action.endingName].title)
+        if (isNew && action.endingName !== "world" && endingList[action.endingName]?.titlestring)
+            notify.success("Ending Completed", endingList[action.endingName].titlestring)
         state.currentEnding = ""
-        if ((action.endingName === "world" || (action.endingName === "true" && state.destinyStars > 1))&& state.progressionLayer <= 2) {
+        if ((action.endingName === "world" || (action.endingName === "true" && state.destinyStars > 1)) && state.progressionLayer < 2) {
             state.progressionLayer = 2
             state.destinyEndTimeStamp = Date.now()
+            if (state.destinyStartTimeStamp > 0)
+                state.destinyRecordMillis = Math.min(state.destinyRecordMillis, state.destinyEndTimeStamp - state.destinyStartTimeStamp)
             state.mailsForCheck.push("Destiny")
             notify.success("DESTINY", "You finished the game!")
             performAlphaReset(state)
@@ -987,12 +1061,17 @@ export const saveReducer = (state, action)=>{
         }
         break;
     case "claimFirstStar":
-        state.destinyStars = 1
+        state.destinyStars = Math.max(state.destinyStars, 1)
         break;
     case "performDestinyReset":
         state.destinyStars += 1
         state = {...structuredClone(newSave), calcTimeStamp: Date.now(), saveTimeStamp: Date.now(), settings:state.settings, shopFavorites:state.shopFavorites, mileStoneCount:state.mileStoneCount, destinyMileStoneCount:state.destinyMileStoneCount, allTimeEndings:state.allTimeEndings,
-            destinyStars:state.destinyStars, starLight:state.starLight, lightAdder:state.lightAdder, lightDoubler:state.lightDoubler, lightRaiser:state.lightRaiser, starConstellations:state.starConstellations, constellationCount:state.constellationCount, fileStartTimeStamp:state.fileStartTimeStamp, destinyStartTimeStamp: Date.now()};
+            destinyStars:state.destinyStars, starLight:state.starLight, lightAdder:state.lightAdder, lightDoubler:state.lightDoubler, lightRaiser:state.lightRaiser, starConstellations:state.starConstellations, constellationCount:state.constellationCount, destinyRecordMillis:state.destinyRecordMillis, fileStartTimeStamp:state.fileStartTimeStamp, destinyStartTimeStamp: Date.now(),
+            starlightStartTimeStamp: state.starlightStartTimeStamp, starlightEndTimeStamp:state.starlightEndTimeStamp, starlightRecordMillis:state.starlightRecordMillis, starLightInfiniteResetCount:state.starLightInfiniteResetCount};
+        state.settings.autoResetterS = "OFF"
+        state.settings.autoResetterA = "OFF"
+        state.settings.alphaThreshold = "MINIMUM"
+        state.settings.autoRemembererActive = "ON"
         state.mailsForCheck.push("Destiny")
         break;
     case "buyLightUpgrade":
@@ -1002,12 +1081,18 @@ export const saveReducer = (state, action)=>{
             
         break;
     case "completeConstellation":
-        state.constellationCount += 1
-        state.starConstellations[action.constellation.id] = true
+        if (action.constellation) {
+            state.constellationCount += 1
+            state.starConstellations[action.constellation.id] = true
+        } else if (state.starLight === Infinity) {
+            state.starLightInfiniteResetCount++
+        }
         state.starLight = 0
         state.lightAdder = 0
         state.lightDoubler = 0
         state.lightRaiser = 0
+        state.starlightStartTimeStamp = Date.now()
+        state.starlightEndTimeStamp = -1
         break;
     case "passTime":
         state.passedTime += action.time
@@ -1024,15 +1109,6 @@ export const saveReducer = (state, action)=>{
         break;
     case "unlockMail":
         eventsystem.unlockMail(state, action.mailid)
-        break;
-    case "getStarted":
-        const FNumber = FormulaNumber
-        debugger
-        //state.game = new Game()
-        break;
-    case "doSomething":
-        state.game.perform("applyFormula",{amount: 3})
-        state.displayvalue = state.game.xValue
         break;
     default:
         console.error("Action " + action.name + " not found.")
