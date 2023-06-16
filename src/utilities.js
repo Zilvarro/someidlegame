@@ -1,6 +1,22 @@
 import Notify from 'simple-notify'
 import 'simple-notify/dist/simple-notify.min.css'
 
+//NEW CODE
+
+export const arrayCompare = (array1, array2)=>{
+  //Based on values, arrays should have same length
+  for (let i = 0; i<Math.min(array1.length,array2.length); i++) {
+    if (array1[i] === array2[i])
+      continue
+    else if (array1[i] > array2[i])
+      return 1
+    else
+      return -1
+  }
+}
+
+
+//OLD CODE
 export const spaces = ()=>{
     return (<>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</>)
 }
@@ -62,14 +78,14 @@ export const formatNumber = (number, numberFormat, decimals=0, smallfixed=false,
 }
 
 export const notify = {
-    success: function(title, text) {
-        this.showNotification({status:'success',title:title, text:text})
+    success: function(title, text, persist) {
+        this.showNotification({status:'success',title:title, text:text, autoclose:!persist, showCloseButton:persist})
     },
-    warning: function(title, text) {
-        this.showNotification({status:'warning',title:title, text:text})
+    warning: function(title, text, persist) {
+        this.showNotification({status:'warning',title:title, text:text, autoclose:!persist, showCloseButton:persist})
     },
-    error: function(title, text) {
-        this.showNotification({status:'error',title:title, text:text})
+    error: function(title, text, persist) {
+        this.showNotification({status:'error',title:title, text:text, autoclose:!persist, showCloseButton:persist})
     },
     showNotification: (props) => {
         return new Notify({
@@ -77,8 +93,8 @@ export const notify = {
             effect: 'fade',
             speed: 1000,
             //customClass: "",
-            showCloseButton: false,//
-            autoclose: true,//
+            showCloseButton: false,
+            autoclose: true,
             autotimeout: 2000,
             type: 1,
             ...props

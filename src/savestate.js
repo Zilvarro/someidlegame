@@ -10,15 +10,18 @@ import {calcStoneResultForX} from './alpha/AlphaStonesTab'
 import {startingStones, stoneTable, stoneList} from './alpha/AlphaStoneDictionary'
 import * as eventsystem from './mails/MailEventSystem'
 import * as progresscalculation from './progresscalculation'
+import { Game } from "./game/Game"
+import { FormulaNumber } from "./game/FormulaNumber";
 
 export const majorversion = 1
-export const version = "0.62d"
+export const version = "0.86d"
 export const productive = false
 export var invitation = "efHyDkqGRZ"
 
 export const newSave = {
     version: version,
     progressionLayer: 0,
+    displayvalue: 0,
     selectedTabKey: "FormulaScreen",
     selectedAlphaTabKey: "AlphaUpgradeTab",
     xValue: [0,0,0,0],
@@ -1021,6 +1024,15 @@ export const saveReducer = (state, action)=>{
         break;
     case "unlockMail":
         eventsystem.unlockMail(state, action.mailid)
+        break;
+    case "getStarted":
+        const FNumber = FormulaNumber
+        debugger
+        //state.game = new Game()
+        break;
+    case "doSomething":
+        state.game.perform("applyFormula",{amount: 3})
+        state.displayvalue = state.game.xValue
         break;
     default:
         console.error("Action " + action.name + " not found.")

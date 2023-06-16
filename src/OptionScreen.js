@@ -3,6 +3,7 @@ import { Buffer } from "buffer";
 import {invitation, productive, save, version} from './savestate'
 import {spaces, notify, secondsToHms} from './utilities'
 import MultiOptionButton from './MultiOptionButton'
+import { checkForUpdates } from "./serviceWorkerRegistration";
 
 export default function OptionScreen({state, popup, updateState, setTotalClicks}) {
   const saveGame = ()=>{
@@ -62,6 +63,11 @@ export default function OptionScreen({state, popup, updateState, setTotalClicks}
 
   return (<div style={{marginLeft: "20px"}}>
     <h1>Options</h1>
+      <p>
+        {state.displayvalue}<br/>
+        <button onClick={()=>{updateState({name: "getStarted"})}}>Get Started</button>
+        <button onClick={()=>{updateState({name: "doSomething"})}}>Do Something</button>
+      </p>
       <p>
         {spaces()}<button title={"Perform a manual save. The game also automatically saves every 10 seconds"} onClick={saveGame} disabled={state.mileStoneCount < 1}>Manual Save</button>
         {spaces()}<button title={"Exports the current game state as a text string to the clipboard"} onClick={exportGame} disabled={state.mileStoneCount < 1}>Export</button>
@@ -187,5 +193,21 @@ export default function OptionScreen({state, popup, updateState, setTotalClicks}
         :
         <p><a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" target="_blank" rel="noopener noreferrer">Must have 3 Milestones to join the Discord &#9785;</a></p>
       )}
+      {!!window.installPromptPWAevent && <button onClick={()=>{window.installPromptPWAevent.prompt(); window.installPromptPWAevent = null}}>Install as Web-App</button>}
+      <button onClick={async()=>{
+        notify.warning("Checking...")
+        const newregistration = await checkForUpdates()
+        if (newregistration)
+          notify.success("Checked for Updates")
+        // debugger
+        // if (!navigator?.serviceWorker?.getRegistration) return
+        // const registration = await navigator.serviceWorker.getRegistration()
+        // notify.warning("Checking for Updates","",false)
+        // debugger
+        // if (!registration) 
+        //   return
+        // const newregistration = await registration.update() 
+        // notify.success("Checked for Updates")
+      }}>Check for Updates</button>
   </div>)
 }

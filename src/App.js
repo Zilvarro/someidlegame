@@ -2,7 +2,7 @@ import React, { useState, useEffect, useReducer} from 'react'
 
 import './App.css';
 import {saveReducer, getSaveGame} from './savestate'
-import {formatNumber} from './utilities'
+import {formatNumber, notify} from './utilities'
 import TabContent from './TabContent'
 import FormulaScreen from './formulas/FormulaScreen'
 import OptionScreen from './OptionScreen'
@@ -15,6 +15,9 @@ import AutoSave from './AutoSave'
 import {PopupDialog, makeShowPopup} from './PopupDialog'
 import EndingSelectionScreen from './endings/EndingSelectionScreen';
 import KeyBoardHandler from './KeyBoardHandler';
+import { checkForUpdates, schedulePeriodicUpdateChecks } from './serviceWorkerRegistration';
+import { FormulaNumber } from './game/FormulaNumber';
+import { describeFormula, evaluateFormula } from './game/formulaBuilder';
 
 function App() {
   const [ playTime, setPlayTime ] = useState(0)
@@ -32,6 +35,51 @@ function App() {
       setInterval(()=>{
         setPlayTime((x)=>x + 1)
       }, 100)
+    })
+  },[])
+
+  const [nums, updateNums] = useState([new FormulaNumber(0), new FormulaNumber(0), new FormulaNumber(0), new FormulaNumber(0), new FormulaNumber(2), new FormulaNumber(0)])
+  const varnames = ["hand", "x","y","z", "c", "result"]
+  const setnum = (index, value)=>{
+    let newnums = [...nums]
+    newnums[index] = value
+    updateNums(newnums)
+  }
+  return <>
+    Hello World<br/>
+    Formula: {describeFormula([2,3,4,"*","+"])}<br/>
+    Result: {evaluateFormula([2,3,4,"*","+"], {}).print()}<br/>
+    {nums.map((number, index)=><p key={index}>{varnames[index]} = {number.print()}</p>)}
+    <button onClick={()=>{setnum(0, nums[1])}}>Take x</button>
+    <button onClick={()=>{setnum(1, nums[0])}}>Put x</button>
+    <button onClick={()=>{setnum(0, nums[2])}}>Take y</button>
+    <button onClick={()=>{setnum(2, nums[0])}}>Put y</button>
+    <button onClick={()=>{setnum(0, nums[3])}}>Take z</button>
+    <button onClick={()=>{setnum(3, nums[0])}}>Put z</button>
+    <button onClick={()=>{setnum(0, nums[4])}}>Take c</button>
+    <button onClick={()=>{setnum(0, nums[5])}}>Take Result</button>
+    <br/>
+    <button onClick={()=>{setnum(0, nums[0].add(new FormulaNumber(1)))}}>Increment</button>
+    <button onClick={()=>{setnum(0, nums[0].sub(new FormulaNumber(1)))}}>Decrement</button>
+    <button onClick={()=>{setnum(0, nums[0].neg())}}>Negate</button>
+    <button onClick={()=>{setnum(0, nums[0].abs())}}>Make positive</button>
+    <button onClick={()=>{setnum(0, nums[0].exp(2))}}>Square</button>
+    <button onClick={()=>{setnum(0, nums[0].exp(0.5))}}>Take square root</button>
+    <button onClick={()=>{setnum(0, nums[0].logC(2))}}>Take log2</button>
+    <br/>
+    <button onClick={()=>{setnum(5, nums[2].add(nums[3]))}}>Add y and z</button>
+    <button onClick={()=>{setnum(5, nums[2].mult(nums[3]))}}>Multiply y and z</button>
+    <button onClick={()=>{setnum(5, nums[2].div(nums[3]))}}>Divide y by z</button>
+    {/* <button onClick={()=>{setnum(5, nums[2].exp(nums[4].factor))}}>Raise y to the c</button>
+    <button onClick={()=>{setnum(5, nums[2].logC(nums[4].factor))}}>Take logC of y</button> */}
+    <button onClick={()=>{setnum(5, nums[3].expand(1,1))}}>Raise Infinity by z</button>
+    <button onClick={()=>{setnum(5, nums[3].collapse())}}>Reduce Infinities of z</button>
+  </>
+
+/*
+  useEffect(()=>{
+    setTimer((t)=>{
+      schedulePeriodicUpdateChecks(10,()=>{console.log("Attempt Update Check")},()=>{console.log("Update Check Completed")})
     })
   },[])
 
@@ -104,6 +152,7 @@ function App() {
     </span>
     </footer>
   </>);
+  */
 }
 
 export default App;
