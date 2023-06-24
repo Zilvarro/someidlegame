@@ -1,4 +1,4 @@
-export const version = "2.00d" //TODO move this elsewhere?
+import { MAJORVERSION, MINORVERSION, PRODUCTIVE, mailStates } from "./constants"
 
 //Resets on Basic Reset
 const newBasicRun = ()=>({
@@ -37,7 +37,7 @@ const newFormulaSave = ()=>({
 //Resets on World Reset
 const newAlphaSave = ()=>({
   //General
-  alpha: 0,
+  tokens: 0,
   selectedSubTabKey: "AlphaUpgradeTab",
   playtime: 0,
 
@@ -77,14 +77,17 @@ const newAlphaSave = ()=>({
   startingStoneMode:1, //1 Increment, 0 Description, -1 Decrement
 })
 
-const mailStates = {
-  "checking": 1,
-  "pending": 2,
-  "aborted": 3,
-  "unread": 4,
-  "read": 5,
-  "completed": 6,
-}
+//Resets on Void Reset
+const newWorldSave = ()=>({
+  essence: 0,
+  playtime: 0,
+})
+
+//Resets on Destiny Reset
+const newVoidSave = ()=>({
+  energy: 0,
+  playtime: 0,
+})
 
 //Resets on Destiny Reset
 const newMailRun = ()=>({
@@ -103,11 +106,14 @@ const newMailRun = ()=>({
 const newMainGameSave = ()=>({
   progressionLayer: 0,
   playtime: 0, //replaces destinyStartTimeStamp and destinyEndTimeStamp
+  isFinished: false,
   completedEndings: {},
   noProdTime: 0, //For Prince Mail
 
   formulas: newFormulaSave(),
   alpha: newAlphaSave(),
+  world: newWorldSave(),
+  void: newVoidSave(),
   mails: newMailRun(),
 })
 
@@ -123,7 +129,7 @@ const newStarlightRun = ()=>({
 
 //This never resets, Postgame related
 const newDestinySave = ()=>({
-  destinyStars: 0,
+  stars: 0,
   starConstellations: {},
   constellationCount: 0,
 
@@ -148,6 +154,7 @@ const newSettingsSave = ()=>({
   autoResetterA: "OFF",
   alphaThreshold: "MINIMUM",
   autoRemembererActive: "ON",
+  challengeTabSwitch: "ON",
   shopResetPopup: "ON",
   alphaResetPopup: "ON",
   alphaAbortPopup: "DOUBLE",
@@ -160,6 +167,8 @@ const newSettingsSave = ()=>({
   hotkeyAlphaReset: "OFF",
   hotkeyToggleAuto: "OFF",
   hotkeyAbortRun: "OFF",
+  hotkeyResearchAll: "OFF",
+  hotkeyDiscardPopup: "ON",
 })
 
 //Also never resets, Overall Gameplay related
@@ -172,6 +181,7 @@ const newGeneralSave = ()=>({
   calcTimeStamp: 0,
   shopFavorites: [{},{},{},{}], //-1: hidden // 1: favorite // undefined: normal
   allTimeEndings: {},
+  destinyRecordMillis: 1e100,
 
   fileStartTimeStamp: Date.now(), //Not shown to user, but saved just in case
   playtime: 0, //Not shown to user, but saved just in case
@@ -205,7 +215,9 @@ const newDerivedContext = ()=>({
 
 //Structure that gets saved in local Storage
 export const newSave = ()=>({
-  version: version,
+  majorversion: MAJORVERSION,
+  minorversion: MINORVERSION,
+  productive: PRODUCTIVE,
 
   destinyMileStoneCount: 0, //Do we still need this?
   lastPlayTime: 0, //Do we still need this?
@@ -221,4 +233,21 @@ export const newContext = ()=>({
   save: newSave(),
   session: newSessionContext(),
   derived: newDerivedContext(),
+})
+
+//Get basic Structure for a Save
+export const getSaveStructure = ()=>({
+  general: true,
+  maingame: {
+    formulas: {
+      basicRun: true,
+      stageRun: true,
+    },
+    alpha: true,
+    mails: true,
+  },
+  destiny: {
+    starlightRun:true,
+  },
+  settings: true,
 })

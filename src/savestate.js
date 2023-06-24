@@ -488,6 +488,10 @@ export const saveReducer = (state, action)=>{
         const aBefore = state.alpha
         const sBefore = state.starLight
 
+        //Makes sure that playtime only starts counting after player did something
+        if (xBefore > 0 && state.destinyStartTimeStamp === -1)
+          state.destinyStartTimeStamp = Date.now()
+
         if (state.noProdTime > 0) {
             state.noProdTime -= deltaMilliSeconds
             deltaMilliSeconds = 0
@@ -865,26 +869,26 @@ export const saveReducer = (state, action)=>{
                 notify.success("CHAPTER 1: FORMULAS")
                 break;
             case "51N6L3PR1M3":
-                state.destinyStartTimeStamp = -1
+                state.destinyStartTimeStamp = -2
                 state.mileStoneCount = 3
                 state.highestXTier = 1
                 notify.success("CHAPTER 2: FIRST DIFFERENTIAL")
                 break;
             case "D0UBL3PR1M3":
-                state.destinyStartTimeStamp = -1
+                state.destinyStartTimeStamp = -2
                 state.mileStoneCount = 4
                 state.highestXTier = 2
                 notify.success("CHAPTER 3: SECOND DIFFERENTIAL")
                 break;
             case "7R1PL3PR1M3":
-                state.destinyStartTimeStamp = -1
+                state.destinyStartTimeStamp = -2
                 state.mileStoneCount = 5
                 state.highestXTier = 3
                 notify.success("CHAPTER 4: THIRD DIFFERENTIAL")
                 break;
             case "4LPH470K3N":
                 state.alpha = 1
-                state.destinyStartTimeStamp = -1
+                state.destinyStartTimeStamp = -2
                 state.mileStoneCount = 6
                 state.progressionLayer = 1
                 state.mailsForCheck = ["Welcome"]
@@ -893,6 +897,7 @@ export const saveReducer = (state, action)=>{
                 break;
             case "D3571NY574R":
                 state.destinyStars = 2
+                state.destinyStartTimeStamp = -1
                 state.mileStoneCount = 12
                 state.progressionLayer = 0
                 state.mailsForCheck.push("Destiny")
@@ -900,7 +905,7 @@ export const saveReducer = (state, action)=>{
                 break;
             case "DEVTEST":
                 if (productive) break
-                state.destinyStartTimeStamp = -1
+                state.destinyStartTimeStamp = -2
                 state.destinyStars = 90
                 state.mileStoneCount = 12
                 state.progressionLayer = 0
@@ -1066,7 +1071,7 @@ export const saveReducer = (state, action)=>{
     case "performDestinyReset":
         state.destinyStars += 1
         state = {...structuredClone(newSave), calcTimeStamp: Date.now(), saveTimeStamp: Date.now(), settings:state.settings, shopFavorites:state.shopFavorites, mileStoneCount:state.mileStoneCount, destinyMileStoneCount:state.destinyMileStoneCount, allTimeEndings:state.allTimeEndings,
-            destinyStars:state.destinyStars, starLight:state.starLight, lightAdder:state.lightAdder, lightDoubler:state.lightDoubler, lightRaiser:state.lightRaiser, starConstellations:state.starConstellations, constellationCount:state.constellationCount, destinyRecordMillis:state.destinyRecordMillis, fileStartTimeStamp:state.fileStartTimeStamp, destinyStartTimeStamp: Date.now(),
+            destinyStars:state.destinyStars, starLight:state.starLight, lightAdder:state.lightAdder, lightDoubler:state.lightDoubler, lightRaiser:state.lightRaiser, starConstellations:state.starConstellations, constellationCount:state.constellationCount, destinyRecordMillis:state.destinyRecordMillis, fileStartTimeStamp:state.fileStartTimeStamp, destinyStartTimeStamp: -1,
             starlightStartTimeStamp: state.starlightStartTimeStamp, starlightEndTimeStamp:state.starlightEndTimeStamp, starlightRecordMillis:state.starlightRecordMillis, starLightInfiniteResetCount:state.starLightInfiniteResetCount};
         state.settings.autoResetterS = "OFF"
         state.settings.autoResetterA = "OFF"

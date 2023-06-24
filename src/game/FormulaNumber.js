@@ -146,7 +146,6 @@ export class FormulaNumber {
   }
 
   div(y) {
-    debugger
     if (y.isZero())
       return new FormulaNumber([1, 0, 0, 0], "divide")
     const exponent = this.collapse().sub(y.collapse()) //Subtract exponents
@@ -177,3 +176,27 @@ export class FormulaNumber {
     return this.collapse().mult(new FormulaNumber([1, 0, 1, 1])) //Multiply Exponent by Infinity since log(Infinity) = Infinity
   }
 }
+
+// Early attempt at postprocessing, probably not complete
+// const postprocess = (x)=>{
+//   if (x.isMax) return x
+//   if (x.error) return x
+//   if (x.order !== Math.floor(x.order)) { //Fractional Order Exponents
+//     const fraction = x.order - Math.floor(x.order)
+//     if (fraction > 0.99) {
+//       x.value = 1
+//       x.order = Math.floor(x.order) + 1
+//     } else if (fraction < 0.01) {
+//       x.order = Math.floor(x.order)
+//     } else {
+//       x.value *= Math.pow(10, fraction)
+//       x.order = Math.floor(x.order)
+//     }
+//   }
+//   if (x.value===Infinity) return {value: 1, order: x.order + 1}
+//   if (x.value===-Infinity) return {value: -1, order: x.order + 1}
+//   if (isNaN(x.value)) return {value: 0, order: 0, error: "infinite"}
+//   if (x.order<0) return {value: 0, order: 0}
+//   if (x.order===Infinity) return {value: x.value, order: x.order, isMax: true}
+//   return x
+// }

@@ -1,7 +1,9 @@
 import { alphaLayer } from "./alphaLayer";
 import { destinyLayer } from "./destinyLayer";
 import { formulaLayer } from "./formulaLayer";
+import { generalLayer } from "./generalLayer";
 import { newSave } from "./saveTemplates";
+import { voidLayer } from "./voidLayer";
 import { worldLayer } from "./worldLayer";
 
 export class Game {
@@ -17,11 +19,15 @@ export class Game {
   //Main entry point to perform all sorts of actions
   perform(actionName, parameters={}) {
     //Delegate work to respective layers
+    const gl = generalLayer.perform(this, actionName, parameters)
     const fl = formulaLayer.perform(this, actionName, parameters)
     const al = alphaLayer.perform(this, actionName, parameters)
-    const wl= worldLayer.perform(this, actionName, parameters)
-    const dl= destinyLayer.perform(this, actionName, parameters)
-    if (!fl && !al && !wl && !dl)
-      console.error("Action " + actionName + " not available.")
+    const wl = worldLayer.perform(this, actionName, parameters)
+    const vl = voidLayer.perform(this, actionName, parameters)
+    const dl = destinyLayer.perform(this, actionName, parameters)
+    const wasPerformed = gl || fl || al || wl || vl || dl
+    //if (!fl && !al && !wl && !dl)
+    //  console.error("Action " + actionName + " not available.")
+    console.log("Performed: " + wasPerformed)
   }
 }

@@ -16,6 +16,8 @@ import {PopupDialog, makeShowPopup} from './PopupDialog'
 import EndingSelectionScreen from './endings/EndingSelectionScreen';
 import KeyBoardHandler from './KeyBoardHandler';
 import { schedulePeriodicUpdateChecks } from './serviceWorkerRegistration';
+import { describeFormula, evaluateFormula, tokenizeOuter } from './game/formulaBuilder';
+import { FormulaNumber } from './game/FormulaNumber';
 
 function App() {
   const [ playTime, setPlayTime ] = useState(0)
@@ -65,6 +67,18 @@ function App() {
     link.href = window.location.href + "/" + filenames[iconState]
     link2.href = window.location.href + "/" + filenames[iconState]
   }, [iconState]);
+
+  const rawString = "x''' * sqrt ( 300e21 - x''' ) / 500e9"
+  const tokenized = tokenizeOuter(rawString)
+  if (true) return <>
+    Hello World<br/>
+    RawString: {rawString}<br/>
+    ParsedFormula: {JSON.stringify(tokenized)}<br/>
+    Formula: {describeFormula(tokenized, (value)=>formatNumber(value, state.settings.numberFormat))}<br/>
+    {/* Formula: {describeFormula([2,3,4,"*","+"])}<br/> */}
+    Result: {evaluateFormula(tokenized, {"x'''":new FormulaNumber(100),"300S":new FormulaNumber(300e21),"500B":new FormulaNumber(500e9)}).print()}<br/>
+    {/* Result: {evaluateFormula([2,3,4,"*","+"], {}).print()}<br/> */}
+  </>
 
   const selectTab = (tabKey)=>{
     updateState({name: "selectTab", tabKey: tabKey})

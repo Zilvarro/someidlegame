@@ -1,11 +1,11 @@
-export const destinyLayer = {
+export const voidLayer = {
   perform: (game, actionName, parameters={})=>{
-    const data = game.save.destiny
+    const data = game.save.maingame.void
     if (!data) return false
 
     switch (actionName) {
-      case "getDestinyStar":
-        data.stars++
+      case "getVoidEnergy":
+        data.energy++
         break;
       default:
         return false

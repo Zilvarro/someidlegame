@@ -1,0 +1,60 @@
+body {
+    background-color: #111111;
+    color: white;
+    font-family: Arial;
+}
+
+footer {
+    position:fixed;
+    bottom:0;
+    left:0;
+    width:100%;
+    background: rgb(54, 54, 54);
+}
+
+.smallMargin {
+  margin: 5px
+}
+
+.topMargin {
+  margin-top: 20px
+}
+
+.black {
+  color: black
+}
+
+.block {
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  display: block;
+}
+
+.hidden {
+  visibility: hidden;
+}
+
+.inlineblock {
+  display:inline-flexbox;
+}
+
+.pointer {
+  cursor: pointer
+}
+
+.ltrList > :first-child {
+  margin-left: 0 !important;
+}
+
+.ltrList > :last-child {
+  margin-right: 0 !important;
+}
+
+.ttbList > :first-child {
+  margin-top: 0 !important;
+}
+
+.ttbList > :last-child {
+  margin-bottom: 0 !important;
+}
+
