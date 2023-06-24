@@ -1,15 +1,16 @@
 import './App.css'
 
 import { createContext, useState } from 'react';
-import { deepAssign, load } from '../engine/saveload';
+import { deepAssign, load, save } from '../utilities/saveload';
 import { Game } from '../game/Game';
 import { getSaveStructure, newSave } from '../game/saveTemplates';
 import MainScreen from './MainScreen';
 import { PopupDialog, makeShowPopup } from './components/PopupDialog';
-import { useObjectReducer } from '../AppContext';
+import { useObjectReducer } from './components/AppContext';
 import { FILENAME } from '../game/constants';
+import BeforeUnload from './components/BeforeUnload';
 
-export const AppSuperContext = createContext({})
+export const AppContext = createContext({})
 
 const initializer=()=>{
   const loadedSave = load(FILENAME) || {}
@@ -35,9 +36,10 @@ export default function App() {
   }
 
   return <>
-    <AppSuperContext.Provider value={context}>
+    <AppContext.Provider value={context}>
+      <BeforeUnload unloadHandler={()=>{if (context.save.general.mileStoneCount > 0) save(FILENAME, context.save)}}/>
       <PopupDialog popupState={popupState} setPopupState={setPopupState} discardable={true/*state.settings.hotkeyDiscardPopup === "ON" TODO*/}/>
       <MainScreen>Hello World! lulul</MainScreen>
-    </AppSuperContext.Provider>
+    </AppContext.Provider>
   </>
 }

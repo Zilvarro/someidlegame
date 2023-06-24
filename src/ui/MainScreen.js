@@ -1,12 +1,11 @@
 import { useContext } from "react";
-import Test from "../Test";
-import { AppSuperContext } from "./App";
+import { AppContext } from "./App";
 import TabContent from "./components/TabContent";
 import OptionScreen from "./options/OptionScreen";
-import Placeholder from "./Placeholder";
+import Placeholder from "./components/Placeholder";
 
 export default function MainScreen() {
-  const context = useContext(AppSuperContext)
+  const context = useContext(AppContext)
 
   const hasNewMail = false
 
@@ -16,8 +15,6 @@ export default function MainScreen() {
   }
 
   return <>
-    Hello Guys
-    <Test>Hello World! lulul</Test>
     <TabContent selectedTabKey={context.save.general.selectedTabKey}>
       <Placeholder tabKey="FormulaScreen"/>
       <Placeholder tabKey="AlphaScreen"/>

@@ -219,9 +219,6 @@ export const newSave = ()=>({
   minorversion: MINORVERSION,
   productive: PRODUCTIVE,
 
-  destinyMileStoneCount: 0, //Do we still need this?
-  lastPlayTime: 0, //Do we still need this?
-
   general: newGeneralSave(),
   maingame: newMainGameSave(),
   destiny: newDestinySave(),

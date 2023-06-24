@@ -1,16 +1,13 @@
 import React from "react";
 
-//Tries to save the game right before the tab is closed
-class LeaveConfirm extends React.Component{
+class BeforeUnload extends React.Component{
   constructor(props){
     super(props);
     this.onUnload = this.onUnload.bind(this)
   }
 
   onUnload(e){
-    debugger
-    if (this.props.saveState.currentEnding)
-        e.preventDefault()
+    this.props.unloadHandler(this.props.parameter)
   }
 
   render(){
@@ -26,4 +23,4 @@ class LeaveConfirm extends React.Component{
   }
 }
  
-export default LeaveConfirm;
+export default BeforeUnload;

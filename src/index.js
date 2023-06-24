@@ -1,10 +1,9 @@
-import './WarningHider'
+import './utilities/warninghider'
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-//import App from './App';
 import App from './ui/App';
 import * as serviceWorkerRegistration from './serviceWorkerRegistration';
-import { notify } from './utilities';
+import { notify } from './utilities/notifier';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(

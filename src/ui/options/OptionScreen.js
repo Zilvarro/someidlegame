@@ -1,16 +1,16 @@
 import { useContext } from "react";
-import { AppSuperContext } from "../App";
-import { exportToClipBoard, exportToFile, importFromString, save } from "../../engine/saveload";
+import { AppContext } from "../App";
+import { exportToClipBoard, exportToFile, importFromString, save } from "../../utilities/saveload";
 import { DOWNLOADNAME, FILENAME, INVITIATION, MAJORVERSION, MINORVERSION, PRODUCTIVE } from "../../game/constants";
 
 import '../App.css'
 import MultiOptionButton from "../components/MultiOptionButton";
 import BasicButton from "../components/BasicButton";
 import Conditional from "../components/Conditional";
-import { secondsToHms } from "../../utilities";
+import { secondsToHms } from "../../utilities/formatter";
 
 export default function OptionScreen() {
-  const context = useContext(AppSuperContext)
+  const context = useContext(AppContext)
   const settings = context.settings
   const mileStoneCount = context.save.general.mileStoneCount
   const maingame = context.save.maingame
