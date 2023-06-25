@@ -1,6 +1,6 @@
 import '../App.css'
 
-export default function Conditional({visible=true, hidden=false, children}) {
+export default function Conditional({visible=false, hidden=false, children}) {
   if (!visible) return undefined
 
   return (

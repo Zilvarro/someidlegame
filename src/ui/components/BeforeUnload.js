@@ -7,7 +7,7 @@ class BeforeUnload extends React.Component{
   }
 
   onUnload(e){
-    this.props.unloadHandler(this.props.parameter)
+    this.props.unloadHandler()
   }
 
   render(){

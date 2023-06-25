@@ -109,3 +109,5 @@ export const getOfflinePopupLine = (label, before, after, numberFormat)=>{
   else
       return <><br/>Your {label} increased by a factor of {formatNumber(factor, numberFormat, 3)}x</>
 }
+
+export const spaces = ()=><>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</>

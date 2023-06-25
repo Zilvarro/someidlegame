@@ -29,10 +29,18 @@ export default function App() {
   const popup = makeShowPopup(popupState, setPopupState)
   const context = {
     game: game,
-    perform:updateGame,
+    perform: (actionName, parameters={})=>{parameters.name=actionName; updateGame(parameters)},
     popup,
     save:game.save,
     settings: game.save.settings,
+    general: game.save.general,
+    maingame: game.save.maingame,
+    formulas: game.save.maingame.formulas,
+    alpha: game.save.maingame.alpha,
+    world: game.save.maingame.world,
+    void: game.save.maingame.void,
+    destiny: game.save.destiny,
+    derived: game.derived,
   }
 
   return <>

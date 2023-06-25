@@ -5,6 +5,17 @@ export const FILENAME = PRODUCTIVE ? "idleformulas_v2" : "idleformulas_v2dev"
 export const DOWNLOADNAME = "idleformulas"
 export var INVITIATION = "efHyDkqGRZ"
 
+export const ALPHATARGET = 2e34
+
+export const layers = {
+  "formulas": 0,
+  "alpha": 1,
+  "world": 2,
+  "void": 3,
+  "destiny": 4,
+}
+export const MAXLAYER = layers.destiny
+
 export const mailStates = {
   "checking": 1,
   "pending": 2,

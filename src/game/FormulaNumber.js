@@ -1,8 +1,10 @@
-import { arrayCompare, logB } from "../utilities"
+import { arrayCompare, logB } from "../utilities/mathhelper"
 
 export class FormulaNumber {
   constructor(arrval, error) {
-    if (arrval === Infinity)
+    if (!arrval)
+      this.arrval = [1,0,0,0]
+    else if (arrval === Infinity)
       this.arrval = [1,0,1,1]
     else if (arrval === -Infinity)
       this.arrval = [-1,0,1,1]
@@ -20,6 +22,10 @@ export class FormulaNumber {
 
   flatten() {
     return this.arrval
+  }
+  
+  toFloat() {
+    return (this.magnitude || this.order) ? this.sign * Infinity : this.sign * this.factor
   }
 
   print() {

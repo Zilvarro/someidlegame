@@ -2,18 +2,20 @@ import { alphaLayer } from "./alphaLayer";
 import { destinyLayer } from "./destinyLayer";
 import { formulaLayer } from "./formulaLayer";
 import { generalLayer } from "./generalLayer";
-import { newSave } from "./saveTemplates";
+import { newDerivedContext, newSave, newSessionContext } from "./saveTemplates";
 import { voidLayer } from "./voidLayer";
 import { worldLayer } from "./worldLayer";
 
 export class Game {
   constructor(save) {
       this.save = save || newSave()
+      this.session = newSessionContext()
+      this.derived = newDerivedContext()
   }
 
   //validates if an action is allowed without performing it
   validate(actionName, parameters={}) {
-    return {isValid: true}
+    return {visible: true, enabled: true, valid: true}
   }
 
   //Main entry point to perform all sorts of actions
@@ -26,8 +28,7 @@ export class Game {
     const vl = voidLayer.perform(this, actionName, parameters)
     const dl = destinyLayer.perform(this, actionName, parameters)
     const wasPerformed = gl || fl || al || wl || vl || dl
-    //if (!fl && !al && !wl && !dl)
-    //  console.error("Action " + actionName + " not available.")
-    console.log("Performed: " + wasPerformed)
+    if (!wasPerformed)
+      console.error("Action " + actionName + " not available.")
   }
 }

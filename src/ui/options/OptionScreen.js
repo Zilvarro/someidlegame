@@ -4,10 +4,11 @@ import { exportToClipBoard, exportToFile, importFromString, save } from "../../u
 import { DOWNLOADNAME, FILENAME, INVITIATION, MAJORVERSION, MINORVERSION, PRODUCTIVE } from "../../game/constants";
 
 import '../App.css'
-import MultiOptionButton from "../components/MultiOptionButton";
+import MultiOptionButton from "../components/ToggleSelectButton";
 import BasicButton from "../components/BasicButton";
 import Conditional from "../components/Conditional";
 import { secondsToHms } from "../../utilities/formatter";
+import DropdownSelectButton from "../components/DropdownSelectButton";
 
 export default function OptionScreen() {
   const context = useContext(AppContext)
@@ -29,6 +30,8 @@ export default function OptionScreen() {
         <BasicButton text="Import" title={"Imports a previously exported text string and restores its game state"} onClick={()=>importFromString(undefined)}/>
       </div>
       <BasicButton text="Install as Web-App" visible={!!window.installPromptPWAevent} fullLine={true} onClick={()=>{window.installPromptPWAevent.prompt(); window.installPromptPWAevent = null; context.popup.alert(<>IMPORTANT NOTE:<br/><br/>The game data is still stored in the browser even when using the app.<br/>Therefore deleting the browser cache also resets the app including your save.</>)}}/>
+      <DropdownSelectButton visible={true || destiny.stars > 1 || maingame.progressionLayer > 0} settingName="headerDisplay" statusList={["X","ALPHA",destiny.stars > 1 && "STARS",destiny.stars > 1 && "STARLIGHT", "VERTICAL", "HORIZONTAL", "OFF"].filter((x)=>x)} settings={settings} updateStatus={updateStatus} fullLine={true}
+          description="Header Display" tooltip="Controls display at the top of the site"/>
       <MultiOptionButton settingName="numberFormat" statusList={["LETTER","SCIENTIFIC","AMBIGUOUS"]} settings={settings} updateStatus={updateStatus} fullLine={true} 
         description="Number Format" tooltip="Controls how numbers are displayed" tooltipList={["Use letters for thousands: K,M,B,T,Q,P,S,V,O,N,D","Use scientific notation", "Use ambigous notation"]}/>
       <MultiOptionButton settingName="shopPrices" statusList={["OFF","ON"]} settings={settings} updateStatus={updateStatus} fullLine={true} 

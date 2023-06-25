@@ -110,7 +110,7 @@ export const evaluate = (stack=[], token, valueMap)=>{
   return stack
 }
 
-export const describe = (stack=[], token, numberFormatter)=>{
+const describe = (stack=[], token, numberFormatter)=>{
   if (typeof(token) === "number") {
     stack.push(numberFormatter(token.toString()))
     return stack
@@ -229,7 +229,7 @@ const splitAtFunction = (tokenArray, token, command)=>{
   }
 }
 
-export const tokenizeOuter = (inputString)=>{
+export const tokenize = (inputString)=>{
   const tokenArray = inputString.split(" ").map((token)=>(Number(token) || token))
   const resultArray = tokenizeFormula(tokenArray)
   return resultArray.flat(50)

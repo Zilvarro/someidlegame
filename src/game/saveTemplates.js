@@ -2,7 +2,7 @@ import { MAJORVERSION, MINORVERSION, PRODUCTIVE, mailStates } from "./constants"
 
 //Resets on Basic Reset
 const newBasicRun = ()=>({
-  xValue: [0,0,0,0],
+  xValues: [0,0,0,0],
   formulaUsed: {},
   inNegativeSpace: false,
   anyFormulaUsed: false, //Should be true in very first run
@@ -12,6 +12,8 @@ const newBasicRun = ()=>({
 
 //Resets on x-Reset
 const newStageRun = ()=>({
+  myFormulas: [],
+  currentStage: 0, //formerly highestXTier
   formulaUnlocked: {},
   formulaBought: {},
   xResetCount: 0,
@@ -24,8 +26,6 @@ const newStageRun = ()=>({
 
 //Resets on Alpha Reset
 const newFormulaSave = ()=>({
-  currentStage: 0, //formerly highestXTier
-  myFormulas: [],
   isFullyIdle: true,
   currentChallenge: null, //id of challenge
   
@@ -119,7 +119,7 @@ const newMainGameSave = ()=>({
 
 //Resets on Constellation Reset
 const newStarlightRun = ()=>({
-  starLight: 0,
+  light: 0,
   lightAdder: 0,
   lightDoubler: 0,
   lightRaiser: 0,
@@ -189,7 +189,7 @@ const newGeneralSave = ()=>({
 })
 
 //Resets when refreshing Page, not saved
-const newSessionContext = ()=>({
+export const newSessionContext = ()=>({
   tickFormula: false, //Session Property
   holdAction: null, //Session Property
   currentEnding: "",
@@ -201,7 +201,7 @@ const newSessionContext = ()=>({
 })
 
 //Contains properties derived from other properties, not saved
-const newDerivedContext = ()=>({
+export const newDerivedContext = ()=>({
   productionBonus: [1,1,1,1],
   formulaEfficiency: [1,1,1,1],
   insideChallenge: false,
@@ -223,13 +223,6 @@ export const newSave = ()=>({
   maingame: newMainGameSave(),
   destiny: newDestinySave(),
   settings: newSettingsSave(),
-})
-
-//Context includes stuff that is not saved
-export const newContext = ()=>({
-  save: newSave(),
-  session: newSessionContext(),
-  derived: newDerivedContext(),
 })
 
 //Get basic Structure for a Save
