@@ -9,7 +9,7 @@ export class FormulaNumber {
     else if (arrval === -Infinity)
       this.arrval = [-1,0,1,1]
     else if (typeof(arrval) === "number")
-      this.arrval = [arrval >= 0 ? 1 : -1,0,0,arrval]
+      this.arrval = [arrval >= 0 ? 1 : -1,0,0,Math.abs(arrval)]
     else
       this.arrval = arrval //Array Based
 
@@ -25,7 +25,11 @@ export class FormulaNumber {
   }
   
   toFloat() {
-    return (this.magnitude || this.order) ? this.sign * Infinity : this.sign * this.factor
+    return (this.order) ? this.sign * Infinity : this.sign * this.factor
+  }
+
+  simplify() {
+    return (this.order) ? this.flatten() : this.toFloat()
   }
 
   print() {
@@ -181,6 +185,12 @@ export class FormulaNumber {
       
     return this.collapse().mult(new FormulaNumber([1, 0, 1, 1])) //Multiply Exponent by Infinity since log(Infinity) = Infinity
   }
+}
+
+export const calc = (op, x, y)=>{
+  const fx = (x.arrval) ? x : new FormulaNumber(x)
+  const fy = (y.arrval) ? y : new FormulaNumber(y)
+  return FormulaNumber.prototype[op].call(fx,fy).simplify()
 }
 
 // Early attempt at postprocessing, probably not complete

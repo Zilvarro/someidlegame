@@ -104,7 +104,10 @@ export const evaluate = (stack=[], token, valueMap)=>{
         console.error("Missing Value in Formula Evaluation for variable " + token)
         stack.push(new FormulaNumber(0))
       }
-      stack.push(valueMap[token])
+      if (typeof value === "number")
+        stack.push(new FormulaNumber(valueMap[token]))
+      else
+        stack.push(valueMap[token])
       break;
   }
   return stack
@@ -112,7 +115,10 @@ export const evaluate = (stack=[], token, valueMap)=>{
 
 const describe = (stack=[], token, numberFormatter)=>{
   if (typeof(token) === "number") {
-    stack.push(numberFormatter(token.toString()))
+    if(token <1e6)
+      stack.push(token.toString())
+    else
+      stack.push(numberFormatter(token.toString()))
     return stack
   }
 

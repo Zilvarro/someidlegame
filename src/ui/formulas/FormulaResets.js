@@ -1,16 +1,16 @@
 import ActionButton from "../components/ActionButton";
 
-//TODO Inline hints for new players (or maybe take these to Infos)
-
 export default function FormulaResets() {
   return (<div>
     <ActionButton actionName="applyFormula" fullLine><b>DISCOVER THE WORLD FORMULA</b></ActionButton>
     <div className="ltrList">
-      <ActionButton actionName="applyFormula">Basic Reset</ActionButton>
-      <ActionButton actionName="applyFormula">x-Reset</ActionButton>
-      <ActionButton actionName="applyFormula">&alpha;-Reset</ActionButton>
-      <ActionButton actionName="applyFormula"><b>Complete Challenge</b></ActionButton>
-      <ActionButton actionName="applyFormula">Abort</ActionButton>
+      <ActionButton actionName="basicReset">Basic Reset</ActionButton>
+      <ActionButton actionName="xReset">x-Reset</ActionButton>
+      <ActionButton actionName="completeSegment">x-Reset C</ActionButton>
+      <ActionButton actionName="alphaReset">&alpha;-Reset</ActionButton>
+      <ActionButton actionName="completeChallenge"><b>Complete Challenge</b></ActionButton>
+      <ActionButton actionName="abortAlphaRun">Abort</ActionButton>
+      <ActionButton actionName="exitChallenge">Abort C</ActionButton>
     </div>
   </div>)
 }

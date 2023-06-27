@@ -1,7 +1,7 @@
 import { MAJORVERSION, MINORVERSION, PRODUCTIVE, mailStates } from "./constants"
 
 //Resets on Basic Reset
-const newBasicRun = ()=>({
+export const newBasicRun = ()=>({
   xValues: [0,0,0,0],
   formulaUsed: {},
   inNegativeSpace: false,
@@ -11,7 +11,7 @@ const newBasicRun = ()=>({
 })
 
 //Resets on x-Reset
-const newStageRun = ()=>({
+export const newStageRun = ()=>({
   myFormulas: [],
   currentStage: 0, //formerly highestXTier
   formulaUnlocked: {},
@@ -25,7 +25,7 @@ const newStageRun = ()=>({
 })
 
 //Resets on Alpha Reset
-const newFormulaSave = ()=>({
+export const newFormulaSave = ()=>({
   isFullyIdle: true,
   currentChallenge: null, //id of challenge
   
@@ -61,6 +61,12 @@ const newAlphaSave = ()=>({
   //Rememberer
   equipLayouts: [[[],[],[],[]],[[],[],[],[]],[[],[],[],[]]],
   selectedLayout: 0,
+  autoRemembererActive: "ON",
+
+  //Resetter
+  autoResetterX: "OFF",
+  autoResetterA: "OFF",
+  alphaThreshold: "MINIMUM",
 
   //Research
   xHighScores: [20e3,20e9,20e21,20e33],
@@ -150,10 +156,6 @@ const newSettingsSave = ()=>({
   hotKeys: "ON",
   shopScroll: "OFF",
   shopFilter: "ALL",
-  autoResetterS: "OFF",
-  autoResetterA: "OFF",
-  alphaThreshold: "MINIMUM",
-  autoRemembererActive: "ON",
   challengeTabSwitch: "ON",
   shopResetPopup: "ON",
   alphaResetPopup: "ON",
