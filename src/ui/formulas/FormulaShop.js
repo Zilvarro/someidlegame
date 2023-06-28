@@ -5,11 +5,11 @@ import ComponentMap from "../components/ComponentMap"
 import FormulaShopButton from "./FormulaShopButton"
 
 export default function FormulaShop() {
-  const context = useContext(AppContext)
+  const context = useContext(AppContext) 
   const stage = stageDictionary[stageList[context.formulas.stageRun.currentStage]]
   return <div>
     <ComponentMap values={stage.formulas} mapping={(formula, index)=>
-      <FormulaShopButton key={index} actionName={context.formulas.stageRun.formulaUnlocked[formula.id] ? "getFormula" : "unlockFormula"} formulaId={formula.id} index={index}/>
+      <FormulaShopButton key={index} formulaId={formula.id} index={index}/>
     }/>
   </div>
 }

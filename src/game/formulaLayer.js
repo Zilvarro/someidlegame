@@ -111,6 +111,16 @@ export const formulaLayer = {
         game.save.maingame.formulas = newFormulaSave()
         break;
       }
+      case "singleTick": {
+        basicRun.xValues[1] += parameters.deltaMilliSeconds / 1000
+        if (game.session.holdAction)
+          game.perform(game.session.holdAction.actionName, game.session.holdAction.parameters)
+        break;
+      }
+      case "offlineProgress": {
+        basicRun.xValues[1] += parameters.deltaMilliSeconds / 1000
+        break;
+      }
       default:
         return false
     }

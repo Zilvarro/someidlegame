@@ -11,6 +11,7 @@ export const generalLayer = {
       case "changeSetting":
         settings[parameters.settingName] = parameters.newStatus
         break;
+
       default:
         return false
     }

@@ -19,12 +19,20 @@ const initializer=()=>{
 }
 
 const reducer=(game, action)=>{
-  game.perform(action.name, action)
-  return game
+  if (document.hidden) 
+    return game.managedRelease()
+  else if (action.name === "tick")
+    return game.managedWait()
+  else if (action.name === "hold")
+    return game.managedHold(action.holdActionName, action.holdParameters)
+  else if (action.name === "release")
+    return game.managedRelease()
+  else
+    return game.managedPerform(action.name, action)
 }
 
 export default function App() {
-  const [ game, updateGame ] = useObjectReducer(reducer, initializer)
+  const [ game, updateGame ] = useObjectReducer(reducer, initializer, 25, {name:"tick"})
   const [ popupState , setPopupState ] = useState({text: "", options: [], visible:false})
   const popup = makeShowPopup(popupState, setPopupState)
   const context = {
@@ -45,9 +53,10 @@ export default function App() {
 
   return <>
     <AppContext.Provider value={context}>
+      {/* <PeriodicTask task={myTask} interval={1000}/> */}
       <BeforeUnload unloadHandler={()=>{if (context.save.general.mileStoneCount > 0) save(FILENAME, context.save)}}/>
       <PopupDialog popupState={popupState} setPopupState={setPopupState} discardable={true/*state.settings.hotkeyDiscardPopup === "ON" TODO*/}/>
-      <MainScreen>Hello World! lulul</MainScreen>
+      <MainScreen/>
     </AppContext.Provider>
   </>
 }

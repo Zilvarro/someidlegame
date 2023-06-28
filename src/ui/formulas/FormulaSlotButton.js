@@ -7,7 +7,7 @@ import ActionButton from "../components/ActionButton";
 export default function FormulaSlotButton({formulaId, slot}) {
   const context = useContext(AppContext)
   return (<div>
-    <FancyButton color="#CCFFCC" actionName="applyFormula" parameters={{slot}}>
+    <FancyButton color="#CCFFCC" holdable actionName="applyFormula" parameters={{slot}}>
       {textifyFormula(formulaDictionary[formulaId], context)}
     </FancyButton>
     <ActionButton actionName="unequipFormula" parameters={{slot}} text="Unequip"/>

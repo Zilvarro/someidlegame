@@ -194,6 +194,7 @@ const newGeneralSave = ()=>({
 export const newSessionContext = ()=>({
   tickFormula: false, //Session Property
   holdAction: null, //Session Property
+  lastTick: Date.now(),
   currentEnding: "",
   
   avgXPerSecond: [0,0,0,0], //Session Property
