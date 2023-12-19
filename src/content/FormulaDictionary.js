@@ -118,7 +118,7 @@ const formulaDictionary = {
       raw: "50e6",
       type: "incrementer",
       applyCost: 1e6,
-      targetLevel: 1,
+      targetLevel: 0,
   },
 
   //Tier 3 Formulas

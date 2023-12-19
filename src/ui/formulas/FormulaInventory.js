@@ -5,9 +5,10 @@ import FormulaSlotButton from "./FormulaSlotButton";
 
 export default function FormulaInventory() {
   const context=useContext(AppContext)
+  const inventory = Object.assign(new Array(context.derived.inventorySize).fill(), context.formulas.stageRun.myFormulas)
   return (<div>
 
-    <ComponentMap values={context.formulas.stageRun.myFormulas} mapping={(formulaId, slot)=>(
+    <ComponentMap values={inventory} mapping={(formulaId, slot)=>(
       <FormulaSlotButton key={slot} slot={slot} formulaId={formulaId}/>
     )}/>
   </div>)

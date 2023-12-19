@@ -4,6 +4,10 @@ import { calc } from "./FormulaNumber"
 import { evaluateFormula } from "./formulaBuilder"
 import { newBasicRun, newFormulaSave, newStageRun } from "./saveTemplates"
 
+const isLockedByChallenge = (game, formula)=>((game.derived.activeChallenges.SIMPLEONLY && formula.complex) || 
+    (game.derived.activeChallenges.COMPLEX && !formula.complex && !formula.isBasic) ||
+    (game.derived.activeChallenges.NEWONLY && formula.effectLevel !== game.save.maingame.formulas.stageRun.currentStage))
+
 export const formulaLayer = {
   perform: (game, actionName, parameters={})=>{
     const data = game.save.maingame.formulas
@@ -21,7 +25,7 @@ export const formulaLayer = {
           "x''":basicRun.xValues[2],
           "x'''":basicRun.xValues[3],
           "#U":stageRun.formulaUnlockCount,
-          "#B":stageRun.xResetCount,
+          "#B":stageRun.basicResetCount,
           "#F":stageRun.formulaApplyCount,
           "#E":stageRun.myFormulas.length,
         }
@@ -39,6 +43,10 @@ export const formulaLayer = {
         if (formula.targetLevel > 0) {
           basicRun.xValues[0] = calc("sub", basicRun.xValues[0], formula.applyCost)
         }
+
+        //Mark as used
+        basicRun.anyFormulaUsed = true
+        basicRun.formulaUsed[formula.id] = true
         break;
       case "unlockFormula": { //index
         const formula = stageDictionary[stageList[stageRun.currentStage]].formulas[parameters.index]
@@ -55,7 +63,7 @@ export const formulaLayer = {
       }
       case "unequipFormula": { //slot
         const discarded = stageRun.myFormulas.splice(parameters.slot, 1)
-        stageRun.formulaBought[discarded.id] = false
+        stageRun.formulaBought[discarded[0]] = false
         break;
       }
       case "moveFormulaUp": { //slot
@@ -77,7 +85,7 @@ export const formulaLayer = {
       }
       case "basicReset": {
         data.basicRun = newBasicRun()
-        data.stageRun.xResetCount++
+        data.stageRun.basicResetCount++
         break;
       }
       case "xReset": {
@@ -111,19 +119,249 @@ export const formulaLayer = {
         game.save.maingame.formulas = newFormulaSave()
         break;
       }
+      case "memorize": { //loadout
+        break;
+      }
+      case "remember": { //loadout
+        break;
+      }
+      case "toggleAuto": { //slot
+        break;
+      }
+      case "toggleAutoAll": {
+        break;
+      }
+      case "changeLoadout": {
+        break;
+      }
       case "singleTick": {
-        basicRun.xValues[1] += parameters.deltaMilliSeconds / 1000
-        if (game.session.holdAction)
-          game.perform(game.session.holdAction.actionName, game.session.holdAction.parameters)
+        applyProductionComplex(parameters.deltaMilliSeconds / 1000, basicRun.xValues)
         break;
       }
       case "offlineProgress": {
-        basicRun.xValues[1] += parameters.deltaMilliSeconds / 1000
+        applyProductionComplex(parameters.deltaMilliSeconds / 1000, basicRun.xValues)
         break;
       }
       default:
         return false
     }
     return true
+  },
+  validate: (game, actionName, parameters={})=>{
+    const data = game.save.maingame.formulas
+    const basicRun = data.basicRun
+    const stageRun = data.stageRun
+    const invisible = {valid: false, visible: false, enabled: false}
+    const disabled = {valid: false, visible: true, enabled: false}
+    const valid = {valid: true, visible: true, enabled: true}
+    const noop = {valid: false, visible: true, enabled: true}
+    //debugger
+    if (!data) return false
+
+    switch (actionName) {
+      case "applyFormula": //slot
+        if (parameters.slot >= stageRun.myFormulas.length) return invisible
+        return {valid: true, visible: true, enabled: true}
+      case "unlockFormula": { //index
+        const formula = stageDictionary[stageList[stageRun.currentStage]].formulas[parameters.index]
+        if (stageRun.formulaUnlocked[formula.id]) return invisible
+        if (stageRun.formulaBought[formula.id]) return invisible //shown only in inventory
+        if (isLockedByChallenge(game, formulaDictionary[formula.id])) return invisible //shown only in inventory, but disabled with text
+
+        if (game.derived.activeChallenges.FULLYIDLE) return disabled
+        if (calc("lt", basicRun.xValues[0], formula.unlock)) return disabled
+        return valid
+      }
+      case "getFormula": { //index
+        const formula = stageDictionary[stageList[stageRun.currentStage]].formulas[parameters.index]
+        if (!stageRun.formulaUnlocked[formula.id]) return invisible
+        if (stageRun.formulaBought[formula.id]) return invisible
+        if (isLockedByChallenge(game, formulaDictionary[formula.id])) return invisible
+
+        if (stageRun.myFormulas.length >= game.derived.inventorySize) return disabled
+        if (game.derived.activeChallenges.FULLYIDLE) return disabled
+        return valid
+      }
+      case "unequipFormula": { //slot
+        if (basicRun.formulaUsed[stageRun.myFormulas[parameters.slot]]) return invisible
+
+        if (game.derived.activeChallenges.FULLYIDLE) return disabled
+        return valid
+      }
+      case "moveFormulaUp": { //slot
+        if (basicRun.formulaUsed[stageRun.myFormulas[parameters.slot]]) return invisible
+        if (game.derived.activeChallenges.FULLYIDLE) return disabled
+        if (parameters.slot <= 0) return noop
+        return valid
+      }
+      case "moveFormulaDown": { //slot
+        if (basicRun.formulaUsed[stageRun.myFormulas[parameters.slot]]) return invisible
+        if (game.derived.activeChallenges.FULLYIDLE) return disabled
+        if (parameters.slot >= game.derived.inventorySize - 1) return noop
+        return valid
+      }
+      case "basicReset": {
+        if (game.save.maingame.progressionLayer === 0 && stageRun.currentStage === 0 && stageRun.formulaUnlockCount < 4) return invisible
+
+        if (!basicRun.anyFormulaUsed) return disabled
+        if (game.derived.activeChallenges.ONESHOT) return disabled
+        if (game.derived.activeChallenges.FULLYIDLE) return disabled
+        return valid
+      }
+      case "xReset": {
+        const xGoal = stageDictionary[stageList[stageRun.currentStage]].xGoal
+        if (!xGoal) return invisible
+        const enoughX = calc("geq", basicRun.xValues[0], xGoal)
+        if (game.save.maingame.progressionLayer === 0 && !enoughX) return invisible
+        
+        if (basicRun.inNegativeSpace) return disabled
+        if (!enoughX) return disabled
+        if (game.derived.activeChallenges.FULLYIDLE) return disabled
+        return valid
+      }
+      case "alphaReset": {
+        if (game.save.maingame.progressionLayer === 0) return invisible
+        const aGoal = stageDictionary[stageList[stageRun.currentStage]].aGoal
+        if (!aGoal) return invisible
+        const enoughX = calc("geq", basicRun.xValues[0], aGoal)
+        if (game.save.maingame.progressionLayer === 0 && !enoughX) return invisible
+        
+        if (basicRun.inNegativeSpace) return disabled
+        if (!enoughX) return disabled
+        if (game.derived.activeChallenges.FULLYIDLE) return disabled
+        return valid
+      }
+      case "abortAlphaRun": {
+        if (game.save.maingame.progressionLayer === 0) return invisible
+        if (data.currentChallenge) return invisible
+        
+        if (game.derived.activeChallenges.FULLYIDLE) return disabled
+        return valid
+      }
+      case "abortChallenge": {
+        if (!data.currentChallenge) return invisible
+        const aGoal = stageDictionary[stageList[stageRun.currentStage]].aGoal
+        if (aGoal && calc("geq", basicRun.xValues[0], aGoal)) return invisible
+
+        if (game.derived.activeChallenges.FULLYIDLE) return disabled
+        return valid
+      }
+      case "completeSegment": {
+        if (!data.currentChallenge) return invisible
+        const xGoal = stageDictionary[stageList[stageRun.currentStage]].xGoal
+        if (!xGoal) return invisible
+
+        if (game.derived.activeChallenges.FULLYIDLE) return disabled
+        if (calc("lt", basicRun.xValues[0], xGoal)) return disabled
+        return valid
+      }
+      case "completeChallenge": {
+        if (!data.currentChallenge) return invisible
+        const aGoal = stageDictionary[stageList[stageRun.currentStage]].aGoal
+        if (!aGoal) return invisible
+        const enoughX = calc("geq", basicRun.xValues[0], aGoal)
+        if (!enoughX) return invisible
+        
+        if (basicRun.inNegativeSpace) return disabled
+        if (game.derived.activeChallenges.FULLYIDLE) return disabled
+        return valid
+      }
+      case "exitChallenge": {
+        if (!data.currentChallenge) return invisible
+        return valid
+      }
+      case "getWorldFormula": {
+        if (data.currentChallenge) return invisible
+        if (calc("lt", basicRun.xValues[0], Infinity)) return invisible
+        return valid
+      }
+      case "unequipAll": {
+        if (!game.save.maingame.alpha.alphaUpgrades.MEEQ) return invisible
+        if (game.derived.activeChallenges.FULLYIDLE) return disabled
+        return valid
+      }
+      case "memorize": //loadout
+        if (!game.save.maingame.alpha.alphaUpgrades.MEEQ) return invisible
+        if (game.derived.activeChallenges.FULLYIDLE) return disabled
+        return valid
+      case "remember": //loadout
+        if (!game.save.maingame.alpha.alphaUpgrades.MEEQ) return invisible
+        if (game.derived.activeChallenges.FULLYIDLE) return disabled
+        return valid
+      case "toggleAuto": //slot
+        if (!game.save.maingame.alpha.alphaUpgrades.AAPP) return invisible
+        if (game.derived.activeChallenges.FULLYIDLE) return disabled
+        return valid
+      case "toggleAutoAll":
+        if (!game.save.maingame.alpha.alphaUpgrades.SAPP) return invisible
+        if (game.derived.activeChallenges.FULLYIDLE) return disabled
+        return valid
+      case "changeLoadout": //loadout
+        if (!game.save.maingame.alpha.alphaUpgrades.MEMS) return invisible
+        if (game.derived.activeChallenges.FULLYIDLE) return disabled
+        return valid
+      default:
+        return undefined
+    }
   }
 }
+
+const applyProductionComplex = (t, xValues) => {
+  // const t = 5
+  // const xValues = [1,2,3,4,5,6]
+  const productionBonus = [1,1,1,1,1,1]
+  const challengeMultiplier = 1
+  const globalMultiplier = 1
+  // const formulaEfficiency = 1
+  // const autoApplyRate = 10
+
+  const boostMap = {
+    "x":{
+      value: xValues[0],
+      generates: [],
+    },
+    "x'":{
+      value: xValues[1],
+      generates: [{target: "x", boost: challengeMultiplier * productionBonus[0] * globalMultiplier}],
+    },
+    "x''":{
+      value: xValues[2],
+      generates: [{target: "x'", boost: challengeMultiplier * productionBonus[1] * globalMultiplier}],
+    },
+    "x'''":{
+      value: xValues[3],
+      generates: [{target: "x''", boost: challengeMultiplier * productionBonus[2] * globalMultiplier}],
+    },
+    // "a1":{
+    //   generates: [{target: "x'", boost: autoApplyRate * formulaEfficiency}]
+    // }
+  }
+
+  let resultMap = {}
+
+  for (const [key, entry] of Object.entries(boostMap)) {
+    resultMap = recurseProduction(boostMap, resultMap, t, key, entry.value)
+  }
+  
+  xValues[0] += resultMap["x"].produced
+  xValues[1] += resultMap["x'"].produced
+  xValues[2] += resultMap["x''"].produced
+  xValues[3] += resultMap["x'''"].produced
+}
+
+const recurseProduction = (boostMap, resultMap, t, currentNode, currentValue = 0, depth = 1)=>{
+  resultMap[currentNode] ||= {produced: 0, perSecond: 0}
+  if (depth > 1) {
+    resultMap[currentNode].produced += currentValue
+  }
+  
+  for (const gen of boostMap[currentNode].generates) {
+    const produced = t * gen.boost * currentValue / depth
+    resultMap = recurseProduction(boostMap, resultMap, t, gen.target, produced, depth+1)
+
+    if (depth === 1)
+      resultMap[gen.target].perSecond += gen.boost * currentValue
+  }
+  return resultMap
+}
+

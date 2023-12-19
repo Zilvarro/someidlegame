@@ -1,5 +1,6 @@
-export default function DropdownSelectButton({settingName, settings, statusList, updateStatus, visible=true, enabled=true, fullLine=false, tooltip, tooltipList, description}) {
-  if (!visible) return undefined
+export default function DropdownSelectButton({settingName, settings, statusList, updateStatus, validateStatus, visible=true, enabled=true, fullLine=false, tooltip, tooltipList, description}) {
+  const validation = validateStatus ? validateStatus(settingName) : {visible: visible, enabled: enabled}
+  if (!validation.visible) return undefined
 
   const currentStatus = settings[settingName]
   const currentIndex = statusList.indexOf(currentStatus)
@@ -18,7 +19,7 @@ export default function DropdownSelectButton({settingName, settings, statusList,
   return (
       <>
           {description && <>{description}:&nbsp;&nbsp;</>}
-          <select value={settings[settingName]} style={{color:"black"}} title={fullToolTip} disabled={!enabled} onChange={onSelectionChange}>
+          <select value={settings[settingName]} style={{color:"black"}} title={fullToolTip} disabled={!validation.enabled} onChange={onSelectionChange}>
               {statusList.filter((status)=>status).map((status)=>
                   <option key={status} value={status}>{status}</option>
               )}

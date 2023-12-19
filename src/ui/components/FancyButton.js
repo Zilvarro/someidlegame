@@ -1,7 +1,6 @@
 import { useContext } from 'react'
 import './FancyButton.css'
 import { AppContext } from '../App'
-import { notify } from '../../utilities/notifier'
 
 const shallowCompare = (obj1, obj2) =>
   Object.keys(obj1).length === Object.keys(obj2).length &&
@@ -9,19 +8,21 @@ const shallowCompare = (obj1, obj2) =>
     obj2.hasOwnProperty(key) && obj1[key] === obj2[key]
 )
 
-export default function FancyButton({actionName, parameters={}, color, inactiveColor, tooltip, holdable, children}) {
+export default function FancyButton({actionName, parameters={}, color, inactiveColor="#666666", tooltip, holdable, children}) {
   const context = useContext(AppContext)
-  const {visible, enabled} = context.game.validate(actionName, parameters)
+  const {visible, enabled} = actionName ? context.game.validate(actionName, parameters) : {visible: true, enabled: false}
   const perform = ()=>{
     if (!enabled) return
     context.perform(actionName, parameters)
   }
 
   const mouseHandler = (e)=>{
-    console.log(e.type)
+    //console.log(e.type)
     if (!holdable || !enabled) return
     switch(e.type){
       case "mousedown":
+        context.perform("hold", {holdActionName: actionName, holdParameters: parameters})
+        break
       case "touchstart":
         context.perform("hold", {holdActionName: actionName, holdParameters: parameters})
         break
@@ -30,9 +31,7 @@ export default function FancyButton({actionName, parameters={}, color, inactiveC
       case "touchend":
       case "blur":
         const holdie = context.game.session.holdAction || context.game.session.prepareHold
-        // if (holdie) debugger
         if (holdie && holdie.actionName === actionName && shallowCompare(holdie.parameters, parameters)) {
-          notify.error(e.type)
           context.perform("release")
         }
         break

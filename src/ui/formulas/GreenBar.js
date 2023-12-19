@@ -8,6 +8,7 @@ export default function GreenBar() {
     return undefined
   
   const progressBarWidth = Math.min(100 * Math.log10(Math.max(context.formulas.basicRun.xValues[0],1)) / Math.log10(ALPHATARGET),99).toFixed(0) + "%"
+  //debugger
   const joinAcademy = ()=>{
     context.popup.confirm("You lose all your differentials but you join the Academy and gain a powerful Alpha Token.",()=>{
       context.perform("joinAcademy")

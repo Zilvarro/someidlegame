@@ -11,5 +11,9 @@ export const destinyLayer = {
         return false
     }
     return true
+  },
+
+  validate: (game, actionName, parameters={})=>{
+    
   }
 }

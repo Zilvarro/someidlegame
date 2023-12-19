@@ -11,21 +11,21 @@ export default function FormulaShopButton({formulaId, index, actionName}) {
 
   if (!isUnlocked) {
     return (<div>
-      <FancyButton color="#CCFFCC" actionName="unlockFormula" parameters={{index}}>
+      <FancyButton color="#FFFFFF" actionName="unlockFormula" parameters={{index}}>
         UNLOCK {textifyFormula(formulaDictionary[formulaId], context)}
       </FancyButton>
       <br/>
     </div>)
   } else if (!isBought) {
     return (<div>
-      <FancyButton color="#CCFFCC" actionName="getFormula" parameters={{index}}>
+      <FancyButton color="#FFFFFF" actionName="getFormula" parameters={{index}}>
         GET {textifyFormula(formulaDictionary[formulaId], context)}
       </FancyButton>
       <br/>
     </div>)
   } else {
     return (<div>
-      <FancyButton color="#CCFFCC" actionName="" parameters={{index}}>
+      <FancyButton color="#FFFFFF" actionName="" parameters={{index}}>
         EQUIPPED
       </FancyButton>
       <br/>

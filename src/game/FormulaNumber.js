@@ -190,7 +190,12 @@ export class FormulaNumber {
 export const calc = (op, x, y)=>{
   const fx = (x.arrval) ? x : new FormulaNumber(x)
   const fy = (y.arrval) ? y : new FormulaNumber(y)
-  return FormulaNumber.prototype[op].call(fx,fy).simplify()
+  const result =  FormulaNumber.prototype[op].call(fx,fy)
+  if (result?.simplify) {
+    return result.simplify()
+  } else {
+    return result
+  }
 }
 
 // Early attempt at postprocessing, probably not complete

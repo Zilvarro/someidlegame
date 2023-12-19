@@ -2,7 +2,7 @@ import ActionButton from "../components/ActionButton";
 
 export default function FormulaResets() {
   return (<div>
-    <ActionButton actionName="applyFormula" fullLine><b>DISCOVER THE WORLD FORMULA</b></ActionButton>
+    <ActionButton actionName="getWorldFormula" fullLine><b>DISCOVER THE WORLD FORMULA</b></ActionButton>
     <div className="ltrList">
       <ActionButton actionName="basicReset">Basic Reset</ActionButton>
       <ActionButton actionName="xReset">x-Reset</ActionButton>

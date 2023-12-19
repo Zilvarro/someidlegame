@@ -40,7 +40,7 @@ export default function OptionScreen() {
         description="Shop Scrollbar" tooltip="Controls whether the formula shop has a separate scroll bar" tooltipList={["Shop has a scroll bar","Shop does not have a scroll bar."]}/>
       <ToggleSelectButton settingName="challengeTabSwitch" statusList={["ON","OFF"]} settings={settings} updateStatus={updateStatus} fullLine={true} 
         description="Challenge Tab Switch" tooltip="Controls whether automatic tab switch occurs when starting or finishing a challenge" tooltipList={["Tab is switched automatically","Tab is not switched automatically."]}/>
-      <BasicButton text="Hard Reset" title={"Starts a new game. This will overwrite your current save file."} fullLine={true} onClick={()=>{/*TODO*/}}/>
+      <BasicButton text="Hard Reset" title={"Starts a new game. This will overwrite your current save file."} fullLine={true} onClick={()=>{context.perform("hardReset")}}/>
 
       <details className="topMargin pointer">
         <summary>Pop-Up-Settings</summary>

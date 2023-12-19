@@ -11,5 +11,9 @@ export const worldLayer = {
         return false
     }
     return true
+  },
+
+  validate: (game, actionName, parameters={})=>{
+    
   }
 }

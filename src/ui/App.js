@@ -9,6 +9,7 @@ import { PopupDialog, makeShowPopup } from './components/PopupDialog';
 import { useObjectReducer } from './components/AppContext';
 import { FILENAME } from '../game/constants';
 import BeforeUnload from './components/BeforeUnload';
+import KeyBoardHandler from './components/KeyboardHandler';
 
 export const AppContext = createContext({})
 
@@ -53,7 +54,7 @@ export default function App() {
 
   return <>
     <AppContext.Provider value={context}>
-      {/* <PeriodicTask task={myTask} interval={1000}/> */}
+      <KeyBoardHandler/>
       <BeforeUnload unloadHandler={()=>{if (context.save.general.mileStoneCount > 0) save(FILENAME, context.save)}}/>
       <PopupDialog popupState={popupState} setPopupState={setPopupState} discardable={true/*state.settings.hotkeyDiscardPopup === "ON" TODO*/}/>
       <MainScreen/>

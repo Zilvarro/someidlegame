@@ -16,7 +16,7 @@ export const newStageRun = ()=>({
   currentStage: 0, //formerly highestXTier
   formulaUnlocked: {},
   formulaBought: {},
-  xResetCount: 0,
+  basicResetCount: 0,
   formulaUnlockCount: 0,
   formulaApplyCount: 0,
   autoUnlockIndex: 0,
@@ -179,7 +179,6 @@ const newGeneralSave = ()=>({
   progressionLayer: 0,
   selectedTabKey: "FormulaScreen",
 
-  saveTimeStamp: 0,
   calcTimeStamp: 0,
   shopFavorites: [{},{},{},{}], //-1: hidden // 1: favorite // undefined: normal
   allTimeEndings: {},
@@ -187,7 +186,7 @@ const newGeneralSave = ()=>({
 
   fileStartTimeStamp: Date.now(), //Not shown to user, but saved just in case
   playtime: 0, //Not shown to user, but saved just in case
-  mileStoneCount: 0,
+  mileStoneCount: 2, //TODO should start at 0 but that prevents Auto Save
 })
 
 //Resets when refreshing Page, not saved
@@ -195,6 +194,7 @@ export const newSessionContext = ()=>({
   tickFormula: false, //Session Property
   holdAction: null, //Session Property
   lastTick: Date.now(),
+  saveTimeStamp: Date.now(),
   currentEnding: "",
   
   avgXPerSecond: [0,0,0,0], //Session Property
@@ -205,6 +205,7 @@ export const newSessionContext = ()=>({
 
 //Contains properties derived from other properties, not saved
 export const newDerivedContext = ()=>({
+  inventorySize: 3,
   productionBonus: [1,1,1,1],
   formulaEfficiency: [1,1,1,1],
   insideChallenge: false,

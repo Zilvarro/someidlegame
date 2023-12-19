@@ -1,4 +1,3 @@
-import { notify } from "../utilities/notifier";
 import { alphaLayer } from "./alphaLayer";
 import { destinyLayer } from "./destinyLayer";
 import { formulaLayer } from "./formulaLayer";
@@ -14,10 +13,10 @@ export class Game {
       this.derived = newDerivedContext()
   }
 
-  //PUBLIC
-  //validates if an action is allowed without performing it
-  validate(actionName, parameters={}) {
-    return {visible: true, enabled: true, valid: true}
+  hardReset() {
+    this.save = newSave()
+    this.session = newSessionContext()
+    this.derived = newDerivedContext()
   }
 
   //REALTIME-PLAY
@@ -32,7 +31,6 @@ export class Game {
     this.session.timebank += deltaMilliSeconds
 
     if (this.session.prepareHold && Date.now() - this.session.prepareHold.prepareTime > 500) {
-      console.log("Hold activate")
       this.setHoldInTick(this.session.prepareHold.actionName, this.session.prepareHold.parameters)//Activate Hold Action
       this.session.prepareHold = null
       this.session.timebank -= 100
@@ -57,8 +55,6 @@ export class Game {
   //REALTIME-PLAY
   //Start of Hold Action
   managedHold(actionName, parameters) {
-    console.log("preparing")
-    notify.warning("Prepare")
     this.session.prepareHold = {
       actionName,
       parameters,
@@ -70,6 +66,7 @@ export class Game {
   //REALTIME-PLAY
   //Release of Hold Action
   managedRelease() {
+    //debugger
     if (this.session.holdAction) { //We always want to release an action that has been set
       this.releaseHoldInTick()
       this.session.prepareHold = null
@@ -93,7 +90,6 @@ export class Game {
       return null
     }
     if (deltaMilliSeconds + this.session.timebank < 0) {
-      console.log("Too fast.")
       return null
     }
 
@@ -146,9 +142,27 @@ export class Game {
       this.perform("offlineProgress", {deltaMilliSeconds})
   }
 
+  //PUBLIC
+  //Validates all sorts of actions
+  validate(actionName, parameters={}) {
+    //Delegate work to respective layers
+    const gl = generalLayer.validate(this, actionName, parameters)
+    const fl = formulaLayer.validate(this, actionName, parameters)
+    const al = alphaLayer.validate(this, actionName, parameters)
+    const wl = worldLayer.validate(this, actionName, parameters)
+    const vl = voidLayer.validate(this, actionName, parameters)
+    const dl = destinyLayer.validate(this, actionName, parameters)
+    const validationResult = gl || fl || al || wl || vl || dl
+    if (!validationResult) {
+      console.error("Action " + actionName + " not available.")
+    }
+    return validationResult || {valid: false}
+  }
+
   //PRIVATE
   //Performs all sorts of actions
   perform(actionName, parameters={}) {
+    if (!this.validate(actionName, parameters)?.valid) return false
     //Delegate work to respective layers
     const gl = generalLayer.perform(this, actionName, parameters)
     const fl = formulaLayer.perform(this, actionName, parameters)
@@ -157,8 +171,9 @@ export class Game {
     const vl = voidLayer.perform(this, actionName, parameters)
     const dl = destinyLayer.perform(this, actionName, parameters)
     const wasPerformed = gl || fl || al || wl || vl || dl
-    if (!wasPerformed)
+    if (!wasPerformed) {
       console.error("Action " + actionName + " not available.")
+    }
     return wasPerformed
   }
 }

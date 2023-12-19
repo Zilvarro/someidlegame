@@ -11,5 +11,9 @@ export const voidLayer = {
         return false
     }
     return true
+  },
+  
+  validate: (game, actionName, parameters={})=>{
+    
   }
 }
