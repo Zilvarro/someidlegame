@@ -9,17 +9,22 @@ LOW: Decrease Formula Confirmation should show target differential
 LOW: Favorite Dropdown cancels Hotkey (=> May need better hotkey package)
 LOW: Rework per Second Display (accurate calculation instead of average over last ticks)
 LOW: Per Second Display should reflect Auto Applier at 2 applies per second
+LOW: Explain tick order in detail (Maybe glossary or just a mail)
 
 ~~~~~~~~~~~ALPHA~~~~~~~~~~~
 
 LOW: Notification for new highscores
 LOW: Allow skipping Endings that are already completed
+LOW: Explain research in detail (Maybe glossary or just a mail)
 
 ~~~~~~~~~~DESTINY~~~~~~~~~~
 
 ~~~~~~~~~~~MAILS~~~~~~~~~~~
 
 ~~~~~~~~~~OPTIONS~~~~~~~~~~
+
+MEDIUM: Export as file
+
 
 ------------REJECTED-----------
 
@@ -39,5 +44,3 @@ Also show best x and Alpha in Options or Mail
 Chapter Completion Stats
 Allow enabling Destiny multiplier on single clicks
 Back button to quit endings early
-Explain research in detail (Maybe glossary or just a mail)
-Explain tick order in detail (Maybe glossary or just a mail)

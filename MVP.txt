@@ -1,41 +1,16 @@
-============GOAL=============
-
-Playthrough Formula Layer possible
-Milestones + Mails
-Alpha Playthrough possible
-
-Alpha Automation
-World Resets (Goal: x=Infinity)
-New x-Reset
-New Challenges
-New World Feature
-Starting Stones Advanced
-Infinimaths
-Rituals
-
 ~~~~~~~~~~VERYHIGH~~~~~~~~~~
 
 ~~~~~~~~~~~~HIGH~~~~~~~~~~~~
 
-Idle Progress
-Offline Progress
-
 ~~~~~~~~~~~MEDIUM~~~~~~~~~~~
-
-Shop Info (Unlock Cost etc.)
-Inventory Info (Apply Cost etc.)
 
 ~~~~~~~~~~~~~LOW~~~~~~~~~~~~
 
-Pull out managed logic from Game.js
-
 ~~~~~~~~~~~VERYLOW~~~~~~~~~~
-
-Mail and Milestone Event System
-Better handling for hold/release
 
 ============DONE=============
 
-Validation Framework
-Auto Save
-Basic Hotkey Support
+Changes:
+Added option to Export save as downloadable File
+
+Fixes:
