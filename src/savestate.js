@@ -18,7 +18,7 @@ import { getCrystalChargeInfo, getCrystalChargeSpeed, getCrystalEffectUpgradeCos
 import { worldPerkDeck } from "./world/WorldPerkDictionary";
 
 export const majorversion = "2d"
-export const version = "2.00d"
+export const version = "2.01d"
 export const productive = false
 export var invitation = "efHyDkqGRZ"
 
@@ -269,7 +269,7 @@ export const save = (state)=>{
     state.saveTimeStamp = Date.now()
     let currentgame = stringifyProperly({...state, holdAction:null})
     const encodedGame = Buffer.from(currentgame).toString("base64");
-    window.localStorage.setItem('majorversion', majorversion)
+    // window.localStorage.setItem('majorversion', majorversion)
     window.localStorage.setItem('idleformulas_v' + majorversion, encodedGame)
 }
 
