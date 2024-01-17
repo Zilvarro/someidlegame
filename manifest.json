@@ -23,6 +23,7 @@
   "screenshots": [],
   "shortcuts": [],
   "dir": "ltr",
-  "scope": "https://zilvarro.github.io/idleformulas",
+  "orientation": "portrait",
+  "scope": "https://zilvarro.github.io/someidlegame",
   "lang": "en"
 }
